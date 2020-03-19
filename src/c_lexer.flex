@@ -6,7 +6,6 @@
 %}
 
 %%
-
 /* ========================================VARIABLE TYPES======================================== */
 
 "int"           {yylval.string = new std::string(yytext); return T_INT;}
@@ -17,9 +16,9 @@
 "else"          {yylval.string = new std::string(yytext); return T_ELSE;}
 "while"         {yylval.string = new std::string(yytext); return T_WHILE;}
 
-/* ============================================STUFF============================================= */
+/* ==========================================IDENTIFIER=========================================== */
 
-[a-zA-Z_][a-zA-Z0-9_]*          {yylval.string=new std::string(yytext); return T_VARNAME;}
+[a-zA-Z_][a-zA-Z0-9_]*          {yylval.string=new std::string(yytext); return T_IDENTIFIER;}
 
 /* ==========================================OPERATORS============================================ */
 
@@ -63,7 +62,7 @@
 
 /* Brackets */
 [(]                     {return T_OPEN_PARENTHESES;}
-[)]                     {return T_CLOSE_PARENTHESES;}
+[)]                     {return T_OPEN_PARENTHESES;}
 [\[]                    {return T_OPEN_BRACKETS;}
 [\]]                    {return T_CLOSE_BRACKETS;}
 [{]                     {return T_OPEN_BRACES;}
