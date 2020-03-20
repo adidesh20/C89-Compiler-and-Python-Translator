@@ -19,7 +19,9 @@
 
 /* ==========================================IDENTIFIER=========================================== */
 
-[a-zA-Z_][a-zA-Z0-9_]*          {yylval.string=new std::string(yytext); return T_IDENTIFIER;}
+[a-zA-Z_][a-zA-Z0-9_]*          {yylval.string=new std::string(yytext); return T_VARIABLE;}
+[0-9]+([.][0-9]*)? { yylval.number=strtod(yytext, 0); return T_NUMBER; }
+
 
 /* ==========================================OPERATORS============================================ */
 
