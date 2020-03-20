@@ -2,7 +2,7 @@
     #include "../include/ast.hpp"
     #include <cassert>
 
-    extern nodePtr g_root; // A way of getting the AST out
+    extern NodePtr g_root; // A way of getting the AST out
 
     int yylex(void);
     void yyerror(const char *);

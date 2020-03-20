@@ -3,6 +3,7 @@
 %{
     extern "C" int fileno(FILE *stream);
     #include <iostream>
+    #include "c_parser.tab.hpp"
 %}
 
 %%

@@ -7,6 +7,7 @@
 #include <map>
 
 #include "ast.hpp"
+#include "common.hpp"
 
 class AST_Node;
 
@@ -22,10 +23,15 @@ public:
     virtual void print(std::ostream &dst) const =0;
 
     //! Evaluate the tree using the given mapping of variables to numbers
-    virtual double evaluate(
-        const std::map<std::string,double> &bindings
-    ) const
-    { throw std::runtime_error("Not implemented."); }
+    virtual double evaluate(const std::map<std::string,double> &bindings) const
+    { 
+        throw std::runtime_error("Not implemented."); 
+    }
+
+    virtual void toPython(std::ostream &out) const
+    {
+        throw std::runtime_error("Not implemented."); 
+    }
 };
 
 #endif

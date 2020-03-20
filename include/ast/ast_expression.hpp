@@ -1,9 +1,10 @@
-#ifndef ast_expression_hpp
-#define ast_expression_hpp
+#ifndef EXPRESSION_HPP
+#define EXPRESSION_HPP
 
 #include <string>
 #include <iostream>
 #include <map>
+#include "ast.hpp"
 
 #include <memory>
 
@@ -11,7 +12,7 @@ class Expression;
 
 typedef const Expression *ExpressionPtr;
 
-class Expression
+class Expression: public AST_Node
 {
 public:
     virtual ~Expression()
@@ -26,6 +27,5 @@ public:
     ) const
     { throw std::runtime_error("Not implemented."); }
 };
-
 
 #endif
