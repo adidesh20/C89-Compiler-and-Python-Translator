@@ -7,27 +7,26 @@
 #include "ast.hpp"
 #include "common.hpp"
 
-extern std::vector<std::string> global_variables;
 
 class GlobalVariable_Definition: public AST_Node
 {
 public:
-    std::string returnType;
+    std::string varType;
     std::string varIdentifier;
-    ExpressionPtr varValue;
+    NodePtr varValue;
 
-    GlobalVariable_Definition(std::string _returnType, std::string _varIdentifier, ExpressionPtr _varValue)
+    GlobalVariable_Definition(std::string _varType, std::string _varIdentifier, NodePtr _varValue)
     {
-        returnType = _returnType;
+        varType = _varType;
         varIdentifier = _varIdentifier;
         varValue = _varValue;
-        global_variables.push_back(varIdentifier);
+        global_variables_names.push_back(varIdentifier);
         
     }
 
     virtual void print(std::ostream &out) const override
     {
-        out << returnType << " " << varIdentifier;
+        out << varType << " " << varIdentifier;
         if(varValue != NULL)
         {
             out << " = ";
@@ -60,9 +59,9 @@ class LocalVariable_Definition: AST_Node
     public:
     std::string returnType;
     std::string varIdentifier;
-    ExpressionPtr varValue;
+    NodePtr varValue;
 
-    LocalVariable_Definition(std::string _returnType, std::string _varIdentifier, ExpressionPtr _varValue)
+    LocalVariable_Definition(std::string _returnType, std::string _varIdentifier, NodePtr _varValue)
     {
         returnType = _returnType;
         varIdentifier = _varIdentifier;

@@ -1,11 +1,11 @@
 #ifndef ast_primitives_hpp
 #define ast_primitives_hpp
-
+#include "ast.hpp"
 #include <string>
 #include <iostream>
 
 class Variable
-    : public Expression
+    : public AST_Node
 {
 private:
     std::string id;
@@ -33,7 +33,7 @@ public:
 };
 
 class Number
-    : public Expression
+    : public AST_Node
 {
 private:
     double value;
@@ -54,7 +54,7 @@ public:
         const std::map<std::string,double> &bindings
     ) const override
     {
-        // TODO-A : Run bin/eval_expr with a numeric expression to make sure you understand how this works.
+        // TODO-A : Run bin/eval_expr with a numeric AST_Node to make sure you understand how this works.
         return value;
     }
 };
