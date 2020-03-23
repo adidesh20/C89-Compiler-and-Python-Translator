@@ -62,7 +62,8 @@ PROGRAM:
   ;
 
 EXTERNAL_DECLARATION:
-   // FUNCTION_DEC_DEF   {$$ = $1;}
+    FUNCTION_DEF   {$$ = $1;}
+  | FUNCTION_DEC   {$$ = $1;}
   | GLOBAL_DECLARATION {$$ = $1;}
   ;
 

@@ -73,8 +73,14 @@ public:
         {
             parameters->print(out);
         }
-        out << ")" << std::endl;
+        out << ");" << std::endl;
     } 
+    virtual void toPython(std::ostream &out) const override
+    { 
+        out <<std::endl;
+    }
+
+
 
     ~Function_Declaration(){}
 };
@@ -102,12 +108,12 @@ public:
         {
             parameters->print(out);
         }
-        out << ") {";
+        out << ")";
         if(functionImplementation != NULL)
         {
             functionImplementation->print(out);
         }
-        out << "}" << std::endl;
+        out << std::endl;
     } 
 
     virtual void toPython(std::ostream &out) const override
@@ -135,7 +141,7 @@ public:
                 
             }
 
-            //Then translate to python
+            //Then toPython to python
             functionImplementation->toPython(out);
         }
         
@@ -144,6 +150,65 @@ public:
 
         
     }
+};
+
+
+
+class Parameter_list: public AST_Node {
+private:
+    NodePtr Parameter;
+    NodePtr Rest_of_Parameters;
+public:
+    ~Parameter_list() {}
+
+    Parameter_list(NodePtr _Parameter, NodePtr _Rest_of_Parameters) {
+        Parameter=_Parameter;
+        Rest_of_Parameters=_Rest_of_Parameters;
+
+    }
+
+    virtual void print (std::ostream &dst) const override {
+        Parameter->print(dst);
+        if (Rest_of_Parameters != NULL) {
+            dst << ",";
+            Rest_of_Parameters->print(dst);
+        }
+    }
+
+    virtual void toPython (std::ostream &dst) const override {
+        Parameter->toPython(dst);
+        if (Rest_of_Parameters != NULL) {
+            dst << ",";
+            Rest_of_Parameters->toPython(dst);
+        }
+    }
+
+ 
+
+};
+
+class Parameter: public AST_Node {
+private:
+    std::string Type;
+    std::string Var;
+
+public:
+    ~Parameter () {}
+
+    Parameter(std::string _Type, std::string _Var){
+        Type=_Type;
+        Var=_Var;
+    }
+
+    virtual void print (std::ostream &dst) const override {
+        dst << Type <<" "<< Var;
+    }
+
+    virtual void toPython (std::ostream &dst) const override {
+        dst<< Var;
+    }
+
+   
 };
 
 #endif
