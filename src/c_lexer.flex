@@ -10,6 +10,9 @@
  /* ========================================VARIABLE TYPES======================================== */
 
 "int"           {yylval.string = new std::string(yytext); return T_INT;}
+"double"        { yylval.string = new std::string(yytext); return T_DOUBLE; }
+"float"         { yylval.string = new std::string(yytext); return T_FLOAT; }
+"void"          { yylval.string = new std::string(yytext); return T_VOID; }
 
  /* =====================================CONDITIONAL SHIZZLE====================================== */
 

@@ -138,11 +138,21 @@ public:
                 {
                     out << "\t";
                 }
-                
+                out << "\t" << "global " << global_variables_names[i] << std::endl;
             }
 
             //Then toPython to python
             functionImplementation->toPython(out);
+        }
+
+        //Main Case
+        if(functionIdentifier == "main")
+        {
+            out << std::endl;
+            out << "if __name__ == \"__main__\": " << std::endl;
+            out << "\timport sys" << std::endl;
+            out << "\tret=main()" << std::endl;
+            out << "\tsys.exit(ret)" << std::endl;
         }
         
        

@@ -54,7 +54,7 @@ public:
 
 };
 
-class LocalVariable_Definition: AST_Node
+class LocalVariable_Definition: public AST_Node
 {
     public:
     std::string returnType;

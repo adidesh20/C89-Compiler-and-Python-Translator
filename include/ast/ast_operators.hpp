@@ -40,6 +40,17 @@ public:
         right->print(dst);
         dst<<" )";
     }
+
+    virtual void toPython(std::ostream &dst) const override
+    {
+        dst<<"( ";
+        left->toPython(dst);
+        dst<<" ";
+        dst<<getOpcode();
+        dst<<" ";
+        right->toPython(dst);
+        dst<<" )";
+    }
 };
 
 class AddOperator

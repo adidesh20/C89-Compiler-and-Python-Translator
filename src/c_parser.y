@@ -44,7 +44,7 @@
 %type <expr> ROOT  PROGRAM EXTERNAL_DECLARATION GLOBAL_DECLARATION SCOPE SCOPE_STATEMENTS STATEMENT LOCAL_DECLARATION  EXPR TERM UNARY  FACTOR 
 %type <expr> FUNCTION_DEC FUNCTION_DEF PARAMETER_LIST PARAMETER
 %type <number> T_NUMBER
-%type <string> T_VARIABLE  RETURN_TYPE VAR_TYPE T_VOID T_INT T_DOUBLE T_FLOAT 
+%type <string> T_VARIABLE  TYPE  T_VOID T_INT T_DOUBLE T_FLOAT 
 
 %start ROOT
 
@@ -69,18 +69,18 @@ EXTERNAL_DECLARATION:
 
 
 GLOBAL_DECLARATION:
-    VAR_TYPE T_VARIABLE T_SEMICOLON                                           {$$ = new GlobalVariable_Definition(*$1,*$2,NULL);}
-  | VAR_TYPE T_VARIABLE T_EQUAL EXPR T_SEMICOLON                              {$$ = new GlobalVariable_Definition(*$1,*$2,$4);}
+    TYPE T_VARIABLE T_SEMICOLON                                           {$$ = new GlobalVariable_Definition(*$1,*$2,NULL);}
+    |TYPE T_VARIABLE T_EQUAL EXPR T_SEMICOLON                              {$$ = new GlobalVariable_Definition(*$1,*$2,$4);}
   ;
 
 FUNCTION_DEF:
-    RETURN_TYPE T_VARIABLE T_OPEN_PARENTHESES T_CLOSE_PARENTHESES SCOPE         {$$ = new Function_Definition(*$1,*$2,NULL,$5);}
-  | RETURN_TYPE T_VARIABLE T_OPEN_PARENTHESES  PARAMETER_LIST T_CLOSE_PARENTHESES SCOPE  {$$ = new Function_Definition(*$1,*$2,$4,$6);}
+    TYPE T_VARIABLE T_OPEN_PARENTHESES T_CLOSE_PARENTHESES SCOPE         {$$ = new Function_Definition(*$1,*$2,NULL,$5);}
+  | TYPE T_VARIABLE T_OPEN_PARENTHESES  PARAMETER_LIST T_CLOSE_PARENTHESES SCOPE  {$$ = new Function_Definition(*$1,*$2,$4,$6);}
   ;
 
 FUNCTION_DEC:
-  | RETURN_TYPE T_VARIABLE T_OPEN_PARENTHESES T_CLOSE_PARENTHESES T_SEMICOLON        {$$ = new Function_Declaration(*$1,*$2, NULL);}
-  | RETURN_TYPE T_VARIABLE T_OPEN_PARENTHESES  PARAMETER_LIST T_CLOSE_PARENTHESES T_SEMICOLON {$$ = new Function_Declaration(*$1,*$2,$4);}
+  | TYPE T_VARIABLE T_OPEN_PARENTHESES T_CLOSE_PARENTHESES T_SEMICOLON        {$$ = new Function_Declaration(*$1,*$2, NULL);}
+  | TYPE T_VARIABLE T_OPEN_PARENTHESES  PARAMETER_LIST T_CLOSE_PARENTHESES T_SEMICOLON {$$ = new Function_Declaration(*$1,*$2,$4);}
   ;
 
 PARAMETER_LIST:
@@ -89,7 +89,7 @@ PARAMETER_LIST:
   ;
 
 PARAMETER: 
-    VAR_TYPE T_VARIABLE {$$= new Parameter(*$1,*$2);}
+    TYPE T_VARIABLE {$$= new Parameter(*$1,*$2);}
     ;
 
 SCOPE: 
@@ -108,22 +108,23 @@ STATEMENT:
 
 
 LOCAL_DECLARATION:
-    VAR_TYPE T_VARIABLE                        {$$ = new LocalVariable_Definition (*$1,*$2,NULL);}
-  | VAR_TYPE T_VARIABLE T_EQUAL EXPR   {$$ = new LocalVariable_Definition (*$1,*$2,$4);}
+    TYPE T_VARIABLE                        {$$ = new LocalVariable_Definition (*$1,*$2,NULL);}
+  | TYPE T_VARIABLE T_EQUAL EXPR   {$$ = new LocalVariable_Definition (*$1,*$2,$4);}
   ;
 
-RETURN_TYPE:
-    T_VOID    {$$ = $1;}
-  | T_INT     {$$ = $1;}
-  | T_DOUBLE  {$$ = $1;}
-  | T_FLOAT   {$$ = $1;}
-  ;
 
-VAR_TYPE:
+TYPE:
     T_INT     {$$ = $1;}
   | T_DOUBLE  {$$ = $1;}
   | T_FLOAT   {$$ = $1;}
+  | T_VOID     {$$ = $1;}
   ;
+
+
+  
+
+
+
 
 EXPR: 
    EXPR T_PLUS TERM { $$ = new AddOperator($1, $3); }
