@@ -7,17 +7,77 @@
 #include "ast.hpp"
 #include "common.hpp"
 
+class Typeset: public AST_Node {
+public:
+    std::string type;
+    NodePtr VarDefList;
+
+    ~Typeset() {}
+
+    Typeset(std::string _type, NodePtr _VarDefList) {
+        type=_type;
+        VarDefList=_VarDefList;
+
+    }
+
+    virtual void print (std::ostream &dst) const override {
+        
+            dst << type;
+           VarDefList->print(dst);
+        
+    }
+
+    virtual void toPython (std::ostream &dst) const override {
+        
+        VarDefList->toPython(dst);
+    }
+
+ 
+
+};
+class GloVarList: public AST_Node {
+private:
+    NodePtr Var;
+    NodePtr Rest_of_Vars;
+public:
+    ~GloVarList() {}
+
+    GloVarList(NodePtr _Var, NodePtr _Rest_of_Vars) {
+        Var=_Var;
+        Rest_of_Vars=_Rest_of_Vars;
+
+    }
+
+    virtual void print (std::ostream &dst) const override {
+        Var->print(dst);
+        if (Rest_of_Vars != NULL) {
+            dst << ",";
+            Rest_of_Vars->print(dst);
+        }
+    }
+
+    virtual void toPython (std::ostream &dst) const override {
+        Var->toPython(dst);
+        if (Rest_of_Vars != NULL) {
+            
+            Rest_of_Vars->toPython(dst);
+        }
+    }
+
+ 
+
+};
 
 class GlobalVariable_Definition: public AST_Node
 {
 public:
-    std::string varType;
+   
     std::string varIdentifier;
     NodePtr varValue;
 
-    GlobalVariable_Definition(std::string _varType, std::string _varIdentifier, NodePtr _varValue)
+    GlobalVariable_Definition(std::string _varIdentifier, NodePtr _varValue)
     {
-        varType = _varType;
+        
         varIdentifier = _varIdentifier;
         varValue = _varValue;
         global_variables_names.push_back(varIdentifier);
@@ -26,7 +86,7 @@ public:
 
     virtual void print(std::ostream &out) const override
     {
-        out << varType << " " << varIdentifier;
+        out <<" "<< varIdentifier;
         if(varValue != NULL)
         {
             out << " = ";

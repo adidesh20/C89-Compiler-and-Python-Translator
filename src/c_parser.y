@@ -41,7 +41,7 @@
 %token T_LOG T_EXP T_SQRT
 %token T_NUMBER T_VARIABLE
 
-%type <expr> ROOT  PROGRAM EXTERNAL_DECLARATION GLOBAL_DECLARATION SCOPE SCOPE_STATEMENTS STATEMENT LOCAL_DECLARATION  EXPR TERM UNARY  FACTOR 
+%type <expr> ROOT  PROGRAM EXTERNAL_DECLARATION GLOBAL_DECLARATION GLOBAL_VAR_DEF_LIST GLOBAL_VAR_DEF SCOPE SCOPE_STATEMENTS STATEMENT LOCAL_DECLARATION  EXPR TERM UNARY  FACTOR 
 %type <expr> FUNCTION_DEC FUNCTION_DEF PARAMETER_LIST PARAMETER
 %type <number> T_NUMBER
 %type <string> T_VARIABLE  TYPE  T_VOID T_INT T_DOUBLE T_FLOAT 
@@ -69,8 +69,18 @@ EXTERNAL_DECLARATION:
 
 
 GLOBAL_DECLARATION:
-    TYPE T_VARIABLE T_SEMICOLON                                           {$$ = new GlobalVariable_Definition(*$1,*$2,NULL);}
-    |TYPE T_VARIABLE T_EQUAL EXPR T_SEMICOLON                              {$$ = new GlobalVariable_Definition(*$1,*$2,$4);}
+    TYPE GLOBAL_VAR_DEF_LIST T_SEMICOLON           {$$=new Typeset (*$1,$2);}                                 
+
+  ;
+
+GLOBAL_VAR_DEF_LIST:      
+  GLOBAL_VAR_DEF T_COMMA GLOBAL_VAR_DEF_LIST      {$$ = new GloVarList ($1,$3);}
+  |GLOBAL_VAR_DEF                          {$$ = new GloVarList ($1,NULL);}
+  ;
+
+GLOBAL_VAR_DEF:
+  T_VARIABLE                    {$$ = new GlobalVariable_Definition(*$1,NULL);}
+  |T_VARIABLE T_EQUAL EXPR        {$$ = new GlobalVariable_Definition(*$1,$3);}
   ;
 
 FUNCTION_DEF:
