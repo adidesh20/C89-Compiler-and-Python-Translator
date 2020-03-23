@@ -21,6 +21,11 @@ public:
     {
         dst<<id;
     }
+    
+    virtual void toPython(std::ostream &dst) const override
+    {
+        dst<<id;
+    }
 
     virtual double evaluate(
         const std::map<std::string,double> &bindings
@@ -46,6 +51,11 @@ public:
     { return value; }
 
     virtual void print(std::ostream &dst) const override
+    {
+        dst<<value;
+    }
+    
+    virtual void toPython(std::ostream &dst) const override
     {
         dst<<value;
     }
