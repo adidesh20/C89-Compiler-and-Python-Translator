@@ -7,17 +7,17 @@
 %}
 
 %%
-/* ========================================VARIABLE TYPES======================================== */
+ /* ========================================VARIABLE TYPES======================================== */
 
 "int"           {yylval.string = new std::string(yytext); return T_INT;}
 
-/* =====================================CONDITIONAL SHIZZLE====================================== */
+ /* =====================================CONDITIONAL SHIZZLE====================================== */
 
 "if"            {yylval.string = new std::string(yytext); return T_IF;}
 "else"          {yylval.string = new std::string(yytext); return T_ELSE;}
 "while"         {yylval.string = new std::string(yytext); return T_WHILE;}
 
-/* ==========================================IDENTIFIER=========================================== */
+ /* ==========================================IDENTIFIER=========================================== */
 
 [a-zA-Z_][a-zA-Z0-9_]*                  {yylval.string=new std::string(yytext); return T_VARIABLE;}
 
@@ -27,7 +27,7 @@
 
 
 
-/* ==========================================OPERATORS============================================ */
+ /* ==========================================OPERATORS============================================ */
 
  /* Arithmetic */
 [*]                     {return T_TIMES;}
@@ -57,15 +57,15 @@
  /* Bitwise */
 [|]                     {return T_BITWISE_OR;}
 [&]                     {return T_BITWISE_AND;}
-[^]                     {return T_BITWISE_XOR;}
+[\^]                     {return T_BITWISE_XOR;}
 [~]                     {return T_BITWISE_COMP;}
 [<<]                    {return T_LEFT_SHIFT;}
 [>>]                    {return T_RIGHT_SHIFT;}
 
  /* Logical */
 [||]                    {return T_LOGICAL_OR;}
-[&&]                    {return T_LOGCIAL_AND;}
-[!]                     {return T_LOGICAL_NOT}
+[&&]                    {return T_LOGICAL_AND;}
+[!]                     {return T_LOGICAL_NOT;}
 
  /* Brackets */
 [(]                     {return T_OPEN_PARENTHESES;}

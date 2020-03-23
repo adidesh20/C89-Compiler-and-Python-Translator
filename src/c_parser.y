@@ -1,24 +1,27 @@
 %code requires{
-    #include "ast.hpp"
-    #include "ast/ast_function_def.hpp"
-    #include "ast/ast_variable_def.hpp"
-    #include <cassert>
+  #include "ast.hpp"
 
-    extern NodePtr g_root; // A way of getting the AST out
 
-    int yylex(void);
-    void yyerror(const char *);
+  #include <cassert>
 
+  extern const AST_Node *g_root; // A way of getting the AST out
+
+  //! This is to fix problems when generating C++
+  // We are declaring the functions provided by Flex, so
+  // that Bison generated code can call them.
+  int yylex(void);
+  void yyerror(const char *);
 }
 
+// Represents the value associated with any kind of
+// AST node.
 %union{
-  const AST_Node* node;
-  const Expression *expr;
+  const AST_Node *expr;
   double number;
   std::string *string;
 }
 
-%token T_INT T_DOUBLE T_VOID T_FLOAT
+%token T_INT T_VOID T_FLOAT T_DOUBLE
 %token T_IF T_ELSE T_WHILE
 %token T_TIMES T_PLUS T_MINUS T_DIVIDE T_MOD
 %token T_INCREMENT T_DECREMENT
@@ -27,10 +30,15 @@
 %token T_BITWISE_OR T_BITWISE_AND T_BITWISE_XOR T_BITWISE_COMP
 %token T_LEFT_SHIFT T_RIGHT_SHIFT
 %token T_EQUAL T_PLUS_EQUALS T_MINUS_EQUALS T_TIMES_EQUALS T_DIVIDE_EQUALS T_MOD_EQUALS
-%token T_OPEN_PARENTHESES T_OPEN_PARENTHESES
+%token T_OPEN_PARENTHESES T_CLOSE_PARENTHESES
 %token T_OPEN_BRACKETS T_CLOSE_BRACKETS
 %token T_OPEN_BRACES T_CLOSE_BRACES
 %token T_SEMICOLON T_COLON T_COMMA
+%token T_VARNAME
+
+%token T_TIMES T_DIVIDE T_PLUS T_MINUS T_EXPONENT
+%token T_LBRACKET T_RBRACKET
+%token T_LOG T_EXP T_SQRT
 %token T_NUMBER T_VARIABLE
 
 %type <expr> ROOT  PROGRAM EXTERNAL_DECLARATION GLOBAL_DECLARATION SCOPE SCOPE_STATEMENTS STATEMENT LOCAL_DECLARATION  EXPR TERM UNARY  FACTOR 
@@ -40,6 +48,9 @@
 %start ROOT
 
 %%
+
+
+
 ROOT: PROGRAM {g_root = $1;};
 
 PROGRAM:
@@ -107,6 +118,8 @@ FACTOR:
   T_NUMBER     {  $$ = new Number( $1 ); }
   | T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES { $$ = $2; }
   | T_VARIABLE         {$$ = new Variable (*$1); }
+
+
 
 
 %%
