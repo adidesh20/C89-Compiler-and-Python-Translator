@@ -47,7 +47,7 @@ public:
         dst<<" ";
         dst<<getOpcode();
         dst<<" ";
-        right->print(dst);
+        right->toPython(dst);
     }
 };
 
@@ -64,5 +64,52 @@ public:
     {}
 };
 
+class AssOpAdd: public AssignmentOperator
+{
+protected:
+    virtual const char *getOpcode() const override
+    { return "+="; }
+
+public:
+    AssOpAdd(std::string _left, NodePtr _right)
+        : AssignmentOperator(_left, _right)
+    {}
+};
+
+class AssOpSub: public AssignmentOperator
+{
+protected:
+    virtual const char *getOpcode() const override
+    { return "-="; }
+
+public:
+    AssOpSub(std::string _left, NodePtr _right)
+        : AssignmentOperator(_left, _right)
+    {}
+};
+
+class AssOpMul: public AssignmentOperator
+{
+protected:
+    virtual const char *getOpcode() const override
+    { return "*="; }
+
+public:
+    AssOpMul(std::string _left, NodePtr _right)
+        : AssignmentOperator(_left, _right)
+    {}
+};
+
+class AssOpDiv: public AssignmentOperator
+{
+protected:
+    virtual const char *getOpcode() const override
+    { return "/="; }
+
+public:
+    AssOpDiv(std::string _left, NodePtr _right)
+        : AssignmentOperator(_left, _right)
+    {}
+};
 
 #endif
