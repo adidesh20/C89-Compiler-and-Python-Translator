@@ -9,9 +9,10 @@ class Unary
 {
 private:
     NodePtr expr;
+    std::string position;
 protected:
-    Unary(const NodePtr _expr)
-        : expr(_expr)
+    Unary(const NodePtr _expr, std::string _position)
+        : expr(_expr), position(_position)
     {}
 public:
     virtual ~Unary()
@@ -26,11 +27,34 @@ public:
 
     virtual void print(std::ostream &dst) const override
     {
-        dst << "( ";
-        dst << getOpcode();
-        dst << " ";
-        expr->print(dst);
-        dst << " )";
+        if(position == "pre")
+        {
+            dst << "( ";
+            dst << getOpcode();
+            expr->print(dst);
+            dst << " )";
+        }
+        else
+        {
+            dst << "( ";
+            expr->print(dst);
+            dst << getOpcode();
+            dst << " )";
+        }
+    }
+
+    virtual void toPython(std::ostream &dst) const override
+    {
+        if(position == "pre")
+        {
+            dst << getOpcode();
+            expr->print(dst);
+        }
+        else
+        {
+            expr->print(dst);
+            dst << getOpcode();
+        }
     }
 };
 
@@ -38,8 +62,8 @@ class NegOperator
     : public Unary
 {
 public:
-    NegOperator(const NodePtr _expr)
-        : Unary(_expr)
+    NegOperator(const NodePtr _expr, std::string _position)
+        : Unary(_expr, _position)
     {}
 
     virtual const char *getOpcode() const override
@@ -55,6 +79,32 @@ public:
         
 	return -vl;
     }
+};
+
+class IncrementOperator
+    : public Unary
+{
+public:
+    IncrementOperator(const NodePtr _expr, std::string _position)
+        : Unary(_expr, _position)
+    {}
+
+    virtual const char *getOpcode() const override
+    { return "++"; }
+
+};
+
+class DecrementOperator
+    : public Unary
+{
+public:
+    DecrementOperator(const NodePtr _expr, std::string _position)
+        : Unary(_expr, _position)
+    {}
+
+    virtual const char *getOpcode() const override
+    { return "--"; }
+
 };
 
 #endif

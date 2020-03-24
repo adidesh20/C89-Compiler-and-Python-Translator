@@ -23,6 +23,7 @@ public:
     }
 
     virtual const char *getOpcode() const =0;
+    virtual const char *getOpcodePython() const =0;
 
     NodePtr getLeft() const
     { return left; }
@@ -46,7 +47,7 @@ public:
         dst<<"( ";
         left->toPython(dst);
         dst<<" ";
-        dst<<getOpcode();
+        dst<<getOpcodePython();
         dst<<" ";
         right->toPython(dst);
         dst<<" )";
@@ -61,6 +62,9 @@ class AddOperator
 protected:
     virtual const char *getOpcode() const override
     { return "+"; }
+
+    virtual const char *getOpcodePython() const override
+    { return getOpcode(); }
 public:
     AddOperator(NodePtr _left, NodePtr _right)
         : Operator(_left, _right)
@@ -83,6 +87,9 @@ class SubOperator
 protected:
     virtual const char *getOpcode() const override
     { return "-"; }
+
+    virtual const char *getOpcodePython() const override
+    { return getOpcode(); }
 public:
     SubOperator(NodePtr _left, NodePtr _right)
         : Operator(_left, _right)
@@ -107,6 +114,9 @@ class MulOperator
 protected:
     virtual const char *getOpcode() const override
     { return "*"; }
+
+    virtual const char *getOpcodePython() const override
+    { return getOpcode(); }
 public:
     MulOperator(NodePtr _left, NodePtr _right)
         : Operator(_left, _right)
@@ -129,6 +139,9 @@ class DivOperator
 protected:
     virtual const char *getOpcode() const override
     { return "/"; }
+
+    virtual const char *getOpcodePython() const override
+    { return getOpcode(); }
 public:
     DivOperator(NodePtr _left, NodePtr _right)
         : Operator(_left, _right)
@@ -168,6 +181,116 @@ public:
     }
 };
 */
+
+    // COMPARISON OPERATORS //
+
+class EqualToOperator
+    : public Operator
+{
+protected:
+    virtual const char *getOpcode() const override
+    { return "=="; }
+
+    virtual const char *getOpcodePython() const override
+    { return getOpcode(); }
+public:
+    EqualToOperator(NodePtr _left, NodePtr _right)
+        : Operator(_left, _right)
+    {}
+};
+
+class LessThanOperator
+    : public Operator
+{
+protected:
+    virtual const char *getOpcode() const override
+    { return "<"; }
+
+    virtual const char *getOpcodePython() const override
+    { return getOpcode(); }
+public:
+    LessThanOperator(NodePtr _left, NodePtr _right)
+        : Operator(_left, _right)
+    {}
+};
+
+class LessThanEqualOperator
+    : public Operator
+{
+protected:
+    virtual const char *getOpcode() const override
+    { return "<="; }
+
+    virtual const char *getOpcodePython() const override
+    { return getOpcode(); }
+public:
+    LessThanEqualOperator(NodePtr _left, NodePtr _right)
+        : Operator(_left, _right)
+    {}
+};
+
+class GreaterThanOperator
+    : public Operator
+{
+protected:
+    virtual const char *getOpcode() const override
+    { return ">"; }
+
+    virtual const char *getOpcodePython() const override
+    { return getOpcode(); }
+public:
+    GreaterThanOperator(NodePtr _left, NodePtr _right)
+        : Operator(_left, _right)
+    {}
+};
+
+class GreaterThanEqualOperator
+    : public Operator
+{
+protected:
+    virtual const char *getOpcode() const override
+    { return ">="; }
+
+    virtual const char *getOpcodePython() const override
+    { return getOpcode(); }
+public:
+    GreaterThanEqualOperator(NodePtr _left, NodePtr _right)
+        : Operator(_left, _right)
+    {}
+};
+
+    // LOGICAL OPERATORS //
+
+class LogicalOrOperator
+    : public Operator
+{
+protected:
+    virtual const char *getOpcode() const override
+    { return "||"; }
+
+    virtual const char *getOpcodePython() const override
+    { return "or"; }
+public:
+    LogicalOrOperator(NodePtr _left, NodePtr _right)
+        : Operator(_left, _right)
+    {}
+};
+
+class LogicalAndOperator
+    : public Operator
+{
+protected:
+    virtual const char *getOpcode() const override
+    { return "&&"; }
+
+    virtual const char *getOpcodePython() const override
+    { return "and"; }
+public:
+    LogicalAndOperator(NodePtr _left, NodePtr _right)
+        : Operator(_left, _right)
+    {}
+};
+
 
 
 #endif
