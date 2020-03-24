@@ -24,12 +24,14 @@ public:
         
             dst << type;
            VarDefList->print(dst);
+           dst << ";" << std::endl;
         
     }
 
     virtual void toPython (std::ostream &dst) const override {
         
         VarDefList->toPython(dst);
+        dst << std::endl;
     }
 
  
@@ -53,7 +55,9 @@ public:
         if (Rest_of_Vars != NULL) {
             dst << ",";
             Rest_of_Vars->print(dst);
+            
         }
+         
     }
 
     virtual void toPython (std::ostream &dst) const override {
@@ -61,6 +65,7 @@ public:
         if (Rest_of_Vars != NULL) {
             
             Rest_of_Vars->toPython(dst);
+            
         }
     }
 
@@ -92,7 +97,7 @@ public:
             out << " = ";
             varValue->print(out);
         }
-        out << ";" << std::endl;
+       
     }
 
     virtual void toPython(std::ostream &out) const override
