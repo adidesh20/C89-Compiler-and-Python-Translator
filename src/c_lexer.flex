@@ -38,36 +38,36 @@
 [-]                     {return T_MINUS;}
 [/]                     {return T_DIVIDE;}
 [%]                     {return T_MOD;}
-[++]                    {return T_INCREMENT;}
-[--]                    {return T_DECREMENT;}
+"++"                   {return T_INCREMENT;}
+"--"                    {return T_DECREMENT;}
 
  /* Assignment */
 [=]                     {return T_EQUAL;}
-[+=]                    {return T_PLUS_EQUALS;}
-[-=]                    {return T_MINUS_EQUALS;}
-[*=]                    {return T_TIMES_EQUALS;}
-[/=]                    {return T_DIVIDE_EQUALS;}
-[%=]                    {return T_MOD_EQUALS;}
+"+="                    {return T_PLUS_EQUALS;}
+"-+"                    {return T_MINUS_EQUALS;}
+"*="                    {return T_TIMES_EQUALS;}
+"/="                    {return T_DIVIDE_EQUALS;}
+"%="                    {return T_MOD_EQUALS;}
 
  /* Comparison */
-[==]                    {return T_EQUAL_TO;}
-[!=]                    {return T_NOT_EQUAL_TO;}
+"=="                    {return T_EQUAL_TO;}
+"!="                    {return T_NOT_EQUAL_TO;}
 [<]                     {return T_LT;}
 [>]                     {return T_GT;}
-[<=]                    {return T_LTEQ;}
-[>=]                    {return T_GTEQ;}    
+"<="                    {return T_LTEQ;}
+">="                    {return T_GTEQ;}    
 
  /* Bitwise */
 [|]                     {return T_BITWISE_OR;}
 [&]                     {return T_BITWISE_AND;}
 [\^]                     {return T_BITWISE_XOR;}
 [~]                     {return T_BITWISE_COMP;}
-[<<]                    {return T_LEFT_SHIFT;}
-[>>]                    {return T_RIGHT_SHIFT;}
+"<<"                    {return T_LEFT_SHIFT;}
+">>"                    {return T_RIGHT_SHIFT;}
 
  /* Logical */
-[||]                    {return T_LOGICAL_OR;}
-[&&]                    {return T_LOGICAL_AND;}
+"||"                    {return T_LOGICAL_OR;}
+"&&"                    {return T_LOGICAL_AND;}
 [!]                     {return T_LOGICAL_NOT;}
 
  /* Brackets */
