@@ -182,6 +182,32 @@ public:
 };
 */
 
+/*
+class TernaryOperator : public AST_Node {
+  private:
+    NodePtr condition;
+    NodePtr con_true;
+    NodePtr con_false;
+  public:
+    
+    ~TernaryOperator() {}
+    
+    TernaryOperator(NodePtr _condition, NodePtr _con_true, NodePtr _con_false)
+     : condition(_condition), con_true(_con_true), con_false(_con_false) {}
+    
+    virtual void print(std::ostream &dst) const override {
+        condition->print(dst);
+        dst<<" ? ";
+        if (con_true != NULL) 
+            con_true->print(dst);
+        dst<<" : ";
+        con_false->print(dst);
+    }
+
+    
+    
+};
+*/
     // COMPARISON OPERATORS //
 
 class EqualToOperator
@@ -195,6 +221,21 @@ protected:
     { return getOpcode(); }
 public:
     EqualToOperator(NodePtr _left, NodePtr _right)
+        : Operator(_left, _right)
+    {}
+};
+
+class NotEqualToOperator
+    : public Operator
+{
+protected:
+    virtual const char *getOpcode() const override
+    { return "!="; }
+
+    virtual const char *getOpcodePython() const override
+    { return getOpcode(); }
+public:
+    NotEqualToOperator(NodePtr _left, NodePtr _right)
         : Operator(_left, _right)
     {}
 };

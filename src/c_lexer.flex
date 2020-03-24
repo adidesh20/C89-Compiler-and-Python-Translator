@@ -44,7 +44,7 @@
  /* Assignment */
 [=]                     {return T_EQUAL;}
 "+="                    {return T_PLUS_EQUALS;}
-"-+"                    {return T_MINUS_EQUALS;}
+"-="                    {return T_MINUS_EQUALS;}
 "*="                    {return T_TIMES_EQUALS;}
 "/="                    {return T_DIVIDE_EQUALS;}
 "%="                    {return T_MOD_EQUALS;}
@@ -69,7 +69,7 @@
 "||"                    {return T_LOGICAL_OR;}
 "&&"                    {return T_LOGICAL_AND;}
 [!]                     {return T_LOGICAL_NOT;}
-
+[?]                     {return T_TERNARY;}
  /* Brackets */
 [(]                     {return T_OPEN_PARENTHESES;}
 [)]                     {return T_CLOSE_PARENTHESES;}

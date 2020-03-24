@@ -8,37 +8,33 @@ class Unary
     : public AST_Node
 {
 private:
-    NodePtr expr;
+    std::string var;
     std::string position;
 protected:
-    Unary(const NodePtr _expr, std::string _position)
-        : expr(_expr), position(_position)
+    Unary( std::string _var, std::string _position)
+        : var(_var), position(_position)
     {}
 public:
     virtual ~Unary()
     {
-        delete expr;
+        
     }
 
     virtual const char *getOpcode() const =0;
 
-    NodePtr getExpr() const
-    { return expr; }
 
     virtual void print(std::ostream &dst) const override
     {
         if(position == "pre")
         {
             dst << "( ";
-            dst << getOpcode();
-            expr->print(dst);
+            dst << getOpcode()<<var;
             dst << " )";
         }
         else
         {
             dst << "( ";
-            expr->print(dst);
-            dst << getOpcode();
+            dst << var<<getOpcode();
             dst << " )";
         }
     }
@@ -47,46 +43,24 @@ public:
     {
         if(position == "pre")
         {
-            dst << getOpcode();
-            expr->print(dst);
+            dst << getOpcode()<<var;
         }
         else
         {
-            expr->print(dst);
-            dst << getOpcode();
+            
+            dst << var<<getOpcode();
         }
     }
 };
 
-class NegOperator
-    : public Unary
-{
-public:
-    NegOperator(const NodePtr _expr, std::string _position)
-        : Unary(_expr, _position)
-    {}
 
-    virtual const char *getOpcode() const override
-    { return "-"; }
-
-    virtual double evaluate(
-        const std::map<std::string, double> &bindings
-    ) const override
-    {
-       
-        //throw std::runtime_error("NegOperator::evaluate is not implemented.");
-	 double vl=getExpr()->evaluate(bindings);
-        
-	return -vl;
-    }
-};
 
 class IncrementOperator
     : public Unary
 {
 public:
-    IncrementOperator(const NodePtr _expr, std::string _position)
-        : Unary(_expr, _position)
+    IncrementOperator( std::string var, std::string _position)
+        : Unary(var, _position)
     {}
 
     virtual const char *getOpcode() const override
@@ -98,8 +72,8 @@ class DecrementOperator
     : public Unary
 {
 public:
-    DecrementOperator(const NodePtr _expr, std::string _position)
-        : Unary(_expr, _position)
+    DecrementOperator( std::string var, std::string _position)
+        : Unary(var, _position)
     {}
 
     virtual const char *getOpcode() const override
@@ -107,4 +81,65 @@ public:
 
 };
 
+class NotOperator: public AST_Node {
+public:
+    
+    NodePtr val;
+
+    ~NotOperator() {}
+
+    NotOperator(NodePtr _val) {
+        val=_val;
+
+    }
+
+    virtual void print (std::ostream &dst) const override {
+        
+            dst << "!";
+            val->print(dst);
+          
+        
+    }
+
+    virtual void toPython (std::ostream &dst) const override {
+        
+        dst << "!";
+        val->toPython(dst);
+    }
+
+ 
+
+};
+
+
+
+class NegOperator: public AST_Node {
+public:
+    
+    NodePtr val;
+
+    ~NegOperator() {}
+
+    NegOperator(NodePtr _val) {
+        val=_val;
+
+    }
+
+    virtual void print (std::ostream &dst) const override {
+        
+            dst << "-";
+            val->print(dst);
+          
+        
+    }
+
+    virtual void toPython (std::ostream &dst) const override {
+        
+        dst << "-";
+        val->toPython(dst);
+    }
+
+ 
+
+};
 #endif
