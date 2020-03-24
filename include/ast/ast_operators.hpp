@@ -53,6 +53,8 @@ public:
     }
 };
 
+    // ARITHMETIC OPERATORS //
+
 class AddOperator
     : public Operator
 {
@@ -143,6 +145,7 @@ public:
     }
 };
 
+/*
 class ExpOperator
     : public Operator
 {
@@ -164,6 +167,7 @@ public:
         return std::pow(vl,vr);
     }
 };
+*/
 
 
 #endif

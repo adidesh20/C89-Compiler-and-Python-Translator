@@ -9,6 +9,7 @@
 #include "ast/ast_statements.hpp"
 #include "ast/ast_function_def.hpp"
 #include "ast/ast_variable_def.hpp"
+#include "ast/ast_assignment_ops.hpp"
 
 extern const AST_Node *parseAST();
 
