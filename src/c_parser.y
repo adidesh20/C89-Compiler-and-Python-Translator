@@ -42,7 +42,7 @@
 %token T_NUMBER T_VARIABLE
 
 %type <expr> ROOT  PROGRAM EXTERNAL_DECLARATION GLOBAL_DECLARATION GLOBAL_VAR_DEF_LIST GLOBAL_VAR_DEF SCOPE SCOPE_STATEMENTS STATEMENT LOCAL_DECLARATION  EXPR TERM UNARY  FACTOR 
-%type <expr> FUNCTION_DEC FUNCTION_DEF PARAMETER_LIST PARAMETER
+%type <expr> FUNCTION_DEC FUNCTION_DEF PARAMETER_LIST PARAMETER  LOCAL_VAR_DEF LOCAL_VAR_DEF_LIST
 %type <number> T_NUMBER
 %type <string> T_VARIABLE  TYPE  T_VOID T_INT T_DOUBLE T_FLOAT 
 
@@ -69,7 +69,7 @@ EXTERNAL_DECLARATION:
 
 
 GLOBAL_DECLARATION:
-    TYPE GLOBAL_VAR_DEF_LIST T_SEMICOLON           {$$=new Typeset (*$1,$2);}                                 
+    TYPE GLOBAL_VAR_DEF_LIST T_SEMICOLON           {$$=new GloTypeset (*$1,$2);}                                 
 
   ;
 
@@ -118,10 +118,19 @@ STATEMENT:
 
 
 LOCAL_DECLARATION:
-    TYPE T_VARIABLE                        {$$ = new LocalVariable_Definition (*$1,*$2,NULL);}
-  | TYPE T_VARIABLE T_EQUAL EXPR   {$$ = new LocalVariable_Definition (*$1,*$2,$4);}
+    TYPE LOCAL_VAR_DEF_LIST            {$$=new LocalTypeset (*$1,$2);}                                 
+
   ;
 
+LOCAL_VAR_DEF_LIST:      
+  LOCAL_VAR_DEF T_COMMA LOCAL_VAR_DEF_LIST      {$$ = new LocalVarList ($1,$3);}
+  |LOCAL_VAR_DEF                          {$$ = new LocalVarList ($1,NULL);}
+  ;
+
+LOCAL_VAR_DEF:
+  T_VARIABLE                    {$$ = new LocalVariable_Definition(*$1,NULL);}
+  |T_VARIABLE T_EQUAL EXPR        {$$ = new LocalVariable_Definition(*$1,$3);}
+  ;
 
 TYPE:
     T_INT     {$$ = $1;}

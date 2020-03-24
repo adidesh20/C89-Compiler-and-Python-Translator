@@ -7,14 +7,14 @@
 #include "ast.hpp"
 #include "common.hpp"
 
-class Typeset: public AST_Node {
+class GloTypeset: public AST_Node {
 public:
     std::string type;
     NodePtr VarDefList;
 
-    ~Typeset() {}
+    ~GloTypeset() {}
 
-    Typeset(std::string _type, NodePtr _VarDefList) {
+    GloTypeset(std::string _type, NodePtr _VarDefList) {
         type=_type;
         VarDefList=_VarDefList;
 
@@ -119,30 +119,103 @@ public:
 
 };
 
-class LocalVariable_Definition: public AST_Node
-{
-    public:
-    std::string returnType;
-    std::string varIdentifier;
-    NodePtr varValue;
+class LocalTypeset: public AST_Node {
+public:
+    std::string type;
+    NodePtr VarDefList;
 
-    LocalVariable_Definition(std::string _returnType, std::string _varIdentifier, NodePtr _varValue)
-    {
-        returnType = _returnType;
-        varIdentifier = _varIdentifier;
-        varValue = _varValue;
+    ~LocalTypeset() {}
+
+    LocalTypeset(std::string _type, NodePtr _VarDefList) {
+        type=_type;
+        VarDefList=_VarDefList;
+
+    }
+
+    virtual void print (std::ostream &dst) const override {
+        
+            dst << type;
+           VarDefList->print(dst);
+           dst << ";" << std::endl;
         
     }
 
-     virtual void print(std::ostream &out) const override
+    virtual void toPython (std::ostream &dst) const override {
+        
+        VarDefList->toPython(dst);
+        dst << std::endl;
+    }
+
+ 
+
+};
+class LocalVarList: public AST_Node {
+private:
+    NodePtr Var;
+    NodePtr Rest_of_Vars;
+public:
+    ~LocalVarList() {}
+
+    LocalVarList(NodePtr _Var, NodePtr _Rest_of_Vars) {
+        Var=_Var;
+        Rest_of_Vars=_Rest_of_Vars;
+
+    }
+
+    virtual void print (std::ostream &dst) const override {
+        Var->print(dst);
+
+        if (Rest_of_Vars != NULL) {
+        
+            dst << ",";
+            Rest_of_Vars->print(dst);
+            
+        }
+         
+    }
+
+    virtual void toPython (std::ostream &dst) const override {
+        Var->toPython(dst);
+        if (Rest_of_Vars != NULL) {
+            for(int j = 0; j < currentIndent; j++)
+            {
+                dst << "\t";
+            }
+            
+            Rest_of_Vars->toPython(dst);
+            
+        }
+    }
+
+ 
+
+};
+
+class LocalVariable_Definition: public AST_Node
+{
+public:
+   
+    std::string varIdentifier;
+    NodePtr varValue;
+
+    LocalVariable_Definition(std::string _varIdentifier, NodePtr _varValue)
     {
-        out << returnType << " " << varIdentifier;
+        
+        varIdentifier = _varIdentifier;
+        varValue = _varValue;
+        
+        
+    }
+
+    virtual void print(std::ostream &out) const override
+    {
+        out <<" "<< varIdentifier;
         if(varValue != NULL)
         {
             out << " = ";
             varValue->print(out);
         }
-        out << ";" << std::endl;
+       
     }
 
     virtual void toPython(std::ostream &out) const override
@@ -160,6 +233,8 @@ class LocalVariable_Definition: public AST_Node
     }
 
     ~LocalVariable_Definition(){}
+
+
 };
 
 #endif
