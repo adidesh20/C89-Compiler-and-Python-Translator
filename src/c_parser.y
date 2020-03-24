@@ -120,9 +120,7 @@ LOCAL_DECLARATION:
     TYPE LOCAL_VAR_DEF_LIST            {$$=new LocalTypeset (*$1,$2);}                                 
   ;
 
-ASSIGNMENT:
-  T_VARIABLE T_EQUAL EXPR T_SEMICOLON           {$$ = new AssOpEqual(*$1,$3);}
-  ;
+
 
 LOCAL_VAR_DEF_LIST:      
   LOCAL_VAR_DEF T_COMMA LOCAL_VAR_DEF_LIST      {$$ = new LocalVarList ($1,$3);}
@@ -134,6 +132,13 @@ LOCAL_VAR_DEF:
   |T_VARIABLE T_EQUAL EXPR        {$$ = new LocalVariable_Definition(*$1,$3);}
   ;
 
+ASSIGNMENT:
+  T_VARIABLE T_EQUAL EXPR T_SEMICOLON                                                           {$$ = new AssOpEqual(*$1,$3);}
+  | T_VARIABLE T_PLUS_EQUALS EXPR T_SEMICOLON                                                   {$$ = new AssOpAdd(*$1, $3);}
+  | T_VARIABLE T_MINUS_EQUALS EXPR T_SEMICOLON                                                  {$$ = new AssOpSub(*$1, $3);}
+  | T_VARIABLE T_TIMES_EQUALS EXPR T_SEMICOLON                                                  {$$ = new AssOpMul(*$1, $3);}
+  | T_VARIABLE T_DIVIDE_EQUALS EXPR T_SEMICOLON                                                 {$$ = new AssOpDiv(*$1, $3);}
+  ;
 TYPE:
     T_INT     {$$ = $1;}
   | T_DOUBLE  {$$ = $1;}
