@@ -221,4 +221,71 @@ public:
     }
 
 };
+
+
+class Parameter_In_List : public AST_Node {
+private:
+    NodePtr Parameter;
+    NodePtr RestOf;
+
+public:
+    ~Parameter_In_List() {}
+
+    Parameter_In_List (NodePtr _Parameter, NodePtr _RestOf) : Parameter(_Parameter), RestOf(_RestOf) {}
+
+    virtual void print (std::ostream &dst) const override {
+        Parameter->print(dst);
+        if (RestOf != NULL) {
+            dst << ",";
+            RestOf->print(dst);
+        }
+    }
+
+    virtual void toPython (std::ostream &dst) const override {
+        Parameter->toPython(dst);
+        if (RestOf != NULL) {
+            dst << ",";
+            RestOf->toPython(dst);
+        }
+    }
+
+  
+};
+
+
+class FunctionCall : public AST_Node
+{
+  private:
+    std::string name;
+    NodePtr arg;
+
+
+  public:
+    FunctionCall(std::string _name, NodePtr _arg) : name(_name), arg(_arg) {     
+    }
+    ~FunctionCall() {}
+
+    virtual void print(std::ostream &dst) const override {
+        dst << name << "(";
+        if (arg != NULL) {
+            arg->print(dst);
+        }
+        
+        dst << ")";
+    }
+
+    virtual void toPython(std::ostream &dst) const {
+        dst << name << "(";
+        if (arg != NULL) {
+            arg->toPython(dst);
+        }
+
+        dst << ")";
+    }
+
+
+   
+  
+};
+
 #endif
