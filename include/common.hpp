@@ -15,4 +15,7 @@ static int currentIndent = 0;
 static int function_call_num;
 static int main_returned;
 
+static unsigned int localVarCount;
+static unsigned int globalVarCount;
+
 #endif

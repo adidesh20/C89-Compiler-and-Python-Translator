@@ -27,6 +27,10 @@ public:
         throw std::runtime_error("Translate not implemented.");
     }
 
+    virtual void compileMips(std::ostream &dst) const {
+        throw std::runtime_error("Compilation not implemented.");
+    }
+
     
 
 };

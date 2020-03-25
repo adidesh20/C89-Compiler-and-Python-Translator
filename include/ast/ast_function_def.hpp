@@ -33,21 +33,19 @@ public:
         main_returned = false;
     }
 
-    virtual void print (std::ostream &dst) const override {
-        ExternalDec->print(dst);
+    virtual void print (std::ostream &out) const override {
+        ExternalDec->print(out);
         if (Rest_of_program != NULL) {
-            Rest_of_program->print(dst);
+            Rest_of_program->print(out);
         }
     }
 
-    virtual void toPython (std::ostream &dst) const override {
-        ExternalDec->toPython(dst);
+    virtual void toPython (std::ostream &out) const override {
+        ExternalDec->toPython(out);
         if (Rest_of_program != NULL) {
-            Rest_of_program->toPython(dst);
+            Rest_of_program->toPython(out);
         }
-    }
-
-    
+    }   
 
 };
 
@@ -177,19 +175,19 @@ public:
 
     }
 
-    virtual void print (std::ostream &dst) const override {
-        Parameter->print(dst);
+    virtual void print (std::ostream &out) const override {
+        Parameter->print(out);
         if (Rest_of_Parameters != NULL) {
-            dst << ",";
-            Rest_of_Parameters->print(dst);
+            out << ",";
+            Rest_of_Parameters->print(out);
         }
     }
 
-    virtual void toPython (std::ostream &dst) const override {
-        Parameter->toPython(dst);
+    virtual void toPython (std::ostream &out) const override {
+        Parameter->toPython(out);
         if (Rest_of_Parameters != NULL) {
-            dst << ",";
-            Rest_of_Parameters->toPython(dst);
+            out << ",";
+            Rest_of_Parameters->toPython(out);
         }
     }
 
@@ -210,12 +208,12 @@ public:
         Var=_Var;
     }
 
-    virtual void print (std::ostream &dst) const override {
-        dst << Type <<" "<< Var;
+    virtual void print (std::ostream &out) const override {
+        out << Type <<" "<< Var;
     }
 
-    virtual void toPython (std::ostream &dst) const override {
-        dst<< Var;
+    virtual void toPython (std::ostream &out) const override {
+        out<< Var;
     }
 
    
