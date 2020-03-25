@@ -74,4 +74,151 @@ public:
 
 };
 
+class ReturnStatement : public AST_Node {
+public:
+    NodePtr return_val;
+
+    ~ReturnStatement() {}
+    ReturnStatement (NodePtr _return_val): return_val(_return_val) {}
+
+    virtual void print(std::ostream &dst) const override {
+        dst<<"return";
+        if (return_val != NULL) {
+            dst<<" ";
+            return_val->print(dst);
+            dst<<";";
+        }
+        else {
+            dst<<";";
+        }
+    }
+
+    virtual void toPython(std::ostream &dst) const override {
+        dst << "return";
+        if (return_val != NULL) {
+            dst << " ";
+            return_val->toPython(dst);
+        }
+    }
+
+    
+};
+
+class WhileStatement: public AST_Node {
+private:
+    NodePtr Condition;
+    NodePtr Body;
+
+public:
+    ~WhileStatement() {}
+    WhileStatement (NodePtr _Condition, NodePtr _Body) : Condition(_Condition) , Body(_Body) {}
+
+    virtual void print (std::ostream &dst) const override {
+        dst << "while(";
+        Condition->print(dst);
+        dst <<") ";
+        Body->print(dst);
+    }
+
+    virtual void toPython (std::ostream &dst) const override {
+        dst<< "while(";
+        Condition->toPython(dst);
+        dst<<"): ";
+        Body->toPython(dst);
+    }
+
+ 
+};
+class NoBraces : public AST_Node
+{
+  private:
+    NodePtr Body;
+
+  public:
+    ~NoBraces() {}
+
+    NoBraces(NodePtr _Body) : Body(_Body) {}
+
+    virtual void print(std::ostream &dst) const override
+    {
+    
+
+        currentIndent++;
+        for (int i = 0; i < currentIndent; i++)  
+        { 
+            dst << "\t"; 
+        }
+        Body->print(dst);
+        currentIndent--;
+        for (int i = 0; i < currentIndent; i++)  
+        { 
+            dst << "\t"; 
+        }
+
+    }
+
+    virtual void toPython(std::ostream &dst) const override
+    {
+        dst << std::endl;
+        currentIndent++;
+        for (int i = 0; i < currentIndent; i++)  
+        { 
+            dst << "\t"; 
+        }
+        Body->toPython(dst);
+        currentIndent--;
+        for (int i = 0; i < currentIndent; i++)  
+        { 
+            dst << "\t"; 
+        }
+
+    }
+
+};
+class IfElseStatement : public AST_Node {
+private:
+    NodePtr Condition;
+    NodePtr IfBody;
+    NodePtr ElseBody;
+
+public:
+    ~IfElseStatement () {}
+
+    IfElseStatement (NodePtr _Condition, NodePtr _IfBody, NodePtr _ElseBody) : Condition(_Condition), IfBody(_IfBody), ElseBody(_ElseBody) {}
+
+    virtual void print (std::ostream &dst) const override {
+        dst << "if (";
+        Condition->print(dst);
+        dst<<") ";
+        IfBody->print(dst);
+        if (ElseBody != NULL) {
+            dst<<std::endl;
+            for (int i = 0; i < currentIndent; i++) 
+            {
+                dst<<"\t";
+            }
+            dst<<"else";
+            ElseBody->print(dst);
+        }
+
+    }
+
+    virtual void toPython(std::ostream &dst) const override {
+        dst<< "if(";
+        Condition->toPython(dst);
+        dst<<"):";
+        IfBody->toPython(dst);
+
+        if(ElseBody != NULL){
+            dst<<std::endl;
+            for(int i = 0; i < currentIndent; i++)
+            {
+                dst<<"\t";
+            }
+            dst<<"else:";
+            ElseBody->toPython(dst);
+        }
+    }
+
+};
 #endif
