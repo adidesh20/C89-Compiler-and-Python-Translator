@@ -2,13 +2,17 @@ CPPFLAGS += -std=c++11 -W -Wall -g -Wno-unused-parameter
 CPPFLAGS += -I include
 LFLAGS = -d
 
-all : bin/print_canonical bin/toPython #bin/eval_expr
+all : bin/c_compiler bin/print_canonical bin/toPython 
 
 src/c_parser.tab.cpp src/c_parser.tab.hpp : src/c_parser.y
 	bison -v -d src/c_parser.y -o src/c_parser.tab.cpp
 
 src/c_lexer.yy.cpp : src/c_lexer.flex src/c_parser.tab.hpp
 	flex -o src/c_lexer.yy.cpp  src/c_lexer.flex
+
+bin/c_compiler : src/c_compiler.o src/c_parser.tab.o src/c_lexer.yy.o src/c_parser.tab.o
+		mkdir -p bin
+		g++ $(CPPFLAGS) -o bin/c_compiler $^
 
 bin/print_canonical : src/print_canonical.o src/c_parser.tab.o src/c_lexer.yy.o src/c_parser.tab.o
 	mkdir -p bin
@@ -18,9 +22,6 @@ bin/toPython : src/toPython.o src/c_parser.tab.o src/c_lexer.yy.o src/c_parser.t
 	mkdir -p bin
 	g++ $(CPPFLAGS) -o bin/toPython $^
 	
-#bin/eval_expr : src/eval_expr.o src/maths_parser.tab.o src/maths_lexer.yy.o src/maths_parser.tab.o
-	#mkdir -p bin
-	#g++ $(CPPFLAGS) -o bin/eval_expr $^
 
 
 clean :
