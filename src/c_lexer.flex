@@ -82,6 +82,7 @@
 [;]				      { return T_SEMICOLON; }
 [:]				      { return T_COLON; }
 [,]				      { return T_COMMA; }
+"//".*                {} // Single Line Comments
 
 %%
 
