@@ -34,6 +34,12 @@ public:
         dst << std::endl;
     }
 
+     virtual void toMips (std::ostream &dst, System &mySystem, int destReg) const override {
+        
+        VarDefList->toMips(dst, mySystem, destReg);
+        dst << std::endl;
+    }
+
  
 
 };
@@ -65,6 +71,15 @@ public:
         if (Rest_of_Vars != NULL) {
             
             Rest_of_Vars->toPython(dst);
+            
+        }
+    }
+
+    virtual void toMips (std::ostream &dst, System &mySystem, int destReg) const override {
+        Var->toMips(dst, mySystem, destReg);
+        if (Rest_of_Vars != NULL) {
+            
+            Rest_of_Vars->toMips(dst, mySystem, destReg);
             
         }
     }
@@ -114,10 +129,37 @@ public:
         
     }
 
+    virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override
+        {
+            dst << "\t"<< ".globl "<<varIdentifier << std::endl;
+            dst << "\t"<< ".data" << std::endl;
+            if (varValue != NULL)
+            {
+                dst << varIdentifier << ":" << std::endl;
+                dst << "\t"<< ".word"<< "\t";
+                isGlobal = true;
+                varValue->toMips(dst, mySystem, destReg);
+                isGlobal = false;
+                dst<< "\t#New global variable"<< std::endl;
+
+                mySystem.store_var_val(varIdentifier, varValue->evaluate());
+             
+            }
+            else {
+                dst<<varIdentifier<<":"<<std::endl;
+                dst<<"\t"<<".word"<<"\t"<<"0" << "\t#New global variable"<< std::endl;
+
+            }
+
+            mySystem.NewGlobalVar(varIdentifier);
+        }
+    
+
     ~GlobalVariable_Definition(){}
 
 
 };
+
 
 class LocalTypeset: public AST_Node {
 public:

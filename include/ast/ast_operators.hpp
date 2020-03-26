@@ -70,15 +70,23 @@ public:
         : Operator(_left, _right)
     {}
     
-    virtual double evaluate(
-        const std::map<std::string,double> &bindings
-    ) const override 
-    {
-        // TODO-C : Run bin/eval_expr with something like 5+a, where a=10, to make sure you understand how this works
-        double vl=getLeft()->evaluate(bindings);
-        double vr=getRight()->evaluate(bindings);
-        return vl+vr;
-    }
+    virtual int evaluate () const override
+        {
+            int vl = getLeft()->evaluate();
+            int vr = getRight()->evaluate();
+            return vl + vr;
+        }
+
+     virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override
+        {
+            if (isGlobal)
+            {
+                int vl = getLeft()->evaluate();
+                int vr = getRight()->evaluate();
+                dst << vl + vr;
+            }
+            else{}
+        }
 };
 
 class SubOperator
@@ -95,16 +103,23 @@ public:
         : Operator(_left, _right)
     {}
     
-    virtual double evaluate(
-        const std::map<std::string,double> &bindings
-    ) const override 
-    {
-        // TODO-D : Implement this, based on AddOperator::evaluate
-        //throw std::runtime_error("MulOperator::evaluate is not implemented.");
-	double vl=getLeft()->evaluate(bindings);
-        double vr=getRight()->evaluate(bindings);
-        return vl-vr;
-    }
+    virtual int evaluate () const override
+        {
+            int vl = getLeft()->evaluate();
+            int vr = getRight()->evaluate();
+            return vl - vr;
+        }
+
+     virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override
+        {
+            if (isGlobal)
+            {
+                int vl = getLeft()->evaluate();
+                int vr = getRight()->evaluate();
+                dst << vl - vr;
+            }
+            else{}
+        }
 };
 
 
@@ -122,15 +137,23 @@ public:
         : Operator(_left, _right)
     {}
 
-    virtual double evaluate(
-        const std::map<std::string,double> &bindings
-    ) const override
-    {
-         //throw std::runtime_error("MulOperator::evaluate is not implemented.");
-        double vl=getLeft()->evaluate(bindings);
-        double vr=getRight()->evaluate(bindings);
-        return vl*vr;
-    }
+  virtual int evaluate () const override
+        {
+            int vl = getLeft()->evaluate();
+            int vr = getRight()->evaluate();
+            return vl * vr;
+        }
+
+     virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override
+        {
+            if (isGlobal)
+            {
+                int vl = getLeft()->evaluate();
+                int vr = getRight()->evaluate();
+                dst << vl * vr;
+            }
+            else{}
+        }
 };
 
 class DivOperator
@@ -147,15 +170,23 @@ public:
         : Operator(_left, _right)
     {}
 
-    virtual double evaluate(
-        const std::map<std::string,double> &bindings
-    ) const override
-    {
-        //throw std::runtime_error("DivOperator::evaluate is not implemented.");
-       double vl=getLeft()->evaluate(bindings);
-        double vr=getRight()->evaluate(bindings);
-        return vl/vr;
-    }
+    virtual int evaluate () const override
+        {
+            int vl = getLeft()->evaluate();
+            int vr = getRight()->evaluate();
+            return vl / vr;
+        }
+
+     virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override
+        {
+            if (isGlobal)
+            {
+                int vl = getLeft()->evaluate();
+                int vr = getRight()->evaluate();
+                dst << vl / vr;
+            }
+            else{}
+        }
 };
 
 /*

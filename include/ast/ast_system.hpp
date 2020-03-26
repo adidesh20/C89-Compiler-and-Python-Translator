@@ -54,6 +54,9 @@ public:
     Memory systemMemory;
     bool registerStatus[32];
     std::vector<std::string> functionParameters;
+    std::unordered_map<std::string, unsigned int> globalvariables;
+    std::unordered_map<std::string,unsigned int> localvariables;
+    std::unordered_map<std::string, unsigned int> variable_bindings;
 
     ~System(){}
 
@@ -85,7 +88,7 @@ public:
     {
         if(reg > 3 && reg < 26)
         {
-            std::cout << "\t\t\t\t #unlock $" << reg << std::endl;
+            std::cout << "\t\t\t\t #unlock $" << getRegName(reg) << std::endl;
             registerStatus[reg] = true;
         }
         else
@@ -99,7 +102,7 @@ public:
     {
         if(reg > 3 && reg < 26)
         {
-            std::cout << "\t\t\t\t #lock $" << reg << std::endl;
+            std::cout << "\t\t\t\t #lock $" << getRegName(reg) << std::endl;
             registerStatus[reg] = false;
         }
         else
@@ -210,12 +213,41 @@ public:
         }
         return -1;
     }
+    void store_var_val(std::string var, int val) {
+        variable_bindings.erase(var);
+        variable_bindings.emplace(var, val);
+    }
+
+    void clear_var_val(std::string var) {
+        variable_bindings.erase(var);
+    }
+
+    int find_var_val(std::string var) {
+        if (variable_bindings.find(var) != variable_bindings.end())
+        {
+            return (variable_bindings.find(var)->second);
+        }
+        return 0;
+    }
 
     void resetParameters()
     {
         functionParameters.clear();
     }
 
+    void NewGlobalVar (std::string varname) {
+        globalvariables.emplace(varname,++globalVarCount);
+
+    }
+
+    void DeleteLocalVar (std::string varname) {
+        localvariables.erase(varname);
+    }
+
+    void NewLocalVar (std::string varname) {
+       
+        localvariables.emplace(varname,localVarCount);
+    }
 
 
 private:

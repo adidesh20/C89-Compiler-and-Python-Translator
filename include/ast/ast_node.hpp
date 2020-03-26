@@ -6,7 +6,7 @@
 #include <map>
 #include <vector>
 #include <memory>
-
+#include "ast_system.hpp"
 class AST_Node;
 
 typedef const AST_Node *NodePtr;
@@ -23,11 +23,15 @@ public:
     virtual double evaluate(const std::map<std::string,double> &bindings) const
     { throw std::runtime_error("Evaluate not implemented."); }
 
+    virtual int evaluate () const {
+        throw std::runtime_error("Eval Not implemented");
+    }
+
     virtual void toPython(std::ostream &dst) const {
         throw std::runtime_error("Translate not implemented.");
     }
 
-    virtual void compileMips(std::ostream &dst) const {
+    virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const {
         throw std::runtime_error("Compilation not implemented.");
     }
 

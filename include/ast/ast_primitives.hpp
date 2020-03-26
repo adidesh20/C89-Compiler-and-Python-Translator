@@ -36,7 +36,7 @@ public:
         return bindings.at(id);
     }    
 
-    virtual void compileMips(std::ostream &dst, System &mySystem, int destReg)
+    virtual void toMips(std::ostream &dst, System &mySystem, int destReg)
     {
         int varAddress = mySystem.systemMemory.variableSearch(id, currentIndent);
         int stackTop = (stackVarCount*4) + paramCount + 62;
@@ -95,6 +95,20 @@ public:
         // TODO-A : Run bin/eval_expr with a numeric AST_Node to make sure you understand how this works.
         return value;
     }
+      virtual int evaluate()const override
+    {
+        // TODO-A : Run bin/eval_expr with a numeric AST_Node to make sure you understand how this works.
+        return value;
+    }
+    virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override
+    {
+        if (isGlobal) {
+            dst<<value<<"\t#Global variable"<<std::endl;
+        }
+        else if (!isGlobal) {
+            dst <<"\t"<< "li" << "\t" << "$"<<destReg<<", " << value<<std::endl;
+        }
+	}
 };
 
 

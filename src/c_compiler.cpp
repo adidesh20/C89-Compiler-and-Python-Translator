@@ -7,7 +7,7 @@
 
 int main(int argc, char* argv[])
 {
-    freopen64(argv[2], "r", stdin); //Opening C file
+    freopen(argv[2], "r", stdin); //Opening C file
 
     const AST_Node *ast = parseAST(); //Generating parse tree
     std::cout << std::endl;

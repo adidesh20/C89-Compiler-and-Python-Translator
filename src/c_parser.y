@@ -57,9 +57,6 @@ ROOT: PROGRAM {g_root = $1;};
 PROGRAM:
     EXTERNAL_DECLARATION PROGRAM {$$ = new Program($1,$2);}
   | EXTERNAL_DECLARATION         {$$ = new Program($1, NULL);}
-  
-
- 
   ;
 
 EXTERNAL_DECLARATION:

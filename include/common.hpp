@@ -8,9 +8,7 @@
 #include <vector>
 #include <string>
 
-static std::vector<NodePtr> global_variables_values;
 static std::vector<std::string> global_variables_names;
-
 static int currentIndent = 0;
 static int function_call_num;
 static int main_returned;

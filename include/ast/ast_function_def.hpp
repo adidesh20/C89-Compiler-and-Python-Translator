@@ -8,7 +8,7 @@
 #include "common.hpp"
 
 
-//extern std::vector<std::string> global_variables_names;
+
 extern std::vector<std::string> global_variables_names;
 
 
@@ -46,6 +46,14 @@ public:
             Rest_of_program->toPython(out);
         }
     }   
+
+    virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override
+    {
+        ExternalDec->toMips(dst, mySystem, destReg);
+        if (Rest_of_program != NULL) {
+            Rest_of_program->toMips(dst, mySystem, destReg);
+        }
+    }
 
 };
 
