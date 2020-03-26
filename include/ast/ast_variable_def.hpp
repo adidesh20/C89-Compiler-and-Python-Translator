@@ -130,7 +130,7 @@ public:
     }
 
     virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override
-        {
+        {   
             dst << "\t"<< ".globl "<<varIdentifier << std::endl;
             dst << "\t"<< ".data" << std::endl;
             if (varValue != NULL)
@@ -142,12 +142,13 @@ public:
                 isGlobal = false;
                 dst<< "\t#New global variable"<< std::endl;
 
-                mySystem.store_var_val(varIdentifier, varValue->evaluate());
+                mySystem.store_var_val(varIdentifier, varValue->evaluate(mySystem));
              
             }
             else {
                 dst<<varIdentifier<<":"<<std::endl;
                 dst<<"\t"<<".word"<<"\t"<<"0" << "\t#New global variable"<< std::endl;
+                mySystem.store_var_val(varIdentifier, 0);
 
             }
 

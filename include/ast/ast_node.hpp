@@ -23,7 +23,7 @@ public:
     virtual double evaluate(const std::map<std::string,double> &bindings) const
     { throw std::runtime_error("Evaluate not implemented."); }
 
-    virtual int evaluate () const {
+    virtual int evaluate (System &mySystem) const {
         throw std::runtime_error("Eval Not implemented");
     }
 

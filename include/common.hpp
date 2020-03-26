@@ -20,4 +20,20 @@ static bool isGlobal;
 static int stackVarCount;
 static int paramCount = 16;
 
+
+
+static int InfunctionVarCount;
+
+static std::vector<std::string> function_call_queue;
+static std::vector<std::string> loop_ends;
+
+static int function_call_num;
+
+static int loop_count;
+static int if_level;
+
+
+static bool loop_while = false;
+static bool loop_for = false;
+
 #endif

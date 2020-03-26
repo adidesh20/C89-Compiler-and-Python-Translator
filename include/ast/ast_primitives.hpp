@@ -36,8 +36,17 @@ public:
         return bindings.at(id);
     }    
 
-    virtual void toMips(std::ostream &dst, System &mySystem, int destReg)
+     virtual int evaluate(System &mySystem) const override
     {
+        // TODO-B : Run bin/eval_expr with a variable binding to make sure you understand how this works.
+        // If the binding does not exist, this will throw an error
+        return mySystem.systemMemory.variable_bindings.at(id);
+    }  
+
+    virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override
+    
+    {   
+       
         int varAddress = mySystem.systemMemory.variableSearch(id, currentIndent);
         int stackTop = (stackVarCount*4) + paramCount + 62;
         std::vector<int> argumentRegs = mySystem.args_freeRegLookup();
@@ -48,7 +57,7 @@ public:
             dst << "\t\t #loading local (scope) variable: " << id << std::endl; 
             dst << "\t" << "nop" << std::endl;
         }
-        else if(varAddress > -1) //Function Parameter (use stack)
+        else if(mySystem.lookupParameter(id) > -1) //Function Parameter (use stack)
         {
             dst << "\t" << "lw" << "\t" << "$" << mySystem.getRegName(destReg) << ", " << ((mySystem.lookupParameter(id))*4 + stackTop) << "($fp)";
             dst << "\t\t #variable " << id << " is a function parameter" << std::endl;
@@ -57,8 +66,8 @@ public:
         else //Global Variable
         {
             dst << "\t" << "lui" << "$" << mySystem.getRegName(destReg) << ", %hi(" << id << ")";
-            dst << "\t\t #loading global variable: " << id << std::endl;
-            dst << "\t" << "lw" << "\t" << "$" << mySystem.getRegName(destReg) << ", %lo(" << id << ")($" << mySystem.getRegName(destReg) << ")" << std::endl;
+            dst << "\t\t #loading global variable: " << getId() << std::endl;
+            dst << "\t" << "lw" << "\t" << "$" << mySystem.getRegName(destReg) << ", %lo(" << getId() << ")($" << mySystem.getRegName(destReg) << ")" << std::endl;
             dst << "\t" << "nop" << std::endl;
         }
         
@@ -95,7 +104,7 @@ public:
         // TODO-A : Run bin/eval_expr with a numeric AST_Node to make sure you understand how this works.
         return value;
     }
-      virtual int evaluate()const override
+      virtual int evaluate(System &mySystem)const override
     {
         // TODO-A : Run bin/eval_expr with a numeric AST_Node to make sure you understand how this works.
         return value;

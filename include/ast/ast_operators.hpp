@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <cmath>
+#include "ast.hpp"
 class Operator
     : public AST_Node
 {
@@ -70,10 +71,10 @@ public:
         : Operator(_left, _right)
     {}
     
-    virtual int evaluate () const override
+    virtual int evaluate (System &mySystem) const override
         {
-            int vl = getLeft()->evaluate();
-            int vr = getRight()->evaluate();
+            int vl = getLeft()->evaluate(mySystem);
+            int vr = getRight()->evaluate(mySystem);
             return vl + vr;
         }
 
@@ -81,8 +82,8 @@ public:
         {
             if (isGlobal)
             {
-                int vl = getLeft()->evaluate();
-                int vr = getRight()->evaluate();
+                int vl = getLeft()->evaluate(mySystem);
+                int vr = getRight()->evaluate(mySystem);
                 dst << vl + vr;
             }
             else{}
@@ -103,10 +104,10 @@ public:
         : Operator(_left, _right)
     {}
     
-    virtual int evaluate () const override
+    virtual int evaluate (System &mySystem) const override
         {
-            int vl = getLeft()->evaluate();
-            int vr = getRight()->evaluate();
+            int vl = getLeft()->evaluate(mySystem);
+            int vr = getRight()->evaluate(mySystem);
             return vl - vr;
         }
 
@@ -114,8 +115,8 @@ public:
         {
             if (isGlobal)
             {
-                int vl = getLeft()->evaluate();
-                int vr = getRight()->evaluate();
+                int vl = getLeft()->evaluate(mySystem);
+                int vr = getRight()->evaluate(mySystem);
                 dst << vl - vr;
             }
             else{}
@@ -137,10 +138,10 @@ public:
         : Operator(_left, _right)
     {}
 
-  virtual int evaluate () const override
+  virtual int evaluate (System &mySystem) const override
         {
-            int vl = getLeft()->evaluate();
-            int vr = getRight()->evaluate();
+            int vl = getLeft()->evaluate(mySystem);
+            int vr = getRight()->evaluate(mySystem);
             return vl * vr;
         }
 
@@ -148,8 +149,8 @@ public:
         {
             if (isGlobal)
             {
-                int vl = getLeft()->evaluate();
-                int vr = getRight()->evaluate();
+                int vl = getLeft()->evaluate(mySystem);
+                int vr = getRight()->evaluate(mySystem);
                 dst << vl * vr;
             }
             else{}
@@ -170,10 +171,10 @@ public:
         : Operator(_left, _right)
     {}
 
-    virtual int evaluate () const override
+    virtual int evaluate (System &mySystem) const override
         {
-            int vl = getLeft()->evaluate();
-            int vr = getRight()->evaluate();
+            int vl = getLeft()->evaluate(mySystem);
+            int vr = getRight()->evaluate(mySystem);
             return vl / vr;
         }
 
@@ -181,8 +182,8 @@ public:
         {
             if (isGlobal)
             {
-                int vl = getLeft()->evaluate();
-                int vr = getRight()->evaluate();
+                int vl = getLeft()->evaluate(mySystem);
+                int vr = getRight()->evaluate(mySystem);
                 dst << vl / vr;
             }
             else{}

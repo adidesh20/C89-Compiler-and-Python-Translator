@@ -9,9 +9,9 @@
 class Memory
 {
 public:
-    std::unordered_map<std::string, unsigned int> localVarBindings;
-    std::unordered_map<std::string, unsigned int> globalVarBindings;
-    std::unordered_map<std::string, unsigned int> variableValues;
+   std::unordered_map<std::string, unsigned int> globalvariables;
+    std::unordered_map<std::string,unsigned int> localvariables;
+    std::unordered_map<std::string, unsigned int> variable_bindings;
 
     ~Memory(){}
     Memory(){}
@@ -21,9 +21,9 @@ public:
         for(int i = currentScope; i >= 0; i--)
         {
             std::string key =  identifier = std::to_string(currentScope);
-            if(localVarBindings.find(key) != localVarBindings.end())
+            if(localvariables.find(key) != localvariables.end())
             {
-                return (((localVarBindings.find(key))->second-1)*4 + 16); //returning memory address
+                return (((localvariables.find(key))->second-1)*4 + 16); //returning memory address
             }
         }
         return 0;

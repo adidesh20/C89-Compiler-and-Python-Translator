@@ -54,9 +54,7 @@ public:
     Memory systemMemory;
     bool registerStatus[32];
     std::vector<std::string> functionParameters;
-    std::unordered_map<std::string, unsigned int> globalvariables;
-    std::unordered_map<std::string,unsigned int> localvariables;
-    std::unordered_map<std::string, unsigned int> variable_bindings;
+    
 
     ~System(){}
 
@@ -213,41 +211,53 @@ public:
         }
         return -1;
     }
-    void store_var_val(std::string var, int val) {
-        variable_bindings.erase(var);
-        variable_bindings.emplace(var, val);
-    }
-
-    void clear_var_val(std::string var) {
-        variable_bindings.erase(var);
-    }
-
-    int find_var_val(std::string var) {
-        if (variable_bindings.find(var) != variable_bindings.end())
-        {
-            return (variable_bindings.find(var)->second);
-        }
-        return 0;
-    }
-
+   
     void resetParameters()
     {
         functionParameters.clear();
     }
 
+    
+
     void NewGlobalVar (std::string varname) {
-        globalvariables.emplace(varname,++globalVarCount);
+        systemMemory.globalvariables.emplace(varname,++globalVarCount);
 
     }
 
     void DeleteLocalVar (std::string varname) {
-        localvariables.erase(varname);
+        systemMemory.localvariables.erase(varname);
     }
 
     void NewLocalVar (std::string varname) {
        
-        localvariables.emplace(varname,localVarCount);
+        systemMemory.localvariables.emplace(varname,localVarCount);
     }
+
+     void store_var_val(std::string var, int val) {
+        systemMemory.variable_bindings.erase(var);
+        systemMemory.variable_bindings.emplace(var, val);
+    }
+
+    void clear_var_val(std::string var) {
+        systemMemory.variable_bindings.erase(var);
+    }
+
+    int find_var_val(std::string var) {
+        if (systemMemory.variable_bindings.find(var) != systemMemory.variable_bindings.end())
+        {
+            return (systemMemory.variable_bindings.find(var)->second);
+        }
+        return 0;
+    }
+
+    void resetArgRegs()
+    {
+        for(int i = 4; i <= 7; i++)
+        {
+            registerStatus[i] = true;
+        }
+    }
+
 
 
 private:
