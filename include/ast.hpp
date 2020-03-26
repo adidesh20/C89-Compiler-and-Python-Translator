@@ -10,6 +10,8 @@
 #include "ast/ast_function_def.hpp"
 #include "ast/ast_variable_def.hpp"
 #include "ast/ast_assignment_ops.hpp"
+#include "ast/ast_system.hpp"
+#include "ast/ast_memory.hpp"
 
 extern const AST_Node *parseAST();
 

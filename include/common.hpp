@@ -18,4 +18,8 @@ static int main_returned;
 static unsigned int localVarCount;
 static unsigned int globalVarCount;
 
+static bool isGlobal;
+static int stackVarCount;
+static int paramCount = 16;
+
 #endif

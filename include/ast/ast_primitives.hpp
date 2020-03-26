@@ -35,6 +35,34 @@ public:
         // If the binding does not exist, this will throw an error
         return bindings.at(id);
     }    
+
+    virtual void compileMips(std::ostream &dst, System &mySystem, int destReg)
+    {
+        int varAddress = mySystem.systemMemory.variableSearch(id, currentIndent);
+        int stackTop = (stackVarCount*4) + paramCount + 62;
+        std::vector<int> argumentRegs = mySystem.args_freeRegLookup();
+
+        if(varAddress > 0) //Local Variable defined in a scope
+        {
+            dst << "\t" << "lw" << "\t" << "$" << mySystem.getRegName(destReg) << ", " << varAddress << "($fp)";
+            dst << "\t\t #loading local (scope) variable: " << id << std::endl; 
+            dst << "\t" << "nop" << std::endl;
+        }
+        else if(varAddress > -1) //Function Parameter (use stack)
+        {
+            dst << "\t" << "lw" << "\t" << "$" << mySystem.getRegName(destReg) << ", " << ((mySystem.lookupParameter(id))*4 + stackTop) << "($fp)";
+            dst << "\t\t #variable " << id << " is a function parameter" << std::endl;
+            dst << "\t" << "nop" << std::endl;
+        }
+        else //Global Variable
+        {
+            dst << "\t" << "lui" << "$" << mySystem.getRegName(destReg) << ", %hi(" << id << ")";
+            dst << "\t\t #loading global variable: " << id << std::endl;
+            dst << "\t" << "lw" << "\t" << "$" << mySystem.getRegName(destReg) << ", %lo(" << id << ")($" << mySystem.getRegName(destReg) << ")" << std::endl;
+            dst << "\t" << "nop" << std::endl;
+        }
+        
+    }
 };
 
 class Number
