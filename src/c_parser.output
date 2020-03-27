@@ -1,0 +1,1954 @@
+Nonterminals useless in grammar
+
+   TERNARY
+
+
+Terminals unused in grammar
+
+   T_MOD
+   T_TERNARY
+   T_BITWISE_OR
+   T_BITWISE_AND
+   T_BITWISE_XOR
+   T_BITWISE_COMP
+   T_LEFT_SHIFT
+   T_RIGHT_SHIFT
+   T_MOD_EQUALS
+   T_OPEN_BRACKETS
+   T_CLOSE_BRACKETS
+   T_COLON
+   T_VARNAME
+   T_EXPONENT
+   T_LBRACKET
+   T_RBRACKET
+   T_LOG
+   T_EXP
+   T_SQRT
+
+
+State 0 conflicts: 4 shift/reduce
+State 7 conflicts: 4 shift/reduce, 1 reduce/reduce
+State 135 conflicts: 1 shift/reduce
+
+
+Grammar
+
+    0 $accept: ROOT $end
+
+    1 ROOT: PROGRAM
+
+    2 PROGRAM: EXTERNAL_DECLARATION PROGRAM
+    3        | EXTERNAL_DECLARATION
+
+    4 EXTERNAL_DECLARATION: FUNCTION_DEF
+    5                     | FUNCTION_DEC
+    6                     | GLOBAL_DECLARATION
+
+    7 GLOBAL_DECLARATION: TYPE GLOBAL_VAR_DEF_LIST T_SEMICOLON
+
+    8 GLOBAL_VAR_DEF_LIST: GLOBAL_VAR_DEF T_COMMA GLOBAL_VAR_DEF_LIST
+    9                    | GLOBAL_VAR_DEF
+
+   10 GLOBAL_VAR_DEF: T_VARIABLE
+   11               | T_VARIABLE T_EQUAL EXPR
+
+   12 FUNCTION_DEF: TYPE T_VARIABLE T_OPEN_PARENTHESES T_CLOSE_PARENTHESES SCOPE
+   13             | TYPE T_VARIABLE T_OPEN_PARENTHESES PARAMETER_LIST T_CLOSE_PARENTHESES SCOPE
+
+   14 FUNCTION_DEC: %empty
+   15             | TYPE T_VARIABLE T_OPEN_PARENTHESES T_CLOSE_PARENTHESES T_SEMICOLON
+   16             | TYPE T_VARIABLE T_OPEN_PARENTHESES PARAMETER_LIST T_CLOSE_PARENTHESES T_SEMICOLON
+
+   17 PARAMETER_LIST: PARAMETER T_COMMA PARAMETER_LIST
+   18               | PARAMETER
+
+   19 PARAMETER: TYPE T_VARIABLE
+
+   20 SCOPE: T_OPEN_BRACES SCOPE_BODY T_CLOSE_BRACES
+   21      | T_OPEN_BRACES T_CLOSE_BRACES
+
+   22 SCOPE_BODY: STATEMENT SCOPE_BODY
+   23           | STATEMENT
+
+   24 STATEMENT: LOCAL_DECLARATION T_SEMICOLON
+   25          | T_RETURN EXPR T_SEMICOLON
+   26          | T_RETURN T_SEMICOLON
+   27          | EXPR T_SEMICOLON
+   28          | T_WHILE T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE
+   29          | T_IF T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE
+   30          | T_IF T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE T_ELSE STATEMENT_SCOPE
+
+   31 STATEMENT_SCOPE: STATEMENT
+   32                | SCOPE
+
+   33 LOCAL_DECLARATION: TYPE LOCAL_VAR_DEF_LIST
+
+   34 LOCAL_VAR_DEF_LIST: LOCAL_VAR_DEF T_COMMA LOCAL_VAR_DEF_LIST
+   35                   | LOCAL_VAR_DEF
+
+   36 LOCAL_VAR_DEF: T_VARIABLE
+   37              | T_VARIABLE T_EQUAL EXPR
+
+   38 TYPE: T_INT
+   39     | T_DOUBLE
+   40     | T_FLOAT
+   41     | T_VOID
+
+   42 PARAMETERS_IN_LIST: EXPR T_COMMA PARAMETERS_IN_LIST
+   43                   | EXPR
+
+   44 EXPR: LOGICAL_OR
+   45     | ASSIGNMENT
+
+   46 ASSIGNMENT: T_VARIABLE T_EQUAL EXPR
+   47           | T_VARIABLE T_PLUS_EQUALS EXPR
+   48           | T_VARIABLE T_MINUS_EQUALS EXPR
+   49           | T_VARIABLE T_TIMES_EQUALS EXPR
+   50           | T_VARIABLE T_DIVIDE_EQUALS EXPR
+
+   51 LOGICAL_OR: LOGICAL_AND T_LOGICAL_OR LOGICAL_OR
+   52           | LOGICAL_AND
+
+   53 LOGICAL_AND: COMPARE_EQUAL T_LOGICAL_AND LOGICAL_AND
+   54            | COMPARE_EQUAL
+
+   55 COMPARE_EQUAL: COMPARE_DIFFERENT T_EQUAL_TO COMPARE_EQUAL
+   56              | COMPARE_DIFFERENT T_NOT_EQUAL_TO COMPARE_EQUAL
+   57              | COMPARE_DIFFERENT
+
+   58 COMPARE_DIFFERENT: ADD_SUBTRACT T_LT COMPARE_DIFFERENT
+   59                  | ADD_SUBTRACT T_LTEQ COMPARE_DIFFERENT
+   60                  | ADD_SUBTRACT T_GT COMPARE_DIFFERENT
+   61                  | ADD_SUBTRACT T_GTEQ COMPARE_DIFFERENT
+   62                  | ADD_SUBTRACT
+
+   63 ADD_SUBTRACT: TERM T_PLUS ADD_SUBTRACT
+   64             | TERM T_MINUS ADD_SUBTRACT
+   65             | TERM
+
+   66 TERM: UNARY T_TIMES TERM
+   67     | UNARY T_DIVIDE TERM
+   68     | UNARY
+
+   69 UNARY: T_MINUS UNARY
+   70      | FACTOR
+   71      | T_VARIABLE T_INCREMENT
+   72      | T_INCREMENT T_VARIABLE
+   73      | T_VARIABLE T_DECREMENT
+   74      | T_DECREMENT T_VARIABLE
+   75      | T_LOGICAL_NOT FACTOR
+
+   76 FACTOR: T_NUMBER
+   77       | T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES
+   78       | T_VARIABLE
+   79       | T_VARIABLE T_OPEN_PARENTHESES PARAMETERS_IN_LIST T_CLOSE_PARENTHESES
+   80       | T_VARIABLE T_OPEN_PARENTHESES T_CLOSE_PARENTHESES
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+T_INT (258) 38
+T_VOID (259) 41
+T_FLOAT (260) 40
+T_DOUBLE (261) 39
+T_RETURN (262) 25 26
+T_IF (263) 29 30
+T_ELSE (264) 30
+T_WHILE (265) 28
+T_TIMES (266) 66
+T_PLUS (267) 63
+T_MINUS (268) 64 69
+T_DIVIDE (269) 67
+T_MOD (270)
+T_INCREMENT (271) 71 72
+T_DECREMENT (272) 73 74
+T_EQUAL_TO (273) 55
+T_NOT_EQUAL_TO (274) 56
+T_LT (275) 58
+T_GT (276) 60
+T_LTEQ (277) 59
+T_GTEQ (278) 61
+T_LOGICAL_OR (279) 51
+T_LOGICAL_AND (280) 53
+T_LOGICAL_NOT (281) 75
+T_TERNARY (282)
+T_BITWISE_OR (283)
+T_BITWISE_AND (284)
+T_BITWISE_XOR (285)
+T_BITWISE_COMP (286)
+T_LEFT_SHIFT (287)
+T_RIGHT_SHIFT (288)
+T_EQUAL (289) 11 37 46
+T_PLUS_EQUALS (290) 47
+T_MINUS_EQUALS (291) 48
+T_TIMES_EQUALS (292) 49
+T_DIVIDE_EQUALS (293) 50
+T_MOD_EQUALS (294)
+T_OPEN_PARENTHESES (295) 12 13 15 16 28 29 30 77 79 80
+T_CLOSE_PARENTHESES (296) 12 13 15 16 28 29 30 77 79 80
+T_OPEN_BRACKETS (297)
+T_CLOSE_BRACKETS (298)
+T_OPEN_BRACES (299) 20 21
+T_CLOSE_BRACES (300) 20 21
+T_SEMICOLON (301) 7 15 16 24 25 26 27
+T_COLON (302)
+T_COMMA (303) 8 17 34 42
+T_VARNAME (304)
+T_EXPONENT (305)
+T_LBRACKET (306)
+T_RBRACKET (307)
+T_LOG (308)
+T_EXP (309)
+T_SQRT (310)
+T_NUMBER (311) 76
+T_VARIABLE (312) 10 11 12 13 15 16 19 36 37 46 47 48 49 50 71 72 73
+    74 78 79 80
+
+
+Nonterminals, with rules where they appear
+
+$accept (58)
+    on left: 0
+ROOT (59)
+    on left: 1, on right: 0
+PROGRAM (60)
+    on left: 2 3, on right: 1 2
+EXTERNAL_DECLARATION (61)
+    on left: 4 5 6, on right: 2 3
+GLOBAL_DECLARATION (62)
+    on left: 7, on right: 6
+GLOBAL_VAR_DEF_LIST (63)
+    on left: 8 9, on right: 7 8
+GLOBAL_VAR_DEF (64)
+    on left: 10 11, on right: 8 9
+FUNCTION_DEF (65)
+    on left: 12 13, on right: 4
+FUNCTION_DEC (66)
+    on left: 14 15 16, on right: 5
+PARAMETER_LIST (67)
+    on left: 17 18, on right: 13 16 17
+PARAMETER (68)
+    on left: 19, on right: 17 18
+SCOPE (69)
+    on left: 20 21, on right: 12 13 32
+SCOPE_BODY (70)
+    on left: 22 23, on right: 20 22
+STATEMENT (71)
+    on left: 24 25 26 27 28 29 30, on right: 22 23 31
+STATEMENT_SCOPE (72)
+    on left: 31 32, on right: 28 29 30
+LOCAL_DECLARATION (73)
+    on left: 33, on right: 24
+LOCAL_VAR_DEF_LIST (74)
+    on left: 34 35, on right: 33 34
+LOCAL_VAR_DEF (75)
+    on left: 36 37, on right: 34 35
+TYPE (76)
+    on left: 38 39 40 41, on right: 7 12 13 15 16 19 33
+PARAMETERS_IN_LIST (77)
+    on left: 42 43, on right: 42 79
+EXPR (78)
+    on left: 44 45, on right: 11 25 27 28 29 30 37 42 43 46 47 48 49
+    50 77
+ASSIGNMENT (79)
+    on left: 46 47 48 49 50, on right: 45
+LOGICAL_OR (80)
+    on left: 51 52, on right: 44 51
+LOGICAL_AND (81)
+    on left: 53 54, on right: 51 52 53
+COMPARE_EQUAL (82)
+    on left: 55 56 57, on right: 53 54 55 56
+COMPARE_DIFFERENT (83)
+    on left: 58 59 60 61 62, on right: 55 56 57 58 59 60 61
+ADD_SUBTRACT (84)
+    on left: 63 64 65, on right: 58 59 60 61 62 63 64
+TERM (85)
+    on left: 66 67 68, on right: 63 64 65 66 67
+UNARY (86)
+    on left: 69 70 71 72 73 74 75, on right: 66 67 68 69
+FACTOR (87)
+    on left: 76 77 78 79 80, on right: 70 75
+
+
+State 0
+
+    0 $accept: . ROOT $end
+
+    T_INT     shift, and go to state 1
+    T_VOID    shift, and go to state 2
+    T_FLOAT   shift, and go to state 3
+    T_DOUBLE  shift, and go to state 4
+
+    T_INT     [reduce using rule 14 (FUNCTION_DEC)]
+    T_VOID    [reduce using rule 14 (FUNCTION_DEC)]
+    T_FLOAT   [reduce using rule 14 (FUNCTION_DEC)]
+    T_DOUBLE  [reduce using rule 14 (FUNCTION_DEC)]
+    $default  reduce using rule 14 (FUNCTION_DEC)
+
+    ROOT                  go to state 5
+    PROGRAM               go to state 6
+    EXTERNAL_DECLARATION  go to state 7
+    GLOBAL_DECLARATION    go to state 8
+    FUNCTION_DEF          go to state 9
+    FUNCTION_DEC          go to state 10
+    TYPE                  go to state 11
+
+
+State 1
+
+   38 TYPE: T_INT .
+
+    $default  reduce using rule 38 (TYPE)
+
+
+State 2
+
+   41 TYPE: T_VOID .
+
+    $default  reduce using rule 41 (TYPE)
+
+
+State 3
+
+   40 TYPE: T_FLOAT .
+
+    $default  reduce using rule 40 (TYPE)
+
+
+State 4
+
+   39 TYPE: T_DOUBLE .
+
+    $default  reduce using rule 39 (TYPE)
+
+
+State 5
+
+    0 $accept: ROOT . $end
+
+    $end  shift, and go to state 12
+
+
+State 6
+
+    1 ROOT: PROGRAM .
+
+    $default  reduce using rule 1 (ROOT)
+
+
+State 7
+
+    2 PROGRAM: EXTERNAL_DECLARATION . PROGRAM
+    3        | EXTERNAL_DECLARATION .
+
+    T_INT     shift, and go to state 1
+    T_VOID    shift, and go to state 2
+    T_FLOAT   shift, and go to state 3
+    T_DOUBLE  shift, and go to state 4
+
+    $end      reduce using rule 3 (PROGRAM)
+    $end      [reduce using rule 14 (FUNCTION_DEC)]
+    T_INT     [reduce using rule 14 (FUNCTION_DEC)]
+    T_VOID    [reduce using rule 14 (FUNCTION_DEC)]
+    T_FLOAT   [reduce using rule 14 (FUNCTION_DEC)]
+    T_DOUBLE  [reduce using rule 14 (FUNCTION_DEC)]
+    $default  reduce using rule 3 (PROGRAM)
+
+    PROGRAM               go to state 13
+    EXTERNAL_DECLARATION  go to state 7
+    GLOBAL_DECLARATION    go to state 8
+    FUNCTION_DEF          go to state 9
+    FUNCTION_DEC          go to state 10
+    TYPE                  go to state 11
+
+
+State 8
+
+    6 EXTERNAL_DECLARATION: GLOBAL_DECLARATION .
+
+    $default  reduce using rule 6 (EXTERNAL_DECLARATION)
+
+
+State 9
+
+    4 EXTERNAL_DECLARATION: FUNCTION_DEF .
+
+    $default  reduce using rule 4 (EXTERNAL_DECLARATION)
+
+
+State 10
+
+    5 EXTERNAL_DECLARATION: FUNCTION_DEC .
+
+    $default  reduce using rule 5 (EXTERNAL_DECLARATION)
+
+
+State 11
+
+    7 GLOBAL_DECLARATION: TYPE . GLOBAL_VAR_DEF_LIST T_SEMICOLON
+   12 FUNCTION_DEF: TYPE . T_VARIABLE T_OPEN_PARENTHESES T_CLOSE_PARENTHESES SCOPE
+   13             | TYPE . T_VARIABLE T_OPEN_PARENTHESES PARAMETER_LIST T_CLOSE_PARENTHESES SCOPE
+   15 FUNCTION_DEC: TYPE . T_VARIABLE T_OPEN_PARENTHESES T_CLOSE_PARENTHESES T_SEMICOLON
+   16             | TYPE . T_VARIABLE T_OPEN_PARENTHESES PARAMETER_LIST T_CLOSE_PARENTHESES T_SEMICOLON
+
+    T_VARIABLE  shift, and go to state 14
+
+    GLOBAL_VAR_DEF_LIST  go to state 15
+    GLOBAL_VAR_DEF       go to state 16
+
+
+State 12
+
+    0 $accept: ROOT $end .
+
+    $default  accept
+
+
+State 13
+
+    2 PROGRAM: EXTERNAL_DECLARATION PROGRAM .
+
+    $default  reduce using rule 2 (PROGRAM)
+
+
+State 14
+
+   10 GLOBAL_VAR_DEF: T_VARIABLE .
+   11               | T_VARIABLE . T_EQUAL EXPR
+   12 FUNCTION_DEF: TYPE T_VARIABLE . T_OPEN_PARENTHESES T_CLOSE_PARENTHESES SCOPE
+   13             | TYPE T_VARIABLE . T_OPEN_PARENTHESES PARAMETER_LIST T_CLOSE_PARENTHESES SCOPE
+   15 FUNCTION_DEC: TYPE T_VARIABLE . T_OPEN_PARENTHESES T_CLOSE_PARENTHESES T_SEMICOLON
+   16             | TYPE T_VARIABLE . T_OPEN_PARENTHESES PARAMETER_LIST T_CLOSE_PARENTHESES T_SEMICOLON
+
+    T_EQUAL             shift, and go to state 17
+    T_OPEN_PARENTHESES  shift, and go to state 18
+
+    $default  reduce using rule 10 (GLOBAL_VAR_DEF)
+
+
+State 15
+
+    7 GLOBAL_DECLARATION: TYPE GLOBAL_VAR_DEF_LIST . T_SEMICOLON
+
+    T_SEMICOLON  shift, and go to state 19
+
+
+State 16
+
+    8 GLOBAL_VAR_DEF_LIST: GLOBAL_VAR_DEF . T_COMMA GLOBAL_VAR_DEF_LIST
+    9                    | GLOBAL_VAR_DEF .
+
+    T_COMMA  shift, and go to state 20
+
+    $default  reduce using rule 9 (GLOBAL_VAR_DEF_LIST)
+
+
+State 17
+
+   11 GLOBAL_VAR_DEF: T_VARIABLE T_EQUAL . EXPR
+
+    T_MINUS             shift, and go to state 21
+    T_INCREMENT         shift, and go to state 22
+    T_DECREMENT         shift, and go to state 23
+    T_LOGICAL_NOT       shift, and go to state 24
+    T_OPEN_PARENTHESES  shift, and go to state 25
+    T_NUMBER            shift, and go to state 26
+    T_VARIABLE          shift, and go to state 27
+
+    EXPR               go to state 28
+    ASSIGNMENT         go to state 29
+    LOGICAL_OR         go to state 30
+    LOGICAL_AND        go to state 31
+    COMPARE_EQUAL      go to state 32
+    COMPARE_DIFFERENT  go to state 33
+    ADD_SUBTRACT       go to state 34
+    TERM               go to state 35
+    UNARY              go to state 36
+    FACTOR             go to state 37
+
+
+State 18
+
+   12 FUNCTION_DEF: TYPE T_VARIABLE T_OPEN_PARENTHESES . T_CLOSE_PARENTHESES SCOPE
+   13             | TYPE T_VARIABLE T_OPEN_PARENTHESES . PARAMETER_LIST T_CLOSE_PARENTHESES SCOPE
+   15 FUNCTION_DEC: TYPE T_VARIABLE T_OPEN_PARENTHESES . T_CLOSE_PARENTHESES T_SEMICOLON
+   16             | TYPE T_VARIABLE T_OPEN_PARENTHESES . PARAMETER_LIST T_CLOSE_PARENTHESES T_SEMICOLON
+
+    T_INT                shift, and go to state 1
+    T_VOID               shift, and go to state 2
+    T_FLOAT              shift, and go to state 3
+    T_DOUBLE             shift, and go to state 4
+    T_CLOSE_PARENTHESES  shift, and go to state 38
+
+    PARAMETER_LIST  go to state 39
+    PARAMETER       go to state 40
+    TYPE            go to state 41
+
+
+State 19
+
+    7 GLOBAL_DECLARATION: TYPE GLOBAL_VAR_DEF_LIST T_SEMICOLON .
+
+    $default  reduce using rule 7 (GLOBAL_DECLARATION)
+
+
+State 20
+
+    8 GLOBAL_VAR_DEF_LIST: GLOBAL_VAR_DEF T_COMMA . GLOBAL_VAR_DEF_LIST
+
+    T_VARIABLE  shift, and go to state 42
+
+    GLOBAL_VAR_DEF_LIST  go to state 43
+    GLOBAL_VAR_DEF       go to state 16
+
+
+State 21
+
+   69 UNARY: T_MINUS . UNARY
+
+    T_MINUS             shift, and go to state 21
+    T_INCREMENT         shift, and go to state 22
+    T_DECREMENT         shift, and go to state 23
+    T_LOGICAL_NOT       shift, and go to state 24
+    T_OPEN_PARENTHESES  shift, and go to state 25
+    T_NUMBER            shift, and go to state 26
+    T_VARIABLE          shift, and go to state 44
+
+    UNARY   go to state 45
+    FACTOR  go to state 37
+
+
+State 22
+
+   72 UNARY: T_INCREMENT . T_VARIABLE
+
+    T_VARIABLE  shift, and go to state 46
+
+
+State 23
+
+   74 UNARY: T_DECREMENT . T_VARIABLE
+
+    T_VARIABLE  shift, and go to state 47
+
+
+State 24
+
+   75 UNARY: T_LOGICAL_NOT . FACTOR
+
+    T_OPEN_PARENTHESES  shift, and go to state 25
+    T_NUMBER            shift, and go to state 26
+    T_VARIABLE          shift, and go to state 48
+
+    FACTOR  go to state 49
+
+
+State 25
+
+   77 FACTOR: T_OPEN_PARENTHESES . EXPR T_CLOSE_PARENTHESES
+
+    T_MINUS             shift, and go to state 21
+    T_INCREMENT         shift, and go to state 22
+    T_DECREMENT         shift, and go to state 23
+    T_LOGICAL_NOT       shift, and go to state 24
+    T_OPEN_PARENTHESES  shift, and go to state 25
+    T_NUMBER            shift, and go to state 26
+    T_VARIABLE          shift, and go to state 27
+
+    EXPR               go to state 50
+    ASSIGNMENT         go to state 29
+    LOGICAL_OR         go to state 30
+    LOGICAL_AND        go to state 31
+    COMPARE_EQUAL      go to state 32
+    COMPARE_DIFFERENT  go to state 33
+    ADD_SUBTRACT       go to state 34
+    TERM               go to state 35
+    UNARY              go to state 36
+    FACTOR             go to state 37
+
+
+State 26
+
+   76 FACTOR: T_NUMBER .
+
+    $default  reduce using rule 76 (FACTOR)
+
+
+State 27
+
+   46 ASSIGNMENT: T_VARIABLE . T_EQUAL EXPR
+   47           | T_VARIABLE . T_PLUS_EQUALS EXPR
+   48           | T_VARIABLE . T_MINUS_EQUALS EXPR
+   49           | T_VARIABLE . T_TIMES_EQUALS EXPR
+   50           | T_VARIABLE . T_DIVIDE_EQUALS EXPR
+   71 UNARY: T_VARIABLE . T_INCREMENT
+   73      | T_VARIABLE . T_DECREMENT
+   78 FACTOR: T_VARIABLE .
+   79       | T_VARIABLE . T_OPEN_PARENTHESES PARAMETERS_IN_LIST T_CLOSE_PARENTHESES
+   80       | T_VARIABLE . T_OPEN_PARENTHESES T_CLOSE_PARENTHESES
+
+    T_INCREMENT         shift, and go to state 51
+    T_DECREMENT         shift, and go to state 52
+    T_EQUAL             shift, and go to state 53
+    T_PLUS_EQUALS       shift, and go to state 54
+    T_MINUS_EQUALS      shift, and go to state 55
+    T_TIMES_EQUALS      shift, and go to state 56
+    T_DIVIDE_EQUALS     shift, and go to state 57
+    T_OPEN_PARENTHESES  shift, and go to state 58
+
+    $default  reduce using rule 78 (FACTOR)
+
+
+State 28
+
+   11 GLOBAL_VAR_DEF: T_VARIABLE T_EQUAL EXPR .
+
+    $default  reduce using rule 11 (GLOBAL_VAR_DEF)
+
+
+State 29
+
+   45 EXPR: ASSIGNMENT .
+
+    $default  reduce using rule 45 (EXPR)
+
+
+State 30
+
+   44 EXPR: LOGICAL_OR .
+
+    $default  reduce using rule 44 (EXPR)
+
+
+State 31
+
+   51 LOGICAL_OR: LOGICAL_AND . T_LOGICAL_OR LOGICAL_OR
+   52           | LOGICAL_AND .
+
+    T_LOGICAL_OR  shift, and go to state 59
+
+    $default  reduce using rule 52 (LOGICAL_OR)
+
+
+State 32
+
+   53 LOGICAL_AND: COMPARE_EQUAL . T_LOGICAL_AND LOGICAL_AND
+   54            | COMPARE_EQUAL .
+
+    T_LOGICAL_AND  shift, and go to state 60
+
+    $default  reduce using rule 54 (LOGICAL_AND)
+
+
+State 33
+
+   55 COMPARE_EQUAL: COMPARE_DIFFERENT . T_EQUAL_TO COMPARE_EQUAL
+   56              | COMPARE_DIFFERENT . T_NOT_EQUAL_TO COMPARE_EQUAL
+   57              | COMPARE_DIFFERENT .
+
+    T_EQUAL_TO      shift, and go to state 61
+    T_NOT_EQUAL_TO  shift, and go to state 62
+
+    $default  reduce using rule 57 (COMPARE_EQUAL)
+
+
+State 34
+
+   58 COMPARE_DIFFERENT: ADD_SUBTRACT . T_LT COMPARE_DIFFERENT
+   59                  | ADD_SUBTRACT . T_LTEQ COMPARE_DIFFERENT
+   60                  | ADD_SUBTRACT . T_GT COMPARE_DIFFERENT
+   61                  | ADD_SUBTRACT . T_GTEQ COMPARE_DIFFERENT
+   62                  | ADD_SUBTRACT .
+
+    T_LT    shift, and go to state 63
+    T_GT    shift, and go to state 64
+    T_LTEQ  shift, and go to state 65
+    T_GTEQ  shift, and go to state 66
+
+    $default  reduce using rule 62 (COMPARE_DIFFERENT)
+
+
+State 35
+
+   63 ADD_SUBTRACT: TERM . T_PLUS ADD_SUBTRACT
+   64             | TERM . T_MINUS ADD_SUBTRACT
+   65             | TERM .
+
+    T_PLUS   shift, and go to state 67
+    T_MINUS  shift, and go to state 68
+
+    $default  reduce using rule 65 (ADD_SUBTRACT)
+
+
+State 36
+
+   66 TERM: UNARY . T_TIMES TERM
+   67     | UNARY . T_DIVIDE TERM
+   68     | UNARY .
+
+    T_TIMES   shift, and go to state 69
+    T_DIVIDE  shift, and go to state 70
+
+    $default  reduce using rule 68 (TERM)
+
+
+State 37
+
+   70 UNARY: FACTOR .
+
+    $default  reduce using rule 70 (UNARY)
+
+
+State 38
+
+   12 FUNCTION_DEF: TYPE T_VARIABLE T_OPEN_PARENTHESES T_CLOSE_PARENTHESES . SCOPE
+   15 FUNCTION_DEC: TYPE T_VARIABLE T_OPEN_PARENTHESES T_CLOSE_PARENTHESES . T_SEMICOLON
+
+    T_OPEN_BRACES  shift, and go to state 71
+    T_SEMICOLON    shift, and go to state 72
+
+    SCOPE  go to state 73
+
+
+State 39
+
+   13 FUNCTION_DEF: TYPE T_VARIABLE T_OPEN_PARENTHESES PARAMETER_LIST . T_CLOSE_PARENTHESES SCOPE
+   16 FUNCTION_DEC: TYPE T_VARIABLE T_OPEN_PARENTHESES PARAMETER_LIST . T_CLOSE_PARENTHESES T_SEMICOLON
+
+    T_CLOSE_PARENTHESES  shift, and go to state 74
+
+
+State 40
+
+   17 PARAMETER_LIST: PARAMETER . T_COMMA PARAMETER_LIST
+   18               | PARAMETER .
+
+    T_COMMA  shift, and go to state 75
+
+    $default  reduce using rule 18 (PARAMETER_LIST)
+
+
+State 41
+
+   19 PARAMETER: TYPE . T_VARIABLE
+
+    T_VARIABLE  shift, and go to state 76
+
+
+State 42
+
+   10 GLOBAL_VAR_DEF: T_VARIABLE .
+   11               | T_VARIABLE . T_EQUAL EXPR
+
+    T_EQUAL  shift, and go to state 17
+
+    $default  reduce using rule 10 (GLOBAL_VAR_DEF)
+
+
+State 43
+
+    8 GLOBAL_VAR_DEF_LIST: GLOBAL_VAR_DEF T_COMMA GLOBAL_VAR_DEF_LIST .
+
+    $default  reduce using rule 8 (GLOBAL_VAR_DEF_LIST)
+
+
+State 44
+
+   71 UNARY: T_VARIABLE . T_INCREMENT
+   73      | T_VARIABLE . T_DECREMENT
+   78 FACTOR: T_VARIABLE .
+   79       | T_VARIABLE . T_OPEN_PARENTHESES PARAMETERS_IN_LIST T_CLOSE_PARENTHESES
+   80       | T_VARIABLE . T_OPEN_PARENTHESES T_CLOSE_PARENTHESES
+
+    T_INCREMENT         shift, and go to state 51
+    T_DECREMENT         shift, and go to state 52
+    T_OPEN_PARENTHESES  shift, and go to state 58
+
+    $default  reduce using rule 78 (FACTOR)
+
+
+State 45
+
+   69 UNARY: T_MINUS UNARY .
+
+    $default  reduce using rule 69 (UNARY)
+
+
+State 46
+
+   72 UNARY: T_INCREMENT T_VARIABLE .
+
+    $default  reduce using rule 72 (UNARY)
+
+
+State 47
+
+   74 UNARY: T_DECREMENT T_VARIABLE .
+
+    $default  reduce using rule 74 (UNARY)
+
+
+State 48
+
+   78 FACTOR: T_VARIABLE .
+   79       | T_VARIABLE . T_OPEN_PARENTHESES PARAMETERS_IN_LIST T_CLOSE_PARENTHESES
+   80       | T_VARIABLE . T_OPEN_PARENTHESES T_CLOSE_PARENTHESES
+
+    T_OPEN_PARENTHESES  shift, and go to state 58
+
+    $default  reduce using rule 78 (FACTOR)
+
+
+State 49
+
+   75 UNARY: T_LOGICAL_NOT FACTOR .
+
+    $default  reduce using rule 75 (UNARY)
+
+
+State 50
+
+   77 FACTOR: T_OPEN_PARENTHESES EXPR . T_CLOSE_PARENTHESES
+
+    T_CLOSE_PARENTHESES  shift, and go to state 77
+
+
+State 51
+
+   71 UNARY: T_VARIABLE T_INCREMENT .
+
+    $default  reduce using rule 71 (UNARY)
+
+
+State 52
+
+   73 UNARY: T_VARIABLE T_DECREMENT .
+
+    $default  reduce using rule 73 (UNARY)
+
+
+State 53
+
+   46 ASSIGNMENT: T_VARIABLE T_EQUAL . EXPR
+
+    T_MINUS             shift, and go to state 21
+    T_INCREMENT         shift, and go to state 22
+    T_DECREMENT         shift, and go to state 23
+    T_LOGICAL_NOT       shift, and go to state 24
+    T_OPEN_PARENTHESES  shift, and go to state 25
+    T_NUMBER            shift, and go to state 26
+    T_VARIABLE          shift, and go to state 27
+
+    EXPR               go to state 78
+    ASSIGNMENT         go to state 29
+    LOGICAL_OR         go to state 30
+    LOGICAL_AND        go to state 31
+    COMPARE_EQUAL      go to state 32
+    COMPARE_DIFFERENT  go to state 33
+    ADD_SUBTRACT       go to state 34
+    TERM               go to state 35
+    UNARY              go to state 36
+    FACTOR             go to state 37
+
+
+State 54
+
+   47 ASSIGNMENT: T_VARIABLE T_PLUS_EQUALS . EXPR
+
+    T_MINUS             shift, and go to state 21
+    T_INCREMENT         shift, and go to state 22
+    T_DECREMENT         shift, and go to state 23
+    T_LOGICAL_NOT       shift, and go to state 24
+    T_OPEN_PARENTHESES  shift, and go to state 25
+    T_NUMBER            shift, and go to state 26
+    T_VARIABLE          shift, and go to state 27
+
+    EXPR               go to state 79
+    ASSIGNMENT         go to state 29
+    LOGICAL_OR         go to state 30
+    LOGICAL_AND        go to state 31
+    COMPARE_EQUAL      go to state 32
+    COMPARE_DIFFERENT  go to state 33
+    ADD_SUBTRACT       go to state 34
+    TERM               go to state 35
+    UNARY              go to state 36
+    FACTOR             go to state 37
+
+
+State 55
+
+   48 ASSIGNMENT: T_VARIABLE T_MINUS_EQUALS . EXPR
+
+    T_MINUS             shift, and go to state 21
+    T_INCREMENT         shift, and go to state 22
+    T_DECREMENT         shift, and go to state 23
+    T_LOGICAL_NOT       shift, and go to state 24
+    T_OPEN_PARENTHESES  shift, and go to state 25
+    T_NUMBER            shift, and go to state 26
+    T_VARIABLE          shift, and go to state 27
+
+    EXPR               go to state 80
+    ASSIGNMENT         go to state 29
+    LOGICAL_OR         go to state 30
+    LOGICAL_AND        go to state 31
+    COMPARE_EQUAL      go to state 32
+    COMPARE_DIFFERENT  go to state 33
+    ADD_SUBTRACT       go to state 34
+    TERM               go to state 35
+    UNARY              go to state 36
+    FACTOR             go to state 37
+
+
+State 56
+
+   49 ASSIGNMENT: T_VARIABLE T_TIMES_EQUALS . EXPR
+
+    T_MINUS             shift, and go to state 21
+    T_INCREMENT         shift, and go to state 22
+    T_DECREMENT         shift, and go to state 23
+    T_LOGICAL_NOT       shift, and go to state 24
+    T_OPEN_PARENTHESES  shift, and go to state 25
+    T_NUMBER            shift, and go to state 26
+    T_VARIABLE          shift, and go to state 27
+
+    EXPR               go to state 81
+    ASSIGNMENT         go to state 29
+    LOGICAL_OR         go to state 30
+    LOGICAL_AND        go to state 31
+    COMPARE_EQUAL      go to state 32
+    COMPARE_DIFFERENT  go to state 33
+    ADD_SUBTRACT       go to state 34
+    TERM               go to state 35
+    UNARY              go to state 36
+    FACTOR             go to state 37
+
+
+State 57
+
+   50 ASSIGNMENT: T_VARIABLE T_DIVIDE_EQUALS . EXPR
+
+    T_MINUS             shift, and go to state 21
+    T_INCREMENT         shift, and go to state 22
+    T_DECREMENT         shift, and go to state 23
+    T_LOGICAL_NOT       shift, and go to state 24
+    T_OPEN_PARENTHESES  shift, and go to state 25
+    T_NUMBER            shift, and go to state 26
+    T_VARIABLE          shift, and go to state 27
+
+    EXPR               go to state 82
+    ASSIGNMENT         go to state 29
+    LOGICAL_OR         go to state 30
+    LOGICAL_AND        go to state 31
+    COMPARE_EQUAL      go to state 32
+    COMPARE_DIFFERENT  go to state 33
+    ADD_SUBTRACT       go to state 34
+    TERM               go to state 35
+    UNARY              go to state 36
+    FACTOR             go to state 37
+
+
+State 58
+
+   79 FACTOR: T_VARIABLE T_OPEN_PARENTHESES . PARAMETERS_IN_LIST T_CLOSE_PARENTHESES
+   80       | T_VARIABLE T_OPEN_PARENTHESES . T_CLOSE_PARENTHESES
+
+    T_MINUS              shift, and go to state 21
+    T_INCREMENT          shift, and go to state 22
+    T_DECREMENT          shift, and go to state 23
+    T_LOGICAL_NOT        shift, and go to state 24
+    T_OPEN_PARENTHESES   shift, and go to state 25
+    T_CLOSE_PARENTHESES  shift, and go to state 83
+    T_NUMBER             shift, and go to state 26
+    T_VARIABLE           shift, and go to state 27
+
+    PARAMETERS_IN_LIST  go to state 84
+    EXPR                go to state 85
+    ASSIGNMENT          go to state 29
+    LOGICAL_OR          go to state 30
+    LOGICAL_AND         go to state 31
+    COMPARE_EQUAL       go to state 32
+    COMPARE_DIFFERENT   go to state 33
+    ADD_SUBTRACT        go to state 34
+    TERM                go to state 35
+    UNARY               go to state 36
+    FACTOR              go to state 37
+
+
+State 59
+
+   51 LOGICAL_OR: LOGICAL_AND T_LOGICAL_OR . LOGICAL_OR
+
+    T_MINUS             shift, and go to state 21
+    T_INCREMENT         shift, and go to state 22
+    T_DECREMENT         shift, and go to state 23
+    T_LOGICAL_NOT       shift, and go to state 24
+    T_OPEN_PARENTHESES  shift, and go to state 25
+    T_NUMBER            shift, and go to state 26
+    T_VARIABLE          shift, and go to state 44
+
+    LOGICAL_OR         go to state 86
+    LOGICAL_AND        go to state 31
+    COMPARE_EQUAL      go to state 32
+    COMPARE_DIFFERENT  go to state 33
+    ADD_SUBTRACT       go to state 34
+    TERM               go to state 35
+    UNARY              go to state 36
+    FACTOR             go to state 37
+
+
+State 60
+
+   53 LOGICAL_AND: COMPARE_EQUAL T_LOGICAL_AND . LOGICAL_AND
+
+    T_MINUS             shift, and go to state 21
+    T_INCREMENT         shift, and go to state 22
+    T_DECREMENT         shift, and go to state 23
+    T_LOGICAL_NOT       shift, and go to state 24
+    T_OPEN_PARENTHESES  shift, and go to state 25
+    T_NUMBER            shift, and go to state 26
+    T_VARIABLE          shift, and go to state 44
+
+    LOGICAL_AND        go to state 87
+    COMPARE_EQUAL      go to state 32
+    COMPARE_DIFFERENT  go to state 33
+    ADD_SUBTRACT       go to state 34
+    TERM               go to state 35
+    UNARY              go to state 36
+    FACTOR             go to state 37
+
+
+State 61
+
+   55 COMPARE_EQUAL: COMPARE_DIFFERENT T_EQUAL_TO . COMPARE_EQUAL
+
+    T_MINUS             shift, and go to state 21
+    T_INCREMENT         shift, and go to state 22
+    T_DECREMENT         shift, and go to state 23
+    T_LOGICAL_NOT       shift, and go to state 24
+    T_OPEN_PARENTHESES  shift, and go to state 25
+    T_NUMBER            shift, and go to state 26
+    T_VARIABLE          shift, and go to state 44
+
+    COMPARE_EQUAL      go to state 88
+    COMPARE_DIFFERENT  go to state 33
+    ADD_SUBTRACT       go to state 34
+    TERM               go to state 35
+    UNARY              go to state 36
+    FACTOR             go to state 37
+
+
+State 62
+
+   56 COMPARE_EQUAL: COMPARE_DIFFERENT T_NOT_EQUAL_TO . COMPARE_EQUAL
+
+    T_MINUS             shift, and go to state 21
+    T_INCREMENT         shift, and go to state 22
+    T_DECREMENT         shift, and go to state 23
+    T_LOGICAL_NOT       shift, and go to state 24
+    T_OPEN_PARENTHESES  shift, and go to state 25
+    T_NUMBER            shift, and go to state 26
+    T_VARIABLE          shift, and go to state 44
+
+    COMPARE_EQUAL      go to state 89
+    COMPARE_DIFFERENT  go to state 33
+    ADD_SUBTRACT       go to state 34
+    TERM               go to state 35
+    UNARY              go to state 36
+    FACTOR             go to state 37
+
+
+State 63
+
+   58 COMPARE_DIFFERENT: ADD_SUBTRACT T_LT . COMPARE_DIFFERENT
+
+    T_MINUS             shift, and go to state 21
+    T_INCREMENT         shift, and go to state 22
+    T_DECREMENT         shift, and go to state 23
+    T_LOGICAL_NOT       shift, and go to state 24
+    T_OPEN_PARENTHESES  shift, and go to state 25
+    T_NUMBER            shift, and go to state 26
+    T_VARIABLE          shift, and go to state 44
+
+    COMPARE_DIFFERENT  go to state 90
+    ADD_SUBTRACT       go to state 34
+    TERM               go to state 35
+    UNARY              go to state 36
+    FACTOR             go to state 37
+
+
+State 64
+
+   60 COMPARE_DIFFERENT: ADD_SUBTRACT T_GT . COMPARE_DIFFERENT
+
+    T_MINUS             shift, and go to state 21
+    T_INCREMENT         shift, and go to state 22
+    T_DECREMENT         shift, and go to state 23
+    T_LOGICAL_NOT       shift, and go to state 24
+    T_OPEN_PARENTHESES  shift, and go to state 25
+    T_NUMBER            shift, and go to state 26
+    T_VARIABLE          shift, and go to state 44
+
+    COMPARE_DIFFERENT  go to state 91
+    ADD_SUBTRACT       go to state 34
+    TERM               go to state 35
+    UNARY              go to state 36
+    FACTOR             go to state 37
+
+
+State 65
+
+   59 COMPARE_DIFFERENT: ADD_SUBTRACT T_LTEQ . COMPARE_DIFFERENT
+
+    T_MINUS             shift, and go to state 21
+    T_INCREMENT         shift, and go to state 22
+    T_DECREMENT         shift, and go to state 23
+    T_LOGICAL_NOT       shift, and go to state 24
+    T_OPEN_PARENTHESES  shift, and go to state 25
+    T_NUMBER            shift, and go to state 26
+    T_VARIABLE          shift, and go to state 44
+
+    COMPARE_DIFFERENT  go to state 92
+    ADD_SUBTRACT       go to state 34
+    TERM               go to state 35
+    UNARY              go to state 36
+    FACTOR             go to state 37
+
+
+State 66
+
+   61 COMPARE_DIFFERENT: ADD_SUBTRACT T_GTEQ . COMPARE_DIFFERENT
+
+    T_MINUS             shift, and go to state 21
+    T_INCREMENT         shift, and go to state 22
+    T_DECREMENT         shift, and go to state 23
+    T_LOGICAL_NOT       shift, and go to state 24
+    T_OPEN_PARENTHESES  shift, and go to state 25
+    T_NUMBER            shift, and go to state 26
+    T_VARIABLE          shift, and go to state 44
+
+    COMPARE_DIFFERENT  go to state 93
+    ADD_SUBTRACT       go to state 34
+    TERM               go to state 35
+    UNARY              go to state 36
+    FACTOR             go to state 37
+
+
+State 67
+
+   63 ADD_SUBTRACT: TERM T_PLUS . ADD_SUBTRACT
+
+    T_MINUS             shift, and go to state 21
+    T_INCREMENT         shift, and go to state 22
+    T_DECREMENT         shift, and go to state 23
+    T_LOGICAL_NOT       shift, and go to state 24
+    T_OPEN_PARENTHESES  shift, and go to state 25
+    T_NUMBER            shift, and go to state 26
+    T_VARIABLE          shift, and go to state 44
+
+    ADD_SUBTRACT  go to state 94
+    TERM          go to state 35
+    UNARY         go to state 36
+    FACTOR        go to state 37
+
+
+State 68
+
+   64 ADD_SUBTRACT: TERM T_MINUS . ADD_SUBTRACT
+
+    T_MINUS             shift, and go to state 21
+    T_INCREMENT         shift, and go to state 22
+    T_DECREMENT         shift, and go to state 23
+    T_LOGICAL_NOT       shift, and go to state 24
+    T_OPEN_PARENTHESES  shift, and go to state 25
+    T_NUMBER            shift, and go to state 26
+    T_VARIABLE          shift, and go to state 44
+
+    ADD_SUBTRACT  go to state 95
+    TERM          go to state 35
+    UNARY         go to state 36
+    FACTOR        go to state 37
+
+
+State 69
+
+   66 TERM: UNARY T_TIMES . TERM
+
+    T_MINUS             shift, and go to state 21
+    T_INCREMENT         shift, and go to state 22
+    T_DECREMENT         shift, and go to state 23
+    T_LOGICAL_NOT       shift, and go to state 24
+    T_OPEN_PARENTHESES  shift, and go to state 25
+    T_NUMBER            shift, and go to state 26
+    T_VARIABLE          shift, and go to state 44
+
+    TERM    go to state 96
+    UNARY   go to state 36
+    FACTOR  go to state 37
+
+
+State 70
+
+   67 TERM: UNARY T_DIVIDE . TERM
+
+    T_MINUS             shift, and go to state 21
+    T_INCREMENT         shift, and go to state 22
+    T_DECREMENT         shift, and go to state 23
+    T_LOGICAL_NOT       shift, and go to state 24
+    T_OPEN_PARENTHESES  shift, and go to state 25
+    T_NUMBER            shift, and go to state 26
+    T_VARIABLE          shift, and go to state 44
+
+    TERM    go to state 97
+    UNARY   go to state 36
+    FACTOR  go to state 37
+
+
+State 71
+
+   20 SCOPE: T_OPEN_BRACES . SCOPE_BODY T_CLOSE_BRACES
+   21      | T_OPEN_BRACES . T_CLOSE_BRACES
+
+    T_INT               shift, and go to state 1
+    T_VOID              shift, and go to state 2
+    T_FLOAT             shift, and go to state 3
+    T_DOUBLE            shift, and go to state 4
+    T_RETURN            shift, and go to state 98
+    T_IF                shift, and go to state 99
+    T_WHILE             shift, and go to state 100
+    T_MINUS             shift, and go to state 21
+    T_INCREMENT         shift, and go to state 22
+    T_DECREMENT         shift, and go to state 23
+    T_LOGICAL_NOT       shift, and go to state 24
+    T_OPEN_PARENTHESES  shift, and go to state 25
+    T_CLOSE_BRACES      shift, and go to state 101
+    T_NUMBER            shift, and go to state 26
+    T_VARIABLE          shift, and go to state 27
+
+    SCOPE_BODY         go to state 102
+    STATEMENT          go to state 103
+    LOCAL_DECLARATION  go to state 104
+    TYPE               go to state 105
+    EXPR               go to state 106
+    ASSIGNMENT         go to state 29
+    LOGICAL_OR         go to state 30
+    LOGICAL_AND        go to state 31
+    COMPARE_EQUAL      go to state 32
+    COMPARE_DIFFERENT  go to state 33
+    ADD_SUBTRACT       go to state 34
+    TERM               go to state 35
+    UNARY              go to state 36
+    FACTOR             go to state 37
+
+
+State 72
+
+   15 FUNCTION_DEC: TYPE T_VARIABLE T_OPEN_PARENTHESES T_CLOSE_PARENTHESES T_SEMICOLON .
+
+    $default  reduce using rule 15 (FUNCTION_DEC)
+
+
+State 73
+
+   12 FUNCTION_DEF: TYPE T_VARIABLE T_OPEN_PARENTHESES T_CLOSE_PARENTHESES SCOPE .
+
+    $default  reduce using rule 12 (FUNCTION_DEF)
+
+
+State 74
+
+   13 FUNCTION_DEF: TYPE T_VARIABLE T_OPEN_PARENTHESES PARAMETER_LIST T_CLOSE_PARENTHESES . SCOPE
+   16 FUNCTION_DEC: TYPE T_VARIABLE T_OPEN_PARENTHESES PARAMETER_LIST T_CLOSE_PARENTHESES . T_SEMICOLON
+
+    T_OPEN_BRACES  shift, and go to state 71
+    T_SEMICOLON    shift, and go to state 107
+
+    SCOPE  go to state 108
+
+
+State 75
+
+   17 PARAMETER_LIST: PARAMETER T_COMMA . PARAMETER_LIST
+
+    T_INT     shift, and go to state 1
+    T_VOID    shift, and go to state 2
+    T_FLOAT   shift, and go to state 3
+    T_DOUBLE  shift, and go to state 4
+
+    PARAMETER_LIST  go to state 109
+    PARAMETER       go to state 40
+    TYPE            go to state 41
+
+
+State 76
+
+   19 PARAMETER: TYPE T_VARIABLE .
+
+    $default  reduce using rule 19 (PARAMETER)
+
+
+State 77
+
+   77 FACTOR: T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES .
+
+    $default  reduce using rule 77 (FACTOR)
+
+
+State 78
+
+   46 ASSIGNMENT: T_VARIABLE T_EQUAL EXPR .
+
+    $default  reduce using rule 46 (ASSIGNMENT)
+
+
+State 79
+
+   47 ASSIGNMENT: T_VARIABLE T_PLUS_EQUALS EXPR .
+
+    $default  reduce using rule 47 (ASSIGNMENT)
+
+
+State 80
+
+   48 ASSIGNMENT: T_VARIABLE T_MINUS_EQUALS EXPR .
+
+    $default  reduce using rule 48 (ASSIGNMENT)
+
+
+State 81
+
+   49 ASSIGNMENT: T_VARIABLE T_TIMES_EQUALS EXPR .
+
+    $default  reduce using rule 49 (ASSIGNMENT)
+
+
+State 82
+
+   50 ASSIGNMENT: T_VARIABLE T_DIVIDE_EQUALS EXPR .
+
+    $default  reduce using rule 50 (ASSIGNMENT)
+
+
+State 83
+
+   80 FACTOR: T_VARIABLE T_OPEN_PARENTHESES T_CLOSE_PARENTHESES .
+
+    $default  reduce using rule 80 (FACTOR)
+
+
+State 84
+
+   79 FACTOR: T_VARIABLE T_OPEN_PARENTHESES PARAMETERS_IN_LIST . T_CLOSE_PARENTHESES
+
+    T_CLOSE_PARENTHESES  shift, and go to state 110
+
+
+State 85
+
+   42 PARAMETERS_IN_LIST: EXPR . T_COMMA PARAMETERS_IN_LIST
+   43                   | EXPR .
+
+    T_COMMA  shift, and go to state 111
+
+    $default  reduce using rule 43 (PARAMETERS_IN_LIST)
+
+
+State 86
+
+   51 LOGICAL_OR: LOGICAL_AND T_LOGICAL_OR LOGICAL_OR .
+
+    $default  reduce using rule 51 (LOGICAL_OR)
+
+
+State 87
+
+   53 LOGICAL_AND: COMPARE_EQUAL T_LOGICAL_AND LOGICAL_AND .
+
+    $default  reduce using rule 53 (LOGICAL_AND)
+
+
+State 88
+
+   55 COMPARE_EQUAL: COMPARE_DIFFERENT T_EQUAL_TO COMPARE_EQUAL .
+
+    $default  reduce using rule 55 (COMPARE_EQUAL)
+
+
+State 89
+
+   56 COMPARE_EQUAL: COMPARE_DIFFERENT T_NOT_EQUAL_TO COMPARE_EQUAL .
+
+    $default  reduce using rule 56 (COMPARE_EQUAL)
+
+
+State 90
+
+   58 COMPARE_DIFFERENT: ADD_SUBTRACT T_LT COMPARE_DIFFERENT .
+
+    $default  reduce using rule 58 (COMPARE_DIFFERENT)
+
+
+State 91
+
+   60 COMPARE_DIFFERENT: ADD_SUBTRACT T_GT COMPARE_DIFFERENT .
+
+    $default  reduce using rule 60 (COMPARE_DIFFERENT)
+
+
+State 92
+
+   59 COMPARE_DIFFERENT: ADD_SUBTRACT T_LTEQ COMPARE_DIFFERENT .
+
+    $default  reduce using rule 59 (COMPARE_DIFFERENT)
+
+
+State 93
+
+   61 COMPARE_DIFFERENT: ADD_SUBTRACT T_GTEQ COMPARE_DIFFERENT .
+
+    $default  reduce using rule 61 (COMPARE_DIFFERENT)
+
+
+State 94
+
+   63 ADD_SUBTRACT: TERM T_PLUS ADD_SUBTRACT .
+
+    $default  reduce using rule 63 (ADD_SUBTRACT)
+
+
+State 95
+
+   64 ADD_SUBTRACT: TERM T_MINUS ADD_SUBTRACT .
+
+    $default  reduce using rule 64 (ADD_SUBTRACT)
+
+
+State 96
+
+   66 TERM: UNARY T_TIMES TERM .
+
+    $default  reduce using rule 66 (TERM)
+
+
+State 97
+
+   67 TERM: UNARY T_DIVIDE TERM .
+
+    $default  reduce using rule 67 (TERM)
+
+
+State 98
+
+   25 STATEMENT: T_RETURN . EXPR T_SEMICOLON
+   26          | T_RETURN . T_SEMICOLON
+
+    T_MINUS             shift, and go to state 21
+    T_INCREMENT         shift, and go to state 22
+    T_DECREMENT         shift, and go to state 23
+    T_LOGICAL_NOT       shift, and go to state 24
+    T_OPEN_PARENTHESES  shift, and go to state 25
+    T_SEMICOLON         shift, and go to state 112
+    T_NUMBER            shift, and go to state 26
+    T_VARIABLE          shift, and go to state 27
+
+    EXPR               go to state 113
+    ASSIGNMENT         go to state 29
+    LOGICAL_OR         go to state 30
+    LOGICAL_AND        go to state 31
+    COMPARE_EQUAL      go to state 32
+    COMPARE_DIFFERENT  go to state 33
+    ADD_SUBTRACT       go to state 34
+    TERM               go to state 35
+    UNARY              go to state 36
+    FACTOR             go to state 37
+
+
+State 99
+
+   29 STATEMENT: T_IF . T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE
+   30          | T_IF . T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE T_ELSE STATEMENT_SCOPE
+
+    T_OPEN_PARENTHESES  shift, and go to state 114
+
+
+State 100
+
+   28 STATEMENT: T_WHILE . T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE
+
+    T_OPEN_PARENTHESES  shift, and go to state 115
+
+
+State 101
+
+   21 SCOPE: T_OPEN_BRACES T_CLOSE_BRACES .
+
+    $default  reduce using rule 21 (SCOPE)
+
+
+State 102
+
+   20 SCOPE: T_OPEN_BRACES SCOPE_BODY . T_CLOSE_BRACES
+
+    T_CLOSE_BRACES  shift, and go to state 116
+
+
+State 103
+
+   22 SCOPE_BODY: STATEMENT . SCOPE_BODY
+   23           | STATEMENT .
+
+    T_INT               shift, and go to state 1
+    T_VOID              shift, and go to state 2
+    T_FLOAT             shift, and go to state 3
+    T_DOUBLE            shift, and go to state 4
+    T_RETURN            shift, and go to state 98
+    T_IF                shift, and go to state 99
+    T_WHILE             shift, and go to state 100
+    T_MINUS             shift, and go to state 21
+    T_INCREMENT         shift, and go to state 22
+    T_DECREMENT         shift, and go to state 23
+    T_LOGICAL_NOT       shift, and go to state 24
+    T_OPEN_PARENTHESES  shift, and go to state 25
+    T_NUMBER            shift, and go to state 26
+    T_VARIABLE          shift, and go to state 27
+
+    $default  reduce using rule 23 (SCOPE_BODY)
+
+    SCOPE_BODY         go to state 117
+    STATEMENT          go to state 103
+    LOCAL_DECLARATION  go to state 104
+    TYPE               go to state 105
+    EXPR               go to state 106
+    ASSIGNMENT         go to state 29
+    LOGICAL_OR         go to state 30
+    LOGICAL_AND        go to state 31
+    COMPARE_EQUAL      go to state 32
+    COMPARE_DIFFERENT  go to state 33
+    ADD_SUBTRACT       go to state 34
+    TERM               go to state 35
+    UNARY              go to state 36
+    FACTOR             go to state 37
+
+
+State 104
+
+   24 STATEMENT: LOCAL_DECLARATION . T_SEMICOLON
+
+    T_SEMICOLON  shift, and go to state 118
+
+
+State 105
+
+   33 LOCAL_DECLARATION: TYPE . LOCAL_VAR_DEF_LIST
+
+    T_VARIABLE  shift, and go to state 119
+
+    LOCAL_VAR_DEF_LIST  go to state 120
+    LOCAL_VAR_DEF       go to state 121
+
+
+State 106
+
+   27 STATEMENT: EXPR . T_SEMICOLON
+
+    T_SEMICOLON  shift, and go to state 122
+
+
+State 107
+
+   16 FUNCTION_DEC: TYPE T_VARIABLE T_OPEN_PARENTHESES PARAMETER_LIST T_CLOSE_PARENTHESES T_SEMICOLON .
+
+    $default  reduce using rule 16 (FUNCTION_DEC)
+
+
+State 108
+
+   13 FUNCTION_DEF: TYPE T_VARIABLE T_OPEN_PARENTHESES PARAMETER_LIST T_CLOSE_PARENTHESES SCOPE .
+
+    $default  reduce using rule 13 (FUNCTION_DEF)
+
+
+State 109
+
+   17 PARAMETER_LIST: PARAMETER T_COMMA PARAMETER_LIST .
+
+    $default  reduce using rule 17 (PARAMETER_LIST)
+
+
+State 110
+
+   79 FACTOR: T_VARIABLE T_OPEN_PARENTHESES PARAMETERS_IN_LIST T_CLOSE_PARENTHESES .
+
+    $default  reduce using rule 79 (FACTOR)
+
+
+State 111
+
+   42 PARAMETERS_IN_LIST: EXPR T_COMMA . PARAMETERS_IN_LIST
+
+    T_MINUS             shift, and go to state 21
+    T_INCREMENT         shift, and go to state 22
+    T_DECREMENT         shift, and go to state 23
+    T_LOGICAL_NOT       shift, and go to state 24
+    T_OPEN_PARENTHESES  shift, and go to state 25
+    T_NUMBER            shift, and go to state 26
+    T_VARIABLE          shift, and go to state 27
+
+    PARAMETERS_IN_LIST  go to state 123
+    EXPR                go to state 85
+    ASSIGNMENT          go to state 29
+    LOGICAL_OR          go to state 30
+    LOGICAL_AND         go to state 31
+    COMPARE_EQUAL       go to state 32
+    COMPARE_DIFFERENT   go to state 33
+    ADD_SUBTRACT        go to state 34
+    TERM                go to state 35
+    UNARY               go to state 36
+    FACTOR              go to state 37
+
+
+State 112
+
+   26 STATEMENT: T_RETURN T_SEMICOLON .
+
+    $default  reduce using rule 26 (STATEMENT)
+
+
+State 113
+
+   25 STATEMENT: T_RETURN EXPR . T_SEMICOLON
+
+    T_SEMICOLON  shift, and go to state 124
+
+
+State 114
+
+   29 STATEMENT: T_IF T_OPEN_PARENTHESES . EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE
+   30          | T_IF T_OPEN_PARENTHESES . EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE T_ELSE STATEMENT_SCOPE
+
+    T_MINUS             shift, and go to state 21
+    T_INCREMENT         shift, and go to state 22
+    T_DECREMENT         shift, and go to state 23
+    T_LOGICAL_NOT       shift, and go to state 24
+    T_OPEN_PARENTHESES  shift, and go to state 25
+    T_NUMBER            shift, and go to state 26
+    T_VARIABLE          shift, and go to state 27
+
+    EXPR               go to state 125
+    ASSIGNMENT         go to state 29
+    LOGICAL_OR         go to state 30
+    LOGICAL_AND        go to state 31
+    COMPARE_EQUAL      go to state 32
+    COMPARE_DIFFERENT  go to state 33
+    ADD_SUBTRACT       go to state 34
+    TERM               go to state 35
+    UNARY              go to state 36
+    FACTOR             go to state 37
+
+
+State 115
+
+   28 STATEMENT: T_WHILE T_OPEN_PARENTHESES . EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE
+
+    T_MINUS             shift, and go to state 21
+    T_INCREMENT         shift, and go to state 22
+    T_DECREMENT         shift, and go to state 23
+    T_LOGICAL_NOT       shift, and go to state 24
+    T_OPEN_PARENTHESES  shift, and go to state 25
+    T_NUMBER            shift, and go to state 26
+    T_VARIABLE          shift, and go to state 27
+
+    EXPR               go to state 126
+    ASSIGNMENT         go to state 29
+    LOGICAL_OR         go to state 30
+    LOGICAL_AND        go to state 31
+    COMPARE_EQUAL      go to state 32
+    COMPARE_DIFFERENT  go to state 33
+    ADD_SUBTRACT       go to state 34
+    TERM               go to state 35
+    UNARY              go to state 36
+    FACTOR             go to state 37
+
+
+State 116
+
+   20 SCOPE: T_OPEN_BRACES SCOPE_BODY T_CLOSE_BRACES .
+
+    $default  reduce using rule 20 (SCOPE)
+
+
+State 117
+
+   22 SCOPE_BODY: STATEMENT SCOPE_BODY .
+
+    $default  reduce using rule 22 (SCOPE_BODY)
+
+
+State 118
+
+   24 STATEMENT: LOCAL_DECLARATION T_SEMICOLON .
+
+    $default  reduce using rule 24 (STATEMENT)
+
+
+State 119
+
+   36 LOCAL_VAR_DEF: T_VARIABLE .
+   37              | T_VARIABLE . T_EQUAL EXPR
+
+    T_EQUAL  shift, and go to state 127
+
+    $default  reduce using rule 36 (LOCAL_VAR_DEF)
+
+
+State 120
+
+   33 LOCAL_DECLARATION: TYPE LOCAL_VAR_DEF_LIST .
+
+    $default  reduce using rule 33 (LOCAL_DECLARATION)
+
+
+State 121
+
+   34 LOCAL_VAR_DEF_LIST: LOCAL_VAR_DEF . T_COMMA LOCAL_VAR_DEF_LIST
+   35                   | LOCAL_VAR_DEF .
+
+    T_COMMA  shift, and go to state 128
+
+    $default  reduce using rule 35 (LOCAL_VAR_DEF_LIST)
+
+
+State 122
+
+   27 STATEMENT: EXPR T_SEMICOLON .
+
+    $default  reduce using rule 27 (STATEMENT)
+
+
+State 123
+
+   42 PARAMETERS_IN_LIST: EXPR T_COMMA PARAMETERS_IN_LIST .
+
+    $default  reduce using rule 42 (PARAMETERS_IN_LIST)
+
+
+State 124
+
+   25 STATEMENT: T_RETURN EXPR T_SEMICOLON .
+
+    $default  reduce using rule 25 (STATEMENT)
+
+
+State 125
+
+   29 STATEMENT: T_IF T_OPEN_PARENTHESES EXPR . T_CLOSE_PARENTHESES STATEMENT_SCOPE
+   30          | T_IF T_OPEN_PARENTHESES EXPR . T_CLOSE_PARENTHESES STATEMENT_SCOPE T_ELSE STATEMENT_SCOPE
+
+    T_CLOSE_PARENTHESES  shift, and go to state 129
+
+
+State 126
+
+   28 STATEMENT: T_WHILE T_OPEN_PARENTHESES EXPR . T_CLOSE_PARENTHESES STATEMENT_SCOPE
+
+    T_CLOSE_PARENTHESES  shift, and go to state 130
+
+
+State 127
+
+   37 LOCAL_VAR_DEF: T_VARIABLE T_EQUAL . EXPR
+
+    T_MINUS             shift, and go to state 21
+    T_INCREMENT         shift, and go to state 22
+    T_DECREMENT         shift, and go to state 23
+    T_LOGICAL_NOT       shift, and go to state 24
+    T_OPEN_PARENTHESES  shift, and go to state 25
+    T_NUMBER            shift, and go to state 26
+    T_VARIABLE          shift, and go to state 27
+
+    EXPR               go to state 131
+    ASSIGNMENT         go to state 29
+    LOGICAL_OR         go to state 30
+    LOGICAL_AND        go to state 31
+    COMPARE_EQUAL      go to state 32
+    COMPARE_DIFFERENT  go to state 33
+    ADD_SUBTRACT       go to state 34
+    TERM               go to state 35
+    UNARY              go to state 36
+    FACTOR             go to state 37
+
+
+State 128
+
+   34 LOCAL_VAR_DEF_LIST: LOCAL_VAR_DEF T_COMMA . LOCAL_VAR_DEF_LIST
+
+    T_VARIABLE  shift, and go to state 119
+
+    LOCAL_VAR_DEF_LIST  go to state 132
+    LOCAL_VAR_DEF       go to state 121
+
+
+State 129
+
+   29 STATEMENT: T_IF T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES . STATEMENT_SCOPE
+   30          | T_IF T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES . STATEMENT_SCOPE T_ELSE STATEMENT_SCOPE
+
+    T_INT               shift, and go to state 1
+    T_VOID              shift, and go to state 2
+    T_FLOAT             shift, and go to state 3
+    T_DOUBLE            shift, and go to state 4
+    T_RETURN            shift, and go to state 98
+    T_IF                shift, and go to state 99
+    T_WHILE             shift, and go to state 100
+    T_MINUS             shift, and go to state 21
+    T_INCREMENT         shift, and go to state 22
+    T_DECREMENT         shift, and go to state 23
+    T_LOGICAL_NOT       shift, and go to state 24
+    T_OPEN_PARENTHESES  shift, and go to state 25
+    T_OPEN_BRACES       shift, and go to state 71
+    T_NUMBER            shift, and go to state 26
+    T_VARIABLE          shift, and go to state 27
+
+    SCOPE              go to state 133
+    STATEMENT          go to state 134
+    STATEMENT_SCOPE    go to state 135
+    LOCAL_DECLARATION  go to state 104
+    TYPE               go to state 105
+    EXPR               go to state 106
+    ASSIGNMENT         go to state 29
+    LOGICAL_OR         go to state 30
+    LOGICAL_AND        go to state 31
+    COMPARE_EQUAL      go to state 32
+    COMPARE_DIFFERENT  go to state 33
+    ADD_SUBTRACT       go to state 34
+    TERM               go to state 35
+    UNARY              go to state 36
+    FACTOR             go to state 37
+
+
+State 130
+
+   28 STATEMENT: T_WHILE T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES . STATEMENT_SCOPE
+
+    T_INT               shift, and go to state 1
+    T_VOID              shift, and go to state 2
+    T_FLOAT             shift, and go to state 3
+    T_DOUBLE            shift, and go to state 4
+    T_RETURN            shift, and go to state 98
+    T_IF                shift, and go to state 99
+    T_WHILE             shift, and go to state 100
+    T_MINUS             shift, and go to state 21
+    T_INCREMENT         shift, and go to state 22
+    T_DECREMENT         shift, and go to state 23
+    T_LOGICAL_NOT       shift, and go to state 24
+    T_OPEN_PARENTHESES  shift, and go to state 25
+    T_OPEN_BRACES       shift, and go to state 71
+    T_NUMBER            shift, and go to state 26
+    T_VARIABLE          shift, and go to state 27
+
+    SCOPE              go to state 133
+    STATEMENT          go to state 134
+    STATEMENT_SCOPE    go to state 136
+    LOCAL_DECLARATION  go to state 104
+    TYPE               go to state 105
+    EXPR               go to state 106
+    ASSIGNMENT         go to state 29
+    LOGICAL_OR         go to state 30
+    LOGICAL_AND        go to state 31
+    COMPARE_EQUAL      go to state 32
+    COMPARE_DIFFERENT  go to state 33
+    ADD_SUBTRACT       go to state 34
+    TERM               go to state 35
+    UNARY              go to state 36
+    FACTOR             go to state 37
+
+
+State 131
+
+   37 LOCAL_VAR_DEF: T_VARIABLE T_EQUAL EXPR .
+
+    $default  reduce using rule 37 (LOCAL_VAR_DEF)
+
+
+State 132
+
+   34 LOCAL_VAR_DEF_LIST: LOCAL_VAR_DEF T_COMMA LOCAL_VAR_DEF_LIST .
+
+    $default  reduce using rule 34 (LOCAL_VAR_DEF_LIST)
+
+
+State 133
+
+   32 STATEMENT_SCOPE: SCOPE .
+
+    $default  reduce using rule 32 (STATEMENT_SCOPE)
+
+
+State 134
+
+   31 STATEMENT_SCOPE: STATEMENT .
+
+    $default  reduce using rule 31 (STATEMENT_SCOPE)
+
+
+State 135
+
+   29 STATEMENT: T_IF T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE .
+   30          | T_IF T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE . T_ELSE STATEMENT_SCOPE
+
+    T_ELSE  shift, and go to state 137
+
+    T_ELSE    [reduce using rule 29 (STATEMENT)]
+    $default  reduce using rule 29 (STATEMENT)
+
+
+State 136
+
+   28 STATEMENT: T_WHILE T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE .
+
+    $default  reduce using rule 28 (STATEMENT)
+
+
+State 137
+
+   30 STATEMENT: T_IF T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE T_ELSE . STATEMENT_SCOPE
+
+    T_INT               shift, and go to state 1
+    T_VOID              shift, and go to state 2
+    T_FLOAT             shift, and go to state 3
+    T_DOUBLE            shift, and go to state 4
+    T_RETURN            shift, and go to state 98
+    T_IF                shift, and go to state 99
+    T_WHILE             shift, and go to state 100
+    T_MINUS             shift, and go to state 21
+    T_INCREMENT         shift, and go to state 22
+    T_DECREMENT         shift, and go to state 23
+    T_LOGICAL_NOT       shift, and go to state 24
+    T_OPEN_PARENTHESES  shift, and go to state 25
+    T_OPEN_BRACES       shift, and go to state 71
+    T_NUMBER            shift, and go to state 26
+    T_VARIABLE          shift, and go to state 27
+
+    SCOPE              go to state 133
+    STATEMENT          go to state 134
+    STATEMENT_SCOPE    go to state 138
+    LOCAL_DECLARATION  go to state 104
+    TYPE               go to state 105
+    EXPR               go to state 106
+    ASSIGNMENT         go to state 29
+    LOGICAL_OR         go to state 30
+    LOGICAL_AND        go to state 31
+    COMPARE_EQUAL      go to state 32
+    COMPARE_DIFFERENT  go to state 33
+    ADD_SUBTRACT       go to state 34
+    TERM               go to state 35
+    UNARY              go to state 36
+    FACTOR             go to state 37
+
+
+State 138
+
+   30 STATEMENT: T_IF T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE T_ELSE STATEMENT_SCOPE .
+
+    $default  reduce using rule 30 (STATEMENT)

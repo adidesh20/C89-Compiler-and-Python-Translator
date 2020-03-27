@@ -160,10 +160,97 @@ public:
             out << "\tret=main()" << std::endl;
             out << "\tsys.exit(ret)" << std::endl;
         }
-        
+
+
+    }
+
+
+    virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override
+    {
+        function_def_num++;
+        function_def_queue.push_back(functionIdentifier);
+        if (functionIdentifier == "main") {
+            function_call_queue.insert(function_call_queue.begin(),"main");
+        }
        
+        dst<<"\t"<<".text"<<std::endl;
+        dst<<std::endl;
+        dst<<"#----------FUNCTION "<<functionIdentifier<<"----------"<<std::endl;
+    
+    
+        dst<<"\t"<<".globl"<<"\t"<<functionIdentifier<<std::endl;
+        
+        dst<<"\t"<<".ent"<<"\t"<<functionIdentifier<<std::endl;
+        dst<<"\t"<<".type"<<"\t"<<functionIdentifier<<", @function"<<std::endl;
 
+        dst<<functionIdentifier<<":"<<std::endl;
+        //space allocated in stack
+        dst<<"#ALLOCATING STACK"<<std::endl;
+        
+        if (functionImplementation != NULL)
+        {
+            std::ostream tmp(0);
+            functionImplementation->print(tmp);
+           
+        }
+        int stack_end = (stackVarCount*4) +78;
+        dst<<"\t"<<"addiu"<<"\t"<<"$sp, $sp,-"<<stack_end<<std::endl; //restoring sp
+        dst<<"\t"<<"sw"<<"\t"<<"$ra,"<<stack_end-4<<"($sp)"<<std::endl; //store return address at end of stack frame
+        dst<<"\t"<<"sw"<<"\t"<<"$fp,"<<stack_end-8<<"($sp)"<<std::endl; //old fp = top of stack address - 4
+        dst<<"\t"<<"move"<<"\t"<<"$fp, $sp"<<std::endl;
 
+        
+        if(parameters != NULL){
+            mySystem.resetArgRegs();
+            
+            for(int i =4; i<8; i++){
+                dst<<"\t"<<"sw"<<"\t"<<"$"<<mySystem.getRegName(i)<<", "<<stack_end+(4*i)<<"($fp)"<<"\t"<<"#storing param argument register"<<std::endl;
+            }
+           
+            parameters->toMips(dst, mySystem, destReg);
+        }
+
+        if(functionImplementation != NULL){
+            functionImplementation->toMips(dst, mySystem, destReg);
+        }
+        else if(functionIdentifier == "main" && functionImplementation == NULL){
+            dst<<"\t"<<"move"<<"\t"<<"$v0, $0"<<std::endl; //empty main should return zero in $2
+        }
+        else{
+            dst<<"\t"<<"nop"<<"\t"<<std::endl; //if a function is declared as empty
+        }
+
+        
+        dst<<functionIdentifier<<"_function_end_"<<function_def_num<<":"<<std::endl;
+        dst<<"#DEALLOCATING STACK"<<std::endl;
+
+        if(parameters != NULL){
+            //int stack_end = (var_count*4) +parameter_count+12+50;
+            int argreg = 4;
+            for(int i =0; i<4; i++){
+                dst<<"\t"<<"lw"<<"\t"<<"$"<<argreg++<<", "<<stack_end+(4*i)<<"($fp)"<<"\t"<<"#loading param argument register"<<std::endl;
+                dst<<"\t"<<"nop"<<std::endl;
+            }
+        }
+
+        dst<<"\t"<<"move"<<"\t"<<"$sp, $fp"<<std::endl; //deallocating stack
+        dst<<"\t"<<"lw"<<"\t"<<"$ra,"<<stack_end-4<<"($sp)"<<std::endl;
+        dst<<"\t"<<"nop"<<std::endl;
+        dst<<"\t"<<"lw"<<"\t"<<"$fp,"<<stack_end-8<<"($sp)"<<std::endl; //old fp = top of stack address - 4
+        dst<<"\t"<<"nop"<<std::endl;
+        dst<<"\t"<<"addiu"<<"\t"<<"$sp, $sp,"<<stack_end<<std::endl; //restoring sp
+        //returns 0 if no return defined for main
+        if (functionIdentifier == "main" && main_returned == false) {
+            dst<<"\t"<<"li"<<"\t"<<"$2"<<", 0"<<"\t#No return defined, return 0 by default"<<std::endl;
+        }
+        dst<<"\t"<<"j"<<"\t"<<"$ra"<<std::endl;
+        dst<<"\t"<<"nop"<<std::endl;
+        dst<<std::endl;
+        
+
+        dst<<"\t"<<".end"<<"\t" <<functionIdentifier<<std::endl;
+        function_def_queue.pop_back();
+        stackVarCount=0;
         
     }
 };
