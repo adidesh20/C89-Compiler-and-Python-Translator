@@ -122,6 +122,19 @@ public:
         }
     }
 
+    virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override
+    {
+        if(return_val != NULL)
+        {
+            return_val->toMips(dst, mySystem, destReg);
+        }
+        dst << "\t" << "b " << function_def_queue.back() << "_function_end_" << function_def_num << "\t #return" << std::endl;
+        if(function_def_queue.back() == "main")
+        {
+            main_returned = true;
+        }
+    }
+
     
 };
 
