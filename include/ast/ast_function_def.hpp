@@ -29,7 +29,7 @@ public:
         Rest_of_program=_Rest_of_program;
     
         
-        function_call_num = 0;
+        functionCallNum = 0;
         main_returned = false;
     }
 

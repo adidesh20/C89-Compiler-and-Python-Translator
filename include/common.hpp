@@ -10,7 +10,7 @@
 
 static std::vector<std::string> global_variables_names;
 static int currentIndent = 0;
-static int function_call_num;
+static int functionCallNum;
 static int main_returned;
 
 static unsigned int localVarCount;
