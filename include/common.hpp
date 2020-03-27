@@ -19,7 +19,8 @@ static unsigned int globalVarCount;
 static bool isGlobal;
 static int stackVarCount;
 static int paramCount = 16;
-
+static std::vector<std::string> function_def_queue;
+static int function_def_num;
 
 
 static int InfunctionVarCount;
@@ -27,7 +28,6 @@ static int InfunctionVarCount;
 static std::vector<std::string> function_call_queue;
 static std::vector<std::string> loop_ends;
 
-static int function_call_num;
 
 static int loop_count;
 static int if_level;
