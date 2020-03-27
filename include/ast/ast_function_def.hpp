@@ -186,7 +186,7 @@ public:
         dst<<functionIdentifier<<":"<<std::endl;
         //space allocated in stack
         dst<<"#ALLOCATING STACK"<<std::endl;
-        // var_count = localvar_counter + globalvar_counter;
+        
         if (functionImplementation != NULL)
         {
             std::ostream tmp(0);
@@ -250,7 +250,7 @@ public:
 
         dst<<"\t"<<".end"<<"\t" <<functionIdentifier<<std::endl;
         function_def_queue.pop_back();
-
+        stackVarCount=0;
         
     }
 };

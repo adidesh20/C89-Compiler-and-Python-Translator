@@ -189,6 +189,12 @@ public:
         dst << std::endl;
     }
 
+     virtual void toMips (std::ostream &dst, System &mySystem, int destReg) const override {
+        
+        VarDefList->toMips(dst, mySystem, destReg);
+        dst << std::endl;
+    }
+
  
 
 };
@@ -230,6 +236,15 @@ public:
         }
     }
 
+     virtual void toMips (std::ostream &dst, System &mySystem, int destReg) const override {
+        Var->toMips(dst, mySystem, destReg);
+        if (Rest_of_Vars != NULL) {
+            
+            Rest_of_Vars->toMips(dst, mySystem, destReg);
+        }
+     }    
+
+
  
 
 };
@@ -251,7 +266,9 @@ public:
     }
 
     virtual void print(std::ostream &out) const override
-    {
+    {   
+
+        stackVarCount++;
         out <<" "<< varIdentifier;
         if(varValue != NULL)
         {
@@ -273,6 +290,26 @@ public:
            varValue->toPython(out);
         }
         
+    }
+
+    virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override
+    {
+        // dst << "#local variable" << std::endl;
+        localVarCount++;
+        mySystem.NewLocalVar(varIdentifier+std::to_string(currentIndent));
+        if (varValue != NULL)
+        {
+            varValue->toMips(dst, mySystem, destReg);
+            mySystem.store_var_val(varIdentifier, varValue->evaluate(mySystem) );
+        }
+        else
+        {
+            dst << "\t"<<"li"<< "\t"<< "$"<<destReg<<", 0" << std::endl;
+        }
+        dst<<"#local var counter = "<<localVarCount<<std::endl;
+        dst << "\t"<<"sw"<< "\t"<< "$"<<destReg<<", "<<(localVarCount-1)*4+16<< "($fp)";
+        dst<<"\t#Storing variable "<<varIdentifier<< std::endl;
+        // localvar_counter--;
     }
 
     ~LocalVariable_Definition(){}

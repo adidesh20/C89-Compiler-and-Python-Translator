@@ -39,7 +39,12 @@ public:
 
     virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override
     {
-        
+        dst << std::endl;
+        currentIndent++;
+        if (Body != NULL)
+            Body->toMips(dst,mySystem, destReg);
+        currentIndent--;
+      
 	}
 
    
@@ -74,6 +79,17 @@ public:
         dst<<std::endl;
         if (Rest_of_statements != NULL) {
             Rest_of_statements->toPython(dst);
+        }
+    }
+
+    virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override {
+        for (int i = 0; i < currentIndent; i++) {
+            dst << "\t";
+        }
+        Singular_statement->toMips(dst, mySystem, destReg);
+        dst<<std::endl;
+        if (Rest_of_statements != NULL) {
+            Rest_of_statements->toMips(dst, mySystem, destReg);
         }
     }
 
