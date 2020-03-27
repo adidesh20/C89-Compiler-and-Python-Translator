@@ -22,12 +22,12 @@ static int paramCount = 16;
 
 
 
-static int InfunctionVarCount;
+static int inFunctionVarCount;
 
 static std::vector<std::string> function_call_queue;
 static std::vector<std::string> loop_ends;
 
-static int function_call_num;
+static int functionCallNum;
 
 static int loop_count;
 static int if_level;
