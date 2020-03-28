@@ -20,7 +20,7 @@ public:
     {
         for(int i = currentScope; i >= 0; i--)
         {
-            std::string key =  identifier = std::to_string(currentScope);
+            std::string key =  identifier + std::to_string(i);
             if(localvariables.find(key) != localvariables.end())
             {
                 return (((localvariables.find(key))->second-1)*4 + 16); //returning memory address

@@ -413,7 +413,6 @@ public:
     virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override
     {
         
-        
         std::vector<int> scratchRegs = mySystem.temp_freeRegLookup();
         mySystem.lockReg(scratchRegs[0]);
 
@@ -489,11 +488,10 @@ public:
         return (vl < vr);
     }
 
-    virtual void toMips(std::ostream &dst, System &mySystem, int destReg)
+    virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override
     {
         std::vector<int> scratchRegs = mySystem.temp_freeRegLookup();
         mySystem.lockReg(scratchRegs[0]);
-
         getLeft()->toMips(dst, mySystem, destReg);
         getRight()->toMips(dst, mySystem, scratchRegs[0]);
 
@@ -524,7 +522,7 @@ public:
         return (vl <= vr);
     }
 
-    virtual void toMips(std::ostream &dst, System &mySystem, int destReg)
+    virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override
     {
         std::vector<int> scratchRegs = mySystem.temp_freeRegLookup();
         mySystem.lockReg(scratchRegs[0]);
@@ -560,7 +558,7 @@ public:
         return (vl > vr);
     }
 
-    virtual void toMips(std::ostream &dst, System &mySystem, int destReg)
+    virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override
     {
         std::vector<int> scratchRegs = mySystem.temp_freeRegLookup();
         mySystem.lockReg(scratchRegs[0]);
@@ -597,7 +595,7 @@ public:
         return (vl >= vr);
     }
 
-    virtual void toMips(std::ostream &dst, System &mySystem, int destReg)
+    virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override
     {
         std::vector<int> scratchRegs = mySystem.temp_freeRegLookup();
         mySystem.lockReg(scratchRegs[0]);
@@ -661,7 +659,7 @@ public:
         return (vl && vr);
     }
 
-    virtual void toMips(std::ostream &dst, System &mySystem, int destReg)
+    virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override
     {
         std::vector<int> scratchRegs = mySystem.temp_freeRegLookup();
         mySystem.lockReg(scratchRegs[0]);
@@ -669,7 +667,7 @@ public:
         getLeft()->toMips(dst, mySystem, destReg);
         getRight()->toMips(dst, mySystem, scratchRegs[0]);
 
-        dst << "\t" << "or"<< "\t" << "$" << mySystem.getRegName(destReg) << ", $" << mySystem.getRegName(destReg) << ", $" << mySystem.getRegName(scratchRegs[0]) << "\t\t #logical or" << std::endl;
+        dst << "\t" << "and"<< "\t" << "$" << mySystem.getRegName(destReg) << ", $" << mySystem.getRegName(destReg) << ", $" << mySystem.getRegName(scratchRegs[0]) << "\t\t #logical or" << std::endl;
         
         mySystem.unlockReg(scratchRegs[0]); 
     }

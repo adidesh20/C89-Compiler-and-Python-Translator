@@ -50,6 +50,7 @@ public:
         int varAddress = mySystem.systemMemory.variableSearch(id, currentIndent);
         int stackSize = (stackVarCount*4) + paramCount + 62;
         std::vector<int> argumentRegs = mySystem.args_freeRegLookup();
+        std::cout << "\t #varAddress = " << varAddress << std::endl;
 
         if(varAddress > 0) //Local Variable defined in a scope
         {
@@ -65,7 +66,7 @@ public:
         }
         else //Global Variable
         {
-            dst << "\t" << "lui" << "$" << mySystem.getRegName(destReg) << ", %hi(" << id << ")";
+            dst << "\t" << "lui" << "\t" << "$" << mySystem.getRegName(destReg) << ", %hi(" << id << ")";
             dst << "\t\t #loading global variable: " << getId() << std::endl;
             dst << "\t" << "lw" << "\t" << "$" << mySystem.getRegName(destReg) << ", %lo(" << getId() << ")($" << mySystem.getRegName(destReg) << ")" << std::endl;
             dst << "\t" << "nop" << std::endl;

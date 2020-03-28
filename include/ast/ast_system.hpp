@@ -86,7 +86,7 @@ public:
     {
         if(reg > 3 && reg < 26)
         {
-            std::cout << "\t\t\t\t #unlock $" << getRegName(reg) << std::endl;
+            std::cout << "#unlock $" << getRegName(reg) << std::endl;
             registerStatus[reg] = true;
         }
         else
@@ -100,7 +100,7 @@ public:
     {
         if(reg > 3 && reg < 26)
         {
-            std::cout << "\t\t\t\t #lock $" << getRegName(reg) << std::endl;
+            std::cout << "#lock $" << getRegName(reg) << std::endl;
             registerStatus[reg] = false;
         }
         else

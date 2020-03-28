@@ -25,6 +25,14 @@ int main(int argc, char* argv[])
         ast->toPython(std::cout);
         std::cout << std::endl;
     }
+    else if(option == "-S")
+    {
+        std::cout << "Compiling " << argv[2] << " to MIPS..." << std::endl;
+        freopen(argv[4], "w", stdout);
+        System *mySystem = new System;
+        ast->toMips(std::cout, *mySystem, 2);
+        std::cout << std::endl;
+    }
     else
     {
         std::cout << "Invalid input" << std::endl;

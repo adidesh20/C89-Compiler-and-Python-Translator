@@ -297,6 +297,7 @@ public:
         // dst << "#local variable" << std::endl;
         localVarCount++;
         mySystem.NewLocalVar(varIdentifier+std::to_string(currentIndent));
+        
         if (varValue != NULL)
         {
             varValue->toMips(dst, mySystem, destReg);
@@ -304,12 +305,12 @@ public:
         }
         else
         {
-            dst << "\t"<<"li"<< "\t"<< "$"<<destReg<<", 0" << std::endl;
+            dst << "\t"<<"li"<< "\t"<< "$"<<mySystem.getRegName(destReg)<<", 0" << std::endl;
         }
         dst<<"#local var counter = "<<localVarCount<<std::endl;
         dst << "\t"<<"sw"<< "\t"<< "$"<<mySystem.getRegName(destReg)<<", "<<(localVarCount-1)*4+16<< "($fp)";
         dst<<"\t#Storing variable "<<varIdentifier<< std::endl;
-        // localvar_counter--;
+        
     }
 
     ~LocalVariable_Definition(){}

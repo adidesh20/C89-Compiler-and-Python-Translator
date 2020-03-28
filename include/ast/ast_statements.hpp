@@ -41,10 +41,11 @@ public:
     {
         dst << std::endl;
         currentIndent++;
+        dst << "#Current Scope Level = " << currentIndent << std::endl;
         if (Body != NULL)
             Body->toMips(dst,mySystem, destReg);
         currentIndent--;
-      
+        dst << "#Current Scope Level = " << currentIndent << std::endl;
 	}
 
    
@@ -83,9 +84,6 @@ public:
     }
 
     virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override {
-        for (int i = 0; i < currentIndent; i++) {
-            dst << "\t";
-        }
         Singular_statement->toMips(dst, mySystem, destReg);
         dst<<std::endl;
         if (Rest_of_statements != NULL) {
@@ -294,14 +292,14 @@ public:
     }
 
     virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override {
-        std::vector<int> FreeReg = mySystem.all_freeRegLookup(8, 15);
-        mySystem.lockReg(FreeReg[0]);
+        std::vector<int> scratchRegs = mySystem.temp_freeRegLookup();
+        mySystem.lockReg(scratchRegs[0]);
         int current_if_level = if_level++;
-        Condition->toMips(dst, mySystem, FreeReg[0]);
-
-        dst << "\t"<<"beq"<<"\t" << "$0, $" << FreeReg[0] << ", else_"<<current_if_level << std::endl; //$else condition yet to be filled
+        
+        Condition->toMips(dst, mySystem, scratchRegs[0]);
+        dst << "\t"<<"beq"<<"\t" << "$zero, $" << mySystem.getRegName(scratchRegs[0]) << ", else_"<<current_if_level << std::endl; //$else condition yet to be filled
 		dst << "\t"<<"nop"<<"\t" << std::endl;
-		mySystem.unlockReg(FreeReg[0]);
+		mySystem.unlockReg(scratchRegs[0]);
 
         if(IfBody != NULL){
             IfBody->toMips(dst, mySystem, destReg);
