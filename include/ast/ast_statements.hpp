@@ -318,6 +318,76 @@ public:
     }
 };
 
+class ForStatement: public AST_Node {
+private:
+    NodePtr Init;
+    NodePtr Condition;
+    NodePtr Increment;
+    NodePtr Body;
+
+public:
+    ~ForStatement() {}
+
+    ForStatement (NodePtr _Init, NodePtr _Condition, NodePtr _Increment, NodePtr _Body)
+     : Init(_Init), Condition(_Condition) , Increment(_Increment), Body(_Body) {}
+
+    virtual void print (std::ostream &dst) const override {
+        dst << "for(";
+        Init->print(dst);
+        Condition->print(dst);
+        dst<<";";
+        Increment->print(dst);
+        dst<<")"<<std::endl;
+        dst<<"\t";
+        Body->print(dst);        
+    }
+
+    virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override {
+
+        loop_for = true;
+
+        if(loop_for == true){
+            //use a free register for condition check
+            // std::vector<int> freeRegs = mySystem.FindFreeConstantRegs();
+            // mySystem.set_used(freeRegs[0]);
+
+            loop_for = true;
+            if (Init != NULL)
+                Init->toMips(dst, mySystem, destReg);
+            dst<<"for_loop_"<<loop_count<<"_begin:"<<"\t#Begin for loop"<<std::endl;
+            
+            //evalute the condition into the free register
+            if (Condition != NULL)
+                Condition->toMips(dst, mySystem, destReg);
+            //branch to end if condition evaluates false (0)
+            dst<<"\t"<<"beq"<<"\t"<<"$0, $"<<destReg<<", end_loop_"<<loop_count<<std::endl;
+            dst<<"\t"<<"nop"<<std::endl;
+
+            std::string current_loop_end = "end_loop_" + std::to_string(loop_count);
+            loop_ends.push_back(current_loop_end);
+            if (Body != NULL)
+                Body->toMips(dst, mySystem, destReg);
+            // loop_count--;
+
+            dst<<"for_increment_"<<loop_count<<":"<<"\t#Increment stage of for loop"<<std::endl;
+            if (Increment != NULL)
+                Increment->toMips(dst, mySystem, destReg);
+
+            //branch back to top
+            dst<<"\t"<<"b"<<"\t"<<"for_loop_"<<loop_count<<"_begin"<<std::endl;
+            dst<<"\t"<<"nop"<<std::endl;
+            //end of loop
+            dst<<"end_loop_"<<loop_count<<":"<<"\t#End for loop"<<std::endl;
+            loop_ends.pop_back();
+            // mySystem.set_unused(freeRegs[0]);
+            loop_count++;
+        }
+
+        loop_for = false;
+    }
+};
+
+
 
 
 

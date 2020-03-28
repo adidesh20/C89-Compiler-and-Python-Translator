@@ -19,6 +19,7 @@
 "if"            {yylval.string = new std::string(yytext); return T_IF;}
 "else"          {yylval.string = new std::string(yytext); return T_ELSE;}
 "while"         {yylval.string = new std::string(yytext); return T_WHILE;}
+"for"           {yylval.string = new std::string(yytext); return T_FOR;}
 
  /* ==========================================IDENTIFIER=========================================== */
 

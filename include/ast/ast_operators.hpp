@@ -24,7 +24,7 @@ public:
     }
 
     virtual const char *getOpcode() const =0;
-    virtual const char *getOpcodePython() const =0;
+    virtual const char *getOpcodePython() const {};
 
     NodePtr getLeft() const
     { return left; }
