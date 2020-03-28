@@ -12,8 +12,6 @@
 extern std::vector<std::string> global_variables_names;
 
 
-extern int function_call_num;
-extern int main_returned;
 
 class Program : public AST_Node
 {
@@ -286,6 +284,14 @@ public:
         }
     }
 
+    virtual void toMips (std::ostream &dst, System &mySystem, int destReg) const override {
+        Parameter->toMips(dst, mySystem, destReg);
+        if (Rest_of_Parameters != NULL) {
+            Rest_of_Parameters->toMips(dst, mySystem, destReg);
+        }
+    }
+
+
  
 
 };
@@ -310,6 +316,13 @@ public:
     virtual void toPython (std::ostream &out) const override {
         out<< Var;
     }
+
+    virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override
+    {
+        mySystem.pushParameter(Var);
+
+        
+    } 
 
    
 };
