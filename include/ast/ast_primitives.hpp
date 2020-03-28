@@ -48,7 +48,7 @@ public:
     {   
        
         int varAddress = mySystem.systemMemory.variableSearch(id, currentIndent);
-        int stackTop = (stackVarCount*4) + paramCount + 62;
+        int stackSize = (stackVarCount*4) + paramCount + 62;
         std::vector<int> argumentRegs = mySystem.args_freeRegLookup();
 
         if(varAddress > 0) //Local Variable defined in a scope
@@ -59,7 +59,7 @@ public:
         }
         else if(mySystem.lookupParameter(id) > -1) //Function Parameter (use stack)
         {
-            dst << "\t" << "lw" << "\t" << "$" << mySystem.getRegName(destReg) << ", " << ((mySystem.lookupParameter(id))*4 + stackTop) << "($fp)";
+            dst << "\t" << "lw" << "\t" << "$" << mySystem.getRegName(destReg) << ", " << ((mySystem.lookupParameter(id))*4 + stackSize) << "($fp)";
             dst << "\t\t #variable " << id << " is a function parameter" << std::endl;
             dst << "\t" << "nop" << std::endl;
         }
