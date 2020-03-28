@@ -161,6 +161,41 @@ public:
         Body->toPython(dst);
     }
 
+    virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override {
+        loop_while = true;
+
+        if(loop_while == true){
+        
+        //use a free register for condition check
+ 
+        int current_loop = loop_count++;
+
+        dst<<"while_loop_"<<current_loop<<"_begin:"<<"\t#Begin while loop"<<std::endl;
+        
+        //evalute the condition into the free register
+        Condition->toMips(dst, mySystem, destReg);
+        //branch to end if condition evaluates false (0)
+        dst<<"\t"<<"beq"<<"\t"<<"$0, $"<<destReg<<", end_loop_"<<current_loop<<std::endl;
+        dst<<"\t"<<"nop"<<std::endl;
+
+        std::string current_loop_end = "end_loop_" + std::to_string(current_loop);
+        loop_ends.push_back(current_loop_end);
+
+        Body->toMips(dst, mySystem, destReg);
+        // loop_count--;
+
+
+        //branch back to top
+        dst<<"\t"<<"b"<<"\t"<<"while_loop_"<<current_loop<<"_begin"<<std::endl;
+        dst<<"\t"<<"nop"<<std::endl;
+        //end of loop
+        dst<<current_loop_end<<":"<<"\t#End while loop"<<std::endl;
+        loop_ends.pop_back();
+        }
+
+        loop_while = false;
+    }
+
  
 };
 class NoBraces : public AST_Node
@@ -206,6 +241,10 @@ class NoBraces : public AST_Node
             dst << "\t"; 
         }
 
+    }
+
+    virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override {
+        Body->toMips(dst,mySystem,destReg);
     }
 
 };
@@ -254,7 +293,34 @@ public:
         }
     }
 
+    virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override {
+        std::vector<int> FreeReg = mySystem.all_freeRegLookup(8, 15);
+        mySystem.lockReg(FreeReg[0]);
+        int current_if_level = if_level++;
+        Condition->toMips(dst, mySystem, FreeReg[0]);
+
+        dst << "\t"<<"beq"<<"\t" << "$0, $" << FreeReg[0] << ", else_"<<current_if_level << std::endl; //$else condition yet to be filled
+		dst << "\t"<<"nop"<<"\t" << std::endl;
+		mySystem.unlockReg(FreeReg[0]);
+
+        if(IfBody != NULL){
+            IfBody->toMips(dst, mySystem, destReg);
+        }
+
+        dst<<"\t"<<"b"<<"\t"<<"ifelse_end_"<<current_if_level<<std::endl;
+        dst<<"\t"<<"nop"<<std::endl;
+
+        dst<<"else_"<<current_if_level<<":"<<std::endl;
+        if(ElseBody != NULL){
+            ElseBody->toMips(dst, mySystem, destReg);
+        }
+
+        dst<<"ifelse_end_"<<current_if_level<<":"<<std::endl;
+        
+    }
 };
+
+
 
 
 class Parameter_In_List : public AST_Node {
@@ -282,6 +348,23 @@ public:
             RestOf->toPython(dst);
         }
     }
+
+    virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override
+    {
+
+        std::vector<int> freeParamReg = mySystem.all_freeRegLookup(4, 7);
+        mySystem.lockReg(freeParamReg[0]);
+
+        Parameter->toMips(dst, mySystem, destReg);
+
+        dst<<"\t"<<"move"<<"\t"<<"$"<<mySystem.getRegName(freeParamReg[0]) <<", $"<<destReg<<"\t #move param to arg reg"<<std::endl;
+
+        if (RestOf != NULL) {
+            RestOf->toMips(dst, mySystem, destReg);
+        }
+
+        mySystem.unlockReg(freeParamReg[0]);
+    } 
 
   
 };
@@ -315,6 +398,34 @@ class FunctionCall : public AST_Node
         }
 
         dst << ")";
+    }
+
+      virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override {
+        functionCallNum++;
+        function_call_queue.push_back(name);
+        std::vector<int> lockedRegs = mySystem.temp_lockedRegLookup();
+        int stack_count = localVarCount;
+        
+        //store temp registers before function call in stack
+        for (unsigned int i = 0; i < lockedRegs.size();i++) {
+            stack_count++;
+            dst << "\t"<<"sw"<< "\t"<< "$"<<lockedRegs[i]<<", "<<(stack_count)*4+16<< "($fp)";
+            dst <<"\t#Storing temp register: "<<lockedRegs[i]<< std::endl;
+        }
+
+        if (arg!=NULL)
+            arg->toMips(dst,mySystem,destReg);
+
+        //function call
+        dst<<"\t"<<"jal"<<"\t"<<name<<"\t#Function called"<<std::endl;
+
+        //restore temp registers
+        for ( int i = lockedRegs.size()-1; i >= 0;i--) {
+            dst << "\t"<<"lw"<< "\t"<< "$"<<lockedRegs[i]<<", "<<(stack_count)*4+16<< "($fp)";
+            dst <<"\t#Loading temp register: "<<lockedRegs[i]<< std::endl;
+            dst<<"\t"<<"nop"<<std::endl;
+            stack_count--;
+        }
     }
 
 

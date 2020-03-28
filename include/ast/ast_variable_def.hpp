@@ -307,7 +307,7 @@ public:
             dst << "\t"<<"li"<< "\t"<< "$"<<destReg<<", 0" << std::endl;
         }
         dst<<"#local var counter = "<<localVarCount<<std::endl;
-        dst << "\t"<<"sw"<< "\t"<< "$"<<destReg<<", "<<(localVarCount-1)*4+16<< "($fp)";
+        dst << "\t"<<"sw"<< "\t"<< "$"<<mySystem.getRegName(destReg)<<", "<<(localVarCount-1)*4+16<< "($fp)";
         dst<<"\t#Storing variable "<<varIdentifier<< std::endl;
         // localvar_counter--;
     }

@@ -115,7 +115,7 @@ public:
             dst<<value<<"\t#Global variable"<<std::endl;
         }
         else if (!isGlobal) {
-            dst <<"\t"<< "li" << "\t" << "$"<<destReg<<", " << value<<std::endl;
+            dst <<"\t"<< "li" << "\t" << "$"<<mySystem.getRegName(destReg)<<", " << value<<std::endl;
         }
 	}
 };
