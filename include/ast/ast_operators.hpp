@@ -635,6 +635,19 @@ public:
         return (vl || vr);
     }
 
+    virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override
+    {
+        std::vector<int> scratchRegs = mySystem.temp_freeRegLookup();
+        mySystem.lockReg(scratchRegs[0]);
+
+        getLeft()->toMips(dst, mySystem, destReg);
+        getRight()->toMips(dst, mySystem, scratchRegs[0]);
+
+        dst<<"\t"<<"or"<<"\t"<<"$"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(scratchRegs[0])<<"\t#&& logical operator" << std::endl;
+        
+        mySystem.unlockReg(scratchRegs[0]); 
+    }
+
     
 };
 
@@ -673,6 +686,167 @@ public:
     }
 };
 
+
+class BitwiseComplement : public Operator {
+  protected:
+    virtual const char *getOpcode() const override
+    { return "~"; }
+
+  public:
+    BitwiseComplement(NodePtr _left, NodePtr _right) : Operator(_left, _right)
+    {}
+
+    virtual int evaluate(System &mySystem) const override {
+        // double vl=left->evaluate(bindings);
+        int vr=getRight()->evaluate(mySystem);
+        return (~vr);
+    }
+
+    virtual void toMips (std::ostream &dst, System &mySystem, int destReg) const override {
+        getRight()->toMips(dst, mySystem, destReg);
+        dst<<"\t"<<"nor"<<"\t"<<"$"<<destReg<<", $"<<destReg<<", $zero"<<"\t#~ operator" << std::endl;
+    }  
+};
+
+class BitwiseOrOperator : public Operator {
+  protected:
+    virtual const char *getOpcode() const override
+    { return "|"; }
+
+  public:
+    BitwiseOrOperator(NodePtr _left, NodePtr _right) : Operator(_left, _right)
+    {}
+
+    virtual int evaluate(System &mySystem) const override {
+        int vl=getLeft()->evaluate(mySystem);
+        int vr=getRight()->evaluate(mySystem);
+        return (vl|vr);
+    }
+
+    virtual void toMips (std::ostream &dst, System &mySystem, int destReg) const override {
+        std::vector<int> freeReg = mySystem.temp_freeRegLookup(); //finds available registers
+        mySystem.lockReg(freeReg[0]);                      //locks the registers for use of the function
+        getLeft()->toMips(dst, mySystem, destReg);
+        getRight()->toMips(dst, mySystem, freeReg[0]);
+     
+        //checks equivalence, if they are the same will result in zero
+        dst<<"\t"<<"or"<<"\t"<<"$"<<destReg<<", $"<<destReg<<", $"<<freeReg[0]<<"\t#| bitwise operator" << std::endl;
+        //or operation ensures that if the result is non zero it becomes 1
+        mySystem.unlockReg(freeReg[0]);
+    }   
+};
+
+class BitwiseXorOperator : public Operator {
+  protected:
+    virtual const char *getOpcode() const override
+    { return "^"; }
+
+  public:
+    BitwiseXorOperator(NodePtr _left, NodePtr _right) : Operator(_left, _right)
+    {}
+
+    virtual int evaluate(System &mySystem) const override {
+        int vl=getLeft()->evaluate(mySystem);
+        int vr=getRight()->evaluate(mySystem);
+        return (vl^vr);
+    }
+
+    virtual void toMips (std::ostream &dst, System &mySystem, int destReg) const override {
+        std::vector<int> freeReg = mySystem.temp_freeRegLookup(); //finds available registers
+        mySystem.lockReg(freeReg[0]);                      //locks the registers for use of the function
+        getLeft()->toMips(dst, mySystem, destReg);
+        getRight()->toMips(dst, mySystem, freeReg[0]);
+     
+        //checks equivalence, if they are the same will result in zero
+        dst<<"\t"<<"xor"<<"\t"<<"$"<<destReg<<", $"<<destReg<<", $"<<freeReg[0]<<"\t#^ bitwise operator" << std::endl;
+        //or operation ensures that if the result is non zero it becomes 1
+        mySystem.unlockReg(freeReg[0]);
+    }   
+};
+
+class BitwiseAndOperator : public Operator {
+  protected:
+    virtual const char *getOpcode() const override
+    { return "&"; }
+
+  public:
+    BitwiseAndOperator(NodePtr _left, NodePtr _right) : Operator(_left, _right)
+    {}
+
+    virtual int evaluate(System &mySystem) const override {
+        int vl=getLeft()->evaluate(mySystem);
+        int vr=getRight()->evaluate(mySystem);
+        return (vl|vr);
+    }
+
+    virtual void toMips (std::ostream &dst, System &mySystem, int destReg) const override {
+        std::vector<int> freeReg = mySystem.temp_freeRegLookup(); //finds available registers
+        mySystem.lockReg(freeReg[0]);                      //locks the registers for use of the function
+        getLeft()->toMips(dst, mySystem, destReg);
+        getRight()->toMips(dst, mySystem, freeReg[0]);
+     
+        //checks equivalence, if they are the same will result in zero
+        dst<<"\t"<<"and"<<"\t"<<"$"<<destReg<<", $"<<destReg<<", $"<<freeReg[0]<<"\t#& bitwise operator" << std::endl;
+        //or operation ensures that if the result is non zero it becomes 1
+        mySystem.unlockReg(freeReg[0]);
+    }   
+};
+
+class LeftShiftOperator : public Operator {
+  protected:
+    virtual const char *getOpcode() const override
+    { return "<<"; }
+
+  public:
+    LeftShiftOperator(NodePtr _left, NodePtr _right) : Operator(_left, _right)
+    {}
+
+    virtual int evaluate(System &mySystem) const override {
+        int vl=getLeft()->evaluate(mySystem);
+        int vr=getRight()->evaluate(mySystem);
+        return (vl<<vr);
+    }
+
+    virtual void toMips (std::ostream &dst, System &mySystem, int destReg) const override {
+        std::vector<int> freeReg = mySystem.temp_freeRegLookup(); //finds available registers
+        mySystem.lockReg(freeReg[0]);                      //locks the registers for use of the function
+        getLeft()->toMips(dst, mySystem, destReg);
+        getRight()->toMips(dst, mySystem, freeReg[0]);
+     
+        //checks equivalence, if they are the same will result in zero
+        dst<<"\t"<<"sllv"<<"\t"<<"$"<<destReg<<", $"<<destReg<<", $"<<freeReg[0]<<"\t# << operator" << std::endl;
+        //or operation ensures that if the result is non zero it becomes 1
+        mySystem.unlockReg(freeReg[0]);
+    }   
+};
+
+class RightShiftOperator : public Operator {
+  protected:
+    virtual const char *getOpcode() const override
+    { return ">>"; }
+
+  public:
+    RightShiftOperator(NodePtr _left, NodePtr _right) : Operator(_left, _right)
+    {}
+
+    virtual int evaluate(System &mySystem) const override {
+        int vl=getLeft()->evaluate(mySystem);
+        int vr=getRight()->evaluate(mySystem);
+        return (vl>>vr);
+    }
+
+    virtual void toMips (std::ostream &dst, System &mySystem, int destReg) const override {
+        std::vector<int> freeReg = mySystem.temp_freeRegLookup(); //finds available registers
+        mySystem.lockReg(freeReg[0]);                      //locks the registers for use of the function
+        getLeft()->toMips(dst, mySystem, destReg);
+        getRight()->toMips(dst, mySystem, freeReg[0]);
+     
+        //checks equivalence, if they are the same will result in zero
+        dst<<"\t"<<"srlv"<<"\t"<<"$"<<destReg<<", $"<<destReg<<", $"<<freeReg[0]<<"\t# << operator" << std::endl;
+        //or operation ensures that if the result is non zero it becomes 1
+        mySystem.unlockReg(freeReg[0]);
+    }   
+};
 
 
 #endif

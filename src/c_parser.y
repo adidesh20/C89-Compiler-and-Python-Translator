@@ -117,6 +117,7 @@ STATEMENT:
     | T_WHILE T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE                                     {$$ = new WhileStatement($3,$5);}
     | T_IF T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE                                         {$$ = new IfElseStatement($3,$5,NULL);}
     | T_IF T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE T_ELSE STATEMENT_SCOPE                  {$$ = new IfElseStatement($3, $5, $7);}
+    | T_FOR T_OPEN_PARENTHESES STATEMENT STATEMENT EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE                        {$$ = new ForStatement($3, $4, $5, $7);}
   ;
 
   STATEMENT_SCOPE:
@@ -173,11 +174,11 @@ LOGICAL_OR:
   ;
 
 LOGICAL_AND:
-    COMPARE_EQUAL T_LOGICAL_AND LOGICAL_AND          {$$ = new LogicalAndOperator($1, $3);}
-  | COMPARE_EQUAL                               {$$ = $1;}
+    BIT_OR T_LOGICAL_AND LOGICAL_AND          {$$ = new LogicalAndOperator($1, $3);}
+  | BIT_OR                               {$$ = $1;}
   ;
 
- /* BIT_OR:
+  BIT_OR:
     BIT_XOR T_BITWISE_OR BIT_OR           {$$ = new BitwiseOrOperator($1,$3);}
   | BIT_XOR                               {$$ = $1;}
   ;
@@ -188,30 +189,30 @@ BIT_XOR:
   ;
 
 BIT_AND:
-    EQUALITY T_BITWISE_AND BIT_AND        {$$ = new BitwiseAndOperator($1,$3);}
-  | EQUALITY                              {$$ = $1;}
+    COMPARE_EQUAL T_BITWISE_AND BIT_AND        {$$ = new BitwiseAndOperator($1,$3);}
+  | COMPARE_EQUAL                              {$$ = $1;}
   ;
- */
+ 
 COMPARE_EQUAL:
     COMPARE_DIFFERENT T_EQUAL_TO COMPARE_EQUAL { $$ = new EqualToOperator($1, $3);}
   | COMPARE_DIFFERENT T_NOT_EQUAL_TO COMPARE_EQUAL { $$ = new NotEqualToOperator($1, $3);}
   | COMPARE_DIFFERENT { $$ = $1;}
   ;
 COMPARE_DIFFERENT:
-    ADD_SUBTRACT T_LT COMPARE_DIFFERENT          { $$ = new LessThanOperator($1, $3);}
-  | ADD_SUBTRACT T_LTEQ COMPARE_DIFFERENT    { $$ = new LessThanEqualOperator($1, $3);}
-  | ADD_SUBTRACT T_GT COMPARE_DIFFERENT       { $$ = new GreaterThanOperator($1, $3);}
-  | ADD_SUBTRACT T_GTEQ COMPARE_DIFFERENT { $$ = new GreaterThanEqualOperator($1, $3);}
-  | ADD_SUBTRACT                                 {$$ = $1;}
+    SHIFT T_LT COMPARE_DIFFERENT          { $$ = new LessThanOperator($1, $3);}
+  | SHIFT T_LTEQ COMPARE_DIFFERENT    { $$ = new LessThanEqualOperator($1, $3);}
+  | SHIFT T_GT COMPARE_DIFFERENT       { $$ = new GreaterThanOperator($1, $3);}
+  | SHIFT T_GTEQ COMPARE_DIFFERENT { $$ = new GreaterThanEqualOperator($1, $3);}
+  | SHIFT                                 {$$ = $1;}
   ;
 
-/*
+
 SHIFT:
     ADD_SUBTRACT T_LSHIFT SHIFT       {$$ = new LeftShiftOperator($1,$3);}
   | ADD_SUBTRACT T_RSHIFT SHIFT       {$$ = new RightShiftOperator($1,$3);}
   | ADD_SUBTRACT                      {$$ = $1;}
   ;
-*/
+
 
 
 ADD_SUBTRACT: 
@@ -238,7 +239,7 @@ UNARY:
   | T_VARIABLE T_DECREMENT         {$$ = new DecrementOperator(*$1,"post");}
   | T_DECREMENT  T_VARIABLE      {$$ = new DecrementOperator(*$2, "pre");}
   | T_LOGICAL_NOT FACTOR             {$$ = new NotOperator($2);}
-  ;
+  | T_BITWISE_COMPLEMENT FACTOR         {$$ = new BitwiseComplement(NULL,$2);}
   
   ;
 
