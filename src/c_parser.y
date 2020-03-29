@@ -68,7 +68,8 @@ EXTERNAL_DECLARATION:
 
 
 GLOBAL_DECLARATION:
-    TYPE GLOBAL_VAR_DEF_LIST T_SEMICOLON           {$$=new GloTypeset (*$1,$2);}                                 
+    TYPE GLOBAL_VAR_DEF_LIST T_SEMICOLON           {$$=new GloTypeset (*$1,$2);}     
+    | TYPE T_VARIABLE T_OPEN_BRACKETS T_NUMBER T_CLOSE_BRACKETS T_SEMICOLON      {$$ = new GlobalArrayDec (*$1,*$2,$4);}                            
 
   ;
 
@@ -115,10 +116,12 @@ STATEMENT:
     | T_RETURN EXPR T_SEMICOLON                                                                  {$$ = new ReturnStatement($2);}
     | T_RETURN T_SEMICOLON                                                                       {$$ = new ReturnStatement(NULL);}
     | EXPR T_SEMICOLON                       {$$ = $1;}
+    | STATEMENT  T_SEMICOLON             {$$ = $1;}
     | T_WHILE T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE                                     {$$ = new WhileStatement($3,$5);}
     | T_IF T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE                                         {$$ = new IfElseStatement($3,$5,NULL);}
     | T_IF T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE T_ELSE STATEMENT_SCOPE                  {$$ = new IfElseStatement($3, $5, $7);}
     | T_FOR T_OPEN_PARENTHESES STATEMENT STATEMENT EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE                        {$$ = new ForStatement($3, $4, $5, $7);}
+   
   ;
 
   STATEMENT_SCOPE:
@@ -127,7 +130,8 @@ STATEMENT:
   ;
 
 LOCAL_DECLARATION:
-    TYPE LOCAL_VAR_DEF_LIST            {$$=new LocalTypeset (*$1,$2);}                                 
+    TYPE LOCAL_VAR_DEF_LIST            {$$=new LocalTypeset (*$1,$2);}     
+  | TYPE T_VARIABLE T_OPEN_BRACKETS T_NUMBER T_CLOSE_BRACKETS {$$ = new LocalArrayDec (*$1,*$2,$4);}                            
   ;
 
 
@@ -165,6 +169,7 @@ ASSIGNMENT:
   | T_VARIABLE T_MINUS_EQUALS EXPR                                                  {$$ = new AssOpSub(*$1, $3);}
   | T_VARIABLE T_TIMES_EQUALS EXPR                                                  {$$ = new AssOpMul(*$1, $3);}
   | T_VARIABLE T_DIVIDE_EQUALS EXPR                                               {$$ = new AssOpDiv(*$1, $3);}
+  | T_VARIABLE T_OPEN_BRACKETS EXPR T_CLOSE_BRACKETS T_EQUAL EXPR        {$$ = new AssArray(*$1,$3,$6);}
   ;
 
 
