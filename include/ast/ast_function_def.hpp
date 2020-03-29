@@ -9,7 +9,6 @@
 
 
 
-extern std::vector<std::string> global_variables_names;
 
 
 

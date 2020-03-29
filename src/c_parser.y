@@ -22,7 +22,7 @@
 }
 
 %token T_INT T_VOID T_FLOAT T_DOUBLE T_RETURN
-%token T_IF T_ELSE T_WHILE T_FOR
+%token T_IF T_ELSE T_WHILE T_FOR T_SWITCH T_CASE T_DEFAULT T_BREAK T_CONTINUE
 %token T_TIMES T_PLUS T_MINUS T_DIVIDE T_MOD
 %token T_INCREMENT T_DECREMENT
 %token T_EQUAL_TO T_NOT_EQUAL_TO T_LT T_GT T_LTEQ T_GTEQ
@@ -43,9 +43,9 @@
 
 %type <expr> ROOT  PROGRAM EXTERNAL_DECLARATION GLOBAL_DECLARATION GLOBAL_VAR_DEF_LIST GLOBAL_VAR_DEF SCOPE SCOPE_BODY STATEMENT LOCAL_DECLARATION  EXPR TERM UNARY  FACTOR PARAMETERS_IN_LIST
 %type <expr> FUNCTION_DEC FUNCTION_DEF PARAMETER_LIST PARAMETER  LOCAL_VAR_DEF LOCAL_VAR_DEF_LIST ASSIGNMENT STATEMENT_SCOPE TERNARY LOGICAL_AND LOGICAL_OR COMPARE_EQUAL COMPARE_DIFFERENT ADD_SUBTRACT
-%type <expr> BIT_AND BIT_OR BIT_XOR SHIFT 
+%type <expr> BIT_AND BIT_OR BIT_XOR SHIFT SWITCH_CASES SW_CASE DEFAULT_CASE
 %type <number> T_NUMBER
-%type <string> T_VARIABLE  TYPE  T_VOID T_INT T_DOUBLE T_FLOAT T_RETURN T_IF T_ELSE T_WHILE T_FOR
+%type <string> T_VARIABLE  TYPE  T_VOID T_INT T_DOUBLE T_FLOAT T_RETURN T_IF T_ELSE T_WHILE T_FOR T_SWITCH 
 
 %start ROOT
 
@@ -118,16 +118,36 @@ STATEMENT:
     | T_WHILE T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE                                     {$$ = new WhileStatement($3,$5);}
     | T_IF T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE                                         {$$ = new IfElseStatement($3,$5,NULL);}
     | T_IF T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE T_ELSE STATEMENT_SCOPE                  {$$ = new IfElseStatement($3, $5, $7);}
-    | T_FOR T_OPEN_PARENTHESES STATEMENT STATEMENT EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE                        {$$ = new ForStatement($3, $4, $5, $7);}
+    | T_FOR T_OPEN_PARENTHESES STATEMENT STATEMENT EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE                    {$$ = new ForStatement($3, $4, $5, $7);}
+    | T_SWITCH T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES T_OPEN_BRACES SWITCH_CASES T_CLOSE_BRACES           {$$ = new Switch($3, $6);}
+    | T_BREAK T_SEMICOLON                                                                                      {$$ = new Break();}
+    | T_CONTINUE T_SEMICOLON                                                                                   {$$ = new Continue();}
   ;
 
-  STATEMENT_SCOPE:
-    STATEMENT {$$ = new NoBraces($1);}
+STATEMENT_SCOPE:
+  STATEMENT {$$ = new NoBraces($1);}
   | SCOPE {$$=$1;}
   ;
 
+SWITCH_CASES:
+  SW_CASE SWITCH_CASES DEFAULT_CASE                         {$$ = new SwitchCaseList($1, $2, $3);}
+  | SW_CASE SWITCH_CASES                                    {$$ = new SwitchCaseList($1, $2, NULL);}
+  | SW_CASE                                                 {$$ = new SwitchCaseList($1, NULL, NULL);}
+  ;
+
+SW_CASE:
+  T_CASE T_NUMBER T_COLON SCOPE_BODY                      {$$ = new SwitchCase($2, $4);}
+  ;
+
+DEFAULT_CASE:
+  T_DEFAULT T_COLON SCOPE_BODY                            {$$ = new SwitchDefaultCase($3);}
+  ;
+
+
+
+
 LOCAL_DECLARATION:
-    TYPE LOCAL_VAR_DEF_LIST            {$$=new LocalTypeset (*$1,$2);}                                 
+  TYPE LOCAL_VAR_DEF_LIST            {$$=new LocalTypeset (*$1,$2);}                                 
   ;
 
 

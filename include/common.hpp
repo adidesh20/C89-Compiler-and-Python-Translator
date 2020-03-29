@@ -35,4 +35,9 @@ static int if_level;
 static bool loop_while = false;
 static bool loop_for = false;
 
+static double switchRef;
+static bool switchActivated = false;
+static bool switchFallthroughAllowed = true;
+static bool inSwitch = false;
+
 #endif
