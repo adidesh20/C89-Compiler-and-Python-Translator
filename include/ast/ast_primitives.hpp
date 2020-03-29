@@ -121,5 +121,48 @@ public:
 	}
 };
 
+class ArrayElement : public AST_Node {
+    private:
+    std::string id;
+    NodePtr index;
+
+    public:
+    ~ArrayElement() {};
+    ArrayElement(std::string _id, NodePtr _index) : id(_id), index(_index) {}
+    virtual void print (std::ostream &dst) const override {
+        dst<<id<<"[";
+        if (index!=NULL)
+            index->print(dst);
+        dst<<"]";
+    }
+
+    virtual int evaluate (System &mySystem) const override {
+        return index->evaluate(mySystem);
+    }
+
+    virtual void toMips (std::ostream &dst, System &mySystem, int destReg) const override{
+        int index_no = index->evaluate(mySystem);
+        
+        int varAddress = mySystem.systemMemory.variableSearch(id+std::to_string(index_no), currentIndent);
+
+        if(varAddress > 0) {  
+            
+            dst<<"\t"<<"lw"<<"\t"<<"$"<<mySystem.getRegName(destReg) <<", "<< varAddress<<"($fp)";
+            dst<<"\t\t#Accessing index "<<index_no<<" of array "<<id<<std::endl;
+            dst<<"\t"<<"nop"<<std::endl;
+        }
+        else {
+            //global array
+            dst<<"\t"<<"lui"<<"\t"<<"$"<<mySystem.getRegName(destReg)<<", "<<"%hi("<<id<<")"<<"\t\t #Loading in array: "<<id<<std::endl;
+            dst<<"\t"<<"addiu"<<"\t"<<"$"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(destReg)<<", %lo("<<id<<")"<<std::endl;
+            dst<<"\t"<<"nop"<<std::endl;
+            dst<<"\t"<<"addiu"<<"\t"<<"$"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(destReg)<<", "<<index_no*4<<"\t\t #Add offset for index "<<index_no<<std::endl;
+            dst<<"\t"<<"lw"<<"\t"<<"$"<<mySystem.getRegName(destReg)<<", "<<"0($"<<mySystem.getRegName(destReg)<<")"<<"\t\t #Load in index "<<index_no<<" of global array "<<id<<std::endl;
+        }
+    }
+};
+
+
+
 
 #endif

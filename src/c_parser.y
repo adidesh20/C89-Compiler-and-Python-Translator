@@ -276,6 +276,7 @@ FACTOR:
   | T_VARIABLE         {$$ = new Variable (*$1); }
   | T_VARIABLE T_OPEN_PARENTHESES PARAMETERS_IN_LIST T_CLOSE_PARENTHESES  {$$ = new FunctionCall(*$1, $3);}
   | T_VARIABLE T_OPEN_PARENTHESES T_CLOSE_PARENTHESES {$$ = new FunctionCall(*$1, NULL);}
+  | T_VARIABLE T_OPEN_BRACKETS EXPR T_CLOSE_BRACKETS {$$ = new ArrayElement(*$1,$3); }
   ;
 
 
