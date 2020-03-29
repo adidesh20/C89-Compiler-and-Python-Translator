@@ -704,7 +704,7 @@ class BitwiseComplement : public Operator {
 
     virtual void toMips (std::ostream &dst, System &mySystem, int destReg) const override {
         getRight()->toMips(dst, mySystem, destReg);
-        dst<<"\t"<<"nor"<<"\t"<<"$"<<destReg<<", $"<<destReg<<", $zero"<<"\t#~ operator" << std::endl;
+        dst<<"\t"<<"nor"<<"\t"<<"$"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(destReg)<<", $zero"<<"\t#~ operator" << std::endl;
     }  
 };
 
@@ -730,7 +730,7 @@ class BitwiseOrOperator : public Operator {
         getRight()->toMips(dst, mySystem, freeReg[0]);
      
         //checks equivalence, if they are the same will result in zero
-        dst<<"\t"<<"or"<<"\t"<<"$"<<destReg<<", $"<<destReg<<", $"<<freeReg[0]<<"\t#| bitwise operator" << std::endl;
+        dst<<"\t"<<"or"<<"\t"<<"$"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(freeReg[0])<<"\t#| bitwise operator" << std::endl;
         //or operation ensures that if the result is non zero it becomes 1
         mySystem.unlockReg(freeReg[0]);
     }   
@@ -758,7 +758,7 @@ class BitwiseXorOperator : public Operator {
         getRight()->toMips(dst, mySystem, freeReg[0]);
      
         //checks equivalence, if they are the same will result in zero
-        dst<<"\t"<<"xor"<<"\t"<<"$"<<destReg<<", $"<<destReg<<", $"<<freeReg[0]<<"\t#^ bitwise operator" << std::endl;
+        dst<<"\t"<<"xor"<<"\t"<<"$"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(freeReg[0])<<"\t#^ bitwise operator" << std::endl;
         //or operation ensures that if the result is non zero it becomes 1
         mySystem.unlockReg(freeReg[0]);
     }   
@@ -786,7 +786,7 @@ class BitwiseAndOperator : public Operator {
         getRight()->toMips(dst, mySystem, freeReg[0]);
      
         //checks equivalence, if they are the same will result in zero
-        dst<<"\t"<<"and"<<"\t"<<"$"<<destReg<<", $"<<destReg<<", $"<<freeReg[0]<<"\t#& bitwise operator" << std::endl;
+        dst<<"\t"<<"and"<<"\t"<<"$"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(freeReg[0])<<"\t#& bitwise operator" << std::endl;
         //or operation ensures that if the result is non zero it becomes 1
         mySystem.unlockReg(freeReg[0]);
     }   
@@ -814,7 +814,7 @@ class LeftShiftOperator : public Operator {
         getRight()->toMips(dst, mySystem, freeReg[0]);
      
         //checks equivalence, if they are the same will result in zero
-        dst<<"\t"<<"sllv"<<"\t"<<"$"<<destReg<<", $"<<destReg<<", $"<<freeReg[0]<<"\t# << operator" << std::endl;
+        dst<<"\t"<<"sllv"<<"\t"<<"$"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(freeReg[0])<<"\t# << operator" << std::endl;
         //or operation ensures that if the result is non zero it becomes 1
         mySystem.unlockReg(freeReg[0]);
     }   
@@ -842,7 +842,7 @@ class RightShiftOperator : public Operator {
         getRight()->toMips(dst, mySystem, freeReg[0]);
      
         //checks equivalence, if they are the same will result in zero
-        dst<<"\t"<<"srlv"<<"\t"<<"$"<<destReg<<", $"<<destReg<<", $"<<freeReg[0]<<"\t# << operator" << std::endl;
+        dst<<"\t"<<"srlv"<<"\t"<<"$"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(freeReg[0])<<"\t# << operator" << std::endl;
         //or operation ensures that if the result is non zero it becomes 1
         mySystem.unlockReg(freeReg[0]);
     }   

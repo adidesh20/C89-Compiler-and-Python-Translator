@@ -234,6 +234,7 @@ public:
     }
 
      void store_var_val(std::string var, int val) {
+         
         systemMemory.variable_bindings.erase(var);
         systemMemory.variable_bindings.emplace(var, val);
     }

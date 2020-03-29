@@ -68,8 +68,9 @@ public:
     {
         int stackSize = (stackVarCount*4) + paramCount + 62;
         getRight()->toMips(dst, mySystem, destReg);
+               
         mySystem.store_var_val(getLeft(), getRight()->evaluate(mySystem));
-
+    
         int varAddress = mySystem.systemMemory.variableSearch(getLeft(), currentIndent);
 
         if(varAddress > 0) //local variable
@@ -332,15 +333,15 @@ public:
 
         int var_offset = mySystem.systemMemory.variableSearch(Identifier + std::to_string(index_no), currentIndent);
         if (var_offset !=0) {
-            dst<<"\t"<<"sw"<<"\t"<<"$"<<freeRegs[0]<<", "<<var_offset<<"($fp)"<<"\t#Assign element "<<index_no<<" of array "<<Identifier<<std::endl;
+            dst<<"\t"<<"sw"<<"\t"<<"$"<<freeRegs[0]<<", "<<var_offset<<"($fp)"<<"\t\t #Assign element "<<index_no<<" of array "<<Identifier<<std::endl;
         }
         else {
             //global array
-            dst<<"\t"<<"lui"<<"\t"<<"$"<<destReg<<", "<<"%hi("<<Identifier<<")"<<"\t#Loading in array: "<<Identifier<<std::endl;
+            dst<<"\t"<<"lui"<<"\t"<<"$"<<destReg<<", "<<"%hi("<<Identifier<<")"<<"\t\t#Loading in array: "<<Identifier<<std::endl;
             dst<<"\t"<<"addiu"<<"\t"<<"$"<<destReg<<", $"<<destReg<<", %lo("<<Identifier<<")"<<std::endl;
             dst<<"\t"<<"nop"<<std::endl;
-            dst<<"\t"<<"addiu"<<"\t"<<"$"<<destReg<<", $"<<destReg<<", "<<index_no*4<<"\t#Add offset for element "<<index_no<<std::endl;
-            dst<<"\t"<<"sw"<<"\t"<<"$"<<freeRegs[0]<<", ($"<<destReg<<")"<<"\t#Store into global array "<<Identifier<<std::endl;
+            dst<<"\t"<<"addiu"<<"\t"<<"$"<<destReg<<", $"<<destReg<<", "<<index_no*4<<"\t\t #Add offset for element "<<index_no<<std::endl;
+            dst<<"\t"<<"sw"<<"\t"<<"$"<<freeRegs[0]<<", ($"<<destReg<<")"<<"\t\t #Store into global array "<<Identifier<<std::endl;
         }
         dst<<"\t"<<"nop"<<std::endl;
         mySystem.unlockReg(freeRegs[0]);

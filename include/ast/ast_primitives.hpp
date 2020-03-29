@@ -38,9 +38,15 @@ public:
 
      virtual int evaluate(System &mySystem) const override
     {
-        // TODO-B : Run bin/eval_expr with a variable binding to make sure you understand how this works.
-        // If the binding does not exist, this will throw an error
-        return mySystem.systemMemory.variable_bindings.at(id);
+         
+        if(mySystem.systemMemory.variable_bindings.count(id)>0){
+
+            return mySystem.systemMemory.variable_bindings.at(id);
+        }
+        else 
+        {
+            return 0;
+        }
     }  
 
     virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override
