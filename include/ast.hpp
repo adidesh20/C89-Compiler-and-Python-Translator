@@ -12,6 +12,7 @@
 #include "ast/ast_assignment_ops.hpp"
 #include "ast/ast_system.hpp"
 #include "ast/ast_memory.hpp"
+#include "ast/ast_switch.hpp"
 
 extern const AST_Node *parseAST();
 

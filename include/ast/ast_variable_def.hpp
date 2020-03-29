@@ -318,4 +318,60 @@ public:
 
 };
 
+class GlobalArrayDec : public AST_Node {
+private:
+  std::string Type;
+  std::string Identifier;
+  int arraysize;
+public:
+  ~GlobalArrayDec() {}
+  GlobalArrayDec(std::string _Type, std::string _Identifier, int _arraysize) : Type(_Type), Identifier(_Identifier), arraysize(_arraysize) {}
+
+  virtual void print(std::ostream &dst) const override{
+
+        dst << Type << " " << Identifier << "[" << arraysize << "];";
+  }
+
+  virtual void toMips (std::ostream &dst, System &mySystem, int destReg) const override {
+      
+        for (int i=0;i<arraysize;i++) {
+            
+            std::string arrayid = Identifier + std::to_string(i);
+            mySystem.NewGlobalVar(arrayid + std::to_string(currentIndent));
+        }
+        dst<<"\t"<<".data"<<std::endl;
+        dst<<Identifier<<":\t"<<".space "<<arraysize*4<<"\t#Global array of size "<<arraysize<<std::endl;
+        dst<<std::endl;
+
+  }
+};
+
+class LocalArrayDec : public AST_Node 
+{
+private:
+    std::string Type;
+    std::string Identifier;
+    int arraysize;
+public:
+    ~LocalArrayDec() {}
+    LocalArrayDec (std::string _Type, std::string _Identifier, int _arraysize) : Type(_Type), Identifier(_Identifier), arraysize(_arraysize) {}
+
+    virtual void print (std::ostream &dst) const override {
+        stackVarCount = stackVarCount + arraysize;
+        dst<<Type<<" "<<Identifier<<"["<<arraysize<<"];";
+    }
+
+    virtual void toMips (std::ostream &dst, System &mySystem, int destReg) const override {
+        
+        dst << "#local array" << std::endl;
+        for (int i=0;i<arraysize;i++) {
+            localVarCount++;
+            std::string arrayid = Identifier + std::to_string(i);
+            mySystem.NewLocalVar(arrayid + std::to_string(currentIndent));
+        }
+        
+        
+    }
+};
+
 #endif

@@ -501,4 +501,66 @@ class FunctionCall : public AST_Node
   
 };
 
+class Break: public AST_Node
+{
+public:
+
+    ~Break(){}
+
+    Break(){}
+    virtual void print(std::ostream &dst) const override
+    {
+        dst << "break;" << std::endl;
+    }
+
+    virtual void toPython(std::ostream &dst) const override
+    {
+        dst << "break" << std::endl;
+    }
+
+    virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override
+    {
+        if(inSwitch)
+        {
+            switchFallthroughAllowed = false;
+        }
+        else
+        {
+            dst << "\t" << "b" << "\t" << loop_ends.back() << "\t\t #break" << std::endl;
+        }
+    }
+};
+
+class Continue: public AST_Node
+{
+public:
+
+    ~Continue(){}
+
+    Continue(){}
+
+    virtual void print(std::ostream &dst) const override
+    {
+        dst << "continue;" << std::endl;
+    }
+
+    virtual void toPython(std::ostream &dst) const override
+    {
+        dst << "continue" << std::endl;
+    }
+
+    virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override
+    {
+        if(loop_while)
+        {
+            dst << "\t" << "b" << "\t" << "while_loop_"<<loop_count-1<<"_begin" << "\t\t #continue to next iteration of while loop" << std::endl;
+            return;
+        }
+        if(loop_for)
+        {
+            dst << "\t" << "b" << "\t" << "for_increment_" << loop_count << "\t\t #continue to next iteration of for loop"<<std::endl;
+        }
+    }
+};
+
 #endif
