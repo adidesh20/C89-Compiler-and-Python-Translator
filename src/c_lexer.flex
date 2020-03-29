@@ -14,6 +14,7 @@
 "float"         { yylval.string = new std::string(yytext); return T_FLOAT; }
 "void"          { yylval.string = new std::string(yytext); return T_VOID; }
 "return"        {yylval.string = new std::string(yytext);return T_RETURN;}
+ 
  /* =====================================CONDITIONAL SHIZZLE====================================== */
 
 "if"            {yylval.string = new std::string(yytext); return T_IF;}

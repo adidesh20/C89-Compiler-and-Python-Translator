@@ -201,7 +201,7 @@ public:
             mySystem.resetArgRegs();
             
             for(int i =4; i<8; i++){
-                dst<<"\t"<<"sw"<<"\t"<<"$"<<mySystem.getRegName(i)<<", "<<stack_end+(4*i)<<"($fp)"<<"\t"<<"#storing param argument register"<<std::endl;
+                dst<<"\t"<<"sw"<<"\t"<<"$"<<mySystem.getRegName(i)<<", "<<stack_end+(4*(i-4))<<"($fp)"<<"\t"<<"#storing param argument register"<<std::endl;
             }
            
             parameters->toMips(dst, mySystem, destReg);
