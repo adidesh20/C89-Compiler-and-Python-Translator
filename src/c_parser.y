@@ -113,15 +113,14 @@ SCOPE_BODY:
 
 STATEMENT: 
     LOCAL_DECLARATION  T_SEMICOLON             {$$ = $1;}
-    | T_RETURN EXPR T_SEMICOLON                                                                  {$$ = new ReturnStatement($2);}
-    | T_RETURN T_SEMICOLON                                                                       {$$ = new ReturnStatement(NULL);}
-    | EXPR T_SEMICOLON                       {$$ = $1;}
-    | STATEMENT  T_SEMICOLON             {$$ = $1;}
+    | T_RETURN EXPR T_SEMICOLON                {$$ = new ReturnStatement($2);}
+    | T_RETURN T_SEMICOLON                     {$$ = new ReturnStatement(NULL);}
+    | EXPR T_SEMICOLON                         {$$ = $1;}
+    | STATEMENT  T_SEMICOLON                   {$$ = $1;}
     | T_WHILE T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE                                     {$$ = new WhileStatement($3,$5);}
     | T_IF T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE                                         {$$ = new IfElseStatement($3,$5,NULL);}
     | T_IF T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE T_ELSE STATEMENT_SCOPE                  {$$ = new IfElseStatement($3, $5, $7);}
-    | T_FOR T_OPEN_PARENTHESES STATEMENT STATEMENT EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE                        {$$ = new ForStatement($3, $4, $5, $7);}
-    | T_FOR T_OPEN_PARENTHESES STATEMENT STATEMENT EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE                    {$$ = new ForStatement($3, $4, $5, $7);}
+    | T_FOR T_OPEN_PARENTHESES STATEMENT STATEMENT EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE                     {$$ = new ForStatement($3, $4, $5, $7);}
     | T_SWITCH T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES T_OPEN_BRACES SWITCH_CASES T_CLOSE_BRACES           {$$ = new Switch($3, $6);}
     | T_BREAK T_SEMICOLON                                                                                      {$$ = new Break();}
     | T_CONTINUE T_SEMICOLON                                                                                   {$$ = new Continue();}
@@ -135,7 +134,9 @@ STATEMENT_SCOPE:
 SWITCH_CASES:
   SW_CASE SWITCH_CASES DEFAULT_CASE                         {$$ = new SwitchCaseList($1, $2, $3);}
   | SW_CASE SWITCH_CASES                                    {$$ = new SwitchCaseList($1, $2, NULL);}
+  | SW_CASE DEFAULT_CASE                                    {$$ = new SwitchCaseList($1, NULL, $2);}
   | SW_CASE                                                 {$$ = new SwitchCaseList($1, NULL, NULL);}
+  | DEFAULT_CASE                                            {$$ = new SwitchCaseList(NULL, NULL, $1);}
   ;
 
 SW_CASE:

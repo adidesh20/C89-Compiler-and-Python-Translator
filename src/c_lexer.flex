@@ -21,6 +21,11 @@
 "else"          {yylval.string = new std::string(yytext); return T_ELSE;}
 "while"         {yylval.string = new std::string(yytext); return T_WHILE;}
 "for"           {yylval.string = new std::string(yytext); return T_FOR;}
+"switch"        {yylval.string = new std::string(yytext); return T_SWITCH;}
+"case"          {yylval.string = new std::string(yytext); return T_CASE;}
+"break"         {yylval.string = new std::string(yytext); return T_BREAK;}
+"continue"      {yylval.string = new std::string(yytext); return T_CONTINUE;}
+"default"       {yylval.string = new std::string(yytext); return T_DEFAULT;}
 
  /* ==========================================IDENTIFIER=========================================== */
 

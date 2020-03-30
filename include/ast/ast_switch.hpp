@@ -73,7 +73,11 @@ public:
 
     virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override
     {
-        SingularCase->toMips(dst, mySystem, destReg);
+
+        if(SingularCase != NULL)
+        {
+            SingularCase->toMips(dst, mySystem, destReg);
+        }
 
         if(RestOfCases != NULL)
         {
