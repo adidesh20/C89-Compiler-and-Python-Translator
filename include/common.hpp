@@ -40,4 +40,6 @@ static bool switchActivated = false;
 static bool switchFallthroughAllowed = true;
 static bool inSwitch = false;
 
+static int enumCounter = 0;
+
 #endif

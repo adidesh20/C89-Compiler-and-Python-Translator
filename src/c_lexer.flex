@@ -13,7 +13,8 @@
 "double"        { yylval.string = new std::string(yytext); return T_DOUBLE; }
 "float"         { yylval.string = new std::string(yytext); return T_FLOAT; }
 "void"          { yylval.string = new std::string(yytext); return T_VOID; }
-"return"        {yylval.string = new std::string(yytext);return T_RETURN;}
+"return"        {yylval.string = new std::string(yytext); return T_RETURN;}
+"enum"          {yylval.string = new std::string(yytext); return T_ENUM;}
  
  /* =====================================CONDITIONAL SHIZZLE====================================== */
 

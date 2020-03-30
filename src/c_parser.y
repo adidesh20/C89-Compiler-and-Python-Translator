@@ -21,7 +21,7 @@
   std::string *string;
 }
 
-%token T_INT T_VOID T_FLOAT T_DOUBLE T_RETURN
+%token T_INT T_VOID T_FLOAT T_DOUBLE T_RETURN T_ENUM
 %token T_IF T_ELSE T_WHILE T_FOR T_SWITCH T_CASE T_DEFAULT T_BREAK T_CONTINUE
 %token T_TIMES T_PLUS T_MINUS T_DIVIDE T_MOD
 %token T_INCREMENT T_DECREMENT
@@ -43,7 +43,7 @@
 
 %type <expr> ROOT  PROGRAM EXTERNAL_DECLARATION GLOBAL_DECLARATION GLOBAL_VAR_DEF_LIST GLOBAL_VAR_DEF SCOPE SCOPE_BODY STATEMENT LOCAL_DECLARATION  EXPR TERM UNARY  FACTOR PARAMETERS_IN_LIST
 %type <expr> FUNCTION_DEC FUNCTION_DEF PARAMETER_LIST PARAMETER  LOCAL_VAR_DEF LOCAL_VAR_DEF_LIST ASSIGNMENT STATEMENT_SCOPE TERNARY LOGICAL_AND LOGICAL_OR COMPARE_EQUAL COMPARE_DIFFERENT ADD_SUBTRACT
-%type <expr> BIT_AND BIT_OR BIT_XOR SHIFT SWITCH_CASES SW_CASE DEFAULT_CASE
+%type <expr> BIT_AND BIT_OR BIT_XOR SHIFT SWITCH_CASES SW_CASE DEFAULT_CASE  GLOBAL_ENUM_LIST ENUM_LIST
 %type <number> T_NUMBER
 %type <string> T_VARIABLE  TYPE  T_VOID T_INT T_DOUBLE T_FLOAT T_RETURN T_IF T_ELSE T_WHILE T_FOR T_SWITCH 
 
@@ -69,7 +69,8 @@ EXTERNAL_DECLARATION:
 
 GLOBAL_DECLARATION:
     TYPE GLOBAL_VAR_DEF_LIST T_SEMICOLON           {$$=new GloTypeset (*$1,$2);}     
-    | TYPE T_VARIABLE T_OPEN_BRACKETS T_NUMBER T_CLOSE_BRACKETS T_SEMICOLON      {$$ = new GlobalArrayDec (*$1,*$2,$4);}                            
+    | TYPE T_VARIABLE T_OPEN_BRACKETS T_NUMBER T_CLOSE_BRACKETS T_SEMICOLON           {$$ = new GlobalArrayDec (*$1,*$2,$4);}  
+    | T_ENUM T_VARIABLE T_OPEN_BRACES GLOBAL_ENUM_LIST T_CLOSE_BRACES T_SEMICOLON     {$$ = new EnumDefinition(*$2, $4);}                     
 
   ;
 
@@ -81,6 +82,13 @@ GLOBAL_VAR_DEF_LIST:
 GLOBAL_VAR_DEF:
   T_VARIABLE                    {$$ = new GlobalVariable_Definition(*$1,NULL);}
   |T_VARIABLE T_EQUAL EXPR        {$$ = new GlobalVariable_Definition(*$1,$3);}
+  ;
+
+GLOBAL_ENUM_LIST:
+  T_VARIABLE T_EQUAL EXPR T_COMMA GLOBAL_ENUM_LIST      {$$ = new GlobalEnumList(*$1, $3, $5);}
+  | T_VARIABLE T_EQUAL EXPR                             {$$ = new GlobalEnumList(*$1, $3, NULL);}
+  | T_VARIABLE T_COMMA GLOBAL_ENUM_LIST                 {$$ = new GlobalEnumList(*$1, NULL, $3);}
+  | T_VARIABLE                                          {$$ = new GlobalEnumList(*$1, NULL, NULL);}
   ;
 
 FUNCTION_DEF:
@@ -124,6 +132,7 @@ STATEMENT:
     | T_SWITCH T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES T_OPEN_BRACES SWITCH_CASES T_CLOSE_BRACES           {$$ = new Switch($3, $6);}
     | T_BREAK T_SEMICOLON                                                                                      {$$ = new Break();}
     | T_CONTINUE T_SEMICOLON                                                                                   {$$ = new Continue();}
+    | T_ENUM T_VARIABLE T_OPEN_BRACES ENUM_LIST T_CLOSE_BRACES T_SEMICOLON                                     {$$ = new EnumDefinition(*$2, $4);}                                 
     |SCOPE {$$ = $1;}
     ;
 
@@ -148,6 +157,12 @@ DEFAULT_CASE:
   T_DEFAULT T_COLON SCOPE_BODY                            {$$ = new SwitchDefaultCase($3);}
   ;
 
+ENUM_LIST:
+  T_VARIABLE T_EQUAL EXPR T_COMMA ENUM_LIST      {$$ = new LocalEnumList(*$1, $3, $5);}
+  | T_VARIABLE T_EQUAL EXPR                      {$$ = new LocalEnumList(*$1, $3, NULL);}
+  | T_VARIABLE T_COMMA ENUM_LIST                 {$$ = new LocalEnumList(*$1, NULL, $3);}
+  | T_VARIABLE                                   {$$ = new LocalEnumList(*$1, NULL, NULL);}
+  ;
 
 
 
