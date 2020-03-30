@@ -494,6 +494,12 @@ class FunctionCall : public AST_Node
             dst<<"\t"<<"nop"<<std::endl;
             stack_count--;
         }
+
+        
+    }
+    virtual int evaluate(System &mySystem) const override
+    {
+          return 0;
     }
 
 

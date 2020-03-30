@@ -83,6 +83,8 @@ public:
         out <<std::endl;
     }
 
+     virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override {}
+
 
 
     ~Function_Declaration(){}

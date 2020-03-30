@@ -87,7 +87,7 @@ public:
                 dst << "\t" << "lw" << "\t" << "$" << mySystem.getRegName(scratchRegs[0]) << ", " <<varAddress <<"($fp)" <<std::endl;
                 dst << "\t" << "nop" << std::endl;
             }
-            else if(mySystem.lookupParameter(var) > 1)
+            else if(mySystem.lookupParameter(var) > -1)
             {
                 dst << "\t" << "lw" << "\t" << "$" << mySystem.getRegName(scratchRegs[0]) << ", " << ((mySystem.lookupParameter(var))*4 + stackSize) << "($fp)" << "\t\t #loading function parameter " << var << std::endl;
                 dst << "\t" << "nop" << std::endl;
@@ -127,7 +127,7 @@ public:
                 dst << "\t" << "addiu" << "\t" << "$" << mySystem.getRegName(scratchRegs[0]) << ", $" << mySystem.getRegName(scratchRegs[0]) << ", 1" << "\t\t #incrementing by 1 due to ++ operator" << std::endl;
                 dst << "\t" << "sw" << "\t" << "$" << mySystem.getRegName(scratchRegs[0]) <<", "<< varAddress <<"($fp)"<<"\t\t #storing " << var << " after increment"<<std::endl;
             }
-            else if(mySystem.lookupParameter(var) > 1)
+            else if(mySystem.lookupParameter(var) > -1)
             {
                 dst << "\t" << "lw" << "\t" << "$" << mySystem.getRegName(scratchRegs[0]) << ", " << ((mySystem.lookupParameter(var))*4 + stackSize) << "($fp)" << "\t\t #loading function parameter " << var << std::endl;
                 dst << "\t" << "nop" << std::endl;
@@ -181,7 +181,7 @@ public:
                 dst << "\t" << "lw" << "\t" << "$" << mySystem.getRegName(scratchRegs[0]) << ", " <<varAddress <<"($fp)" <<std::endl;
                 dst << "\t" << "nop" << std::endl;
             }
-            else if(mySystem.lookupParameter(var) > 1)
+            else if(mySystem.lookupParameter(var) > -1)
             {
                 dst << "\t" << "lw" << "\t" << "$" << mySystem.getRegName(scratchRegs[0]) << ", " << ((mySystem.lookupParameter(var))*4 + stackSize) << "($fp)" << "\t\t #loading function parameter " << var << std::endl;
                 dst << "\t" << "nop" << std::endl;
@@ -221,7 +221,7 @@ public:
                 dst << "\t" << "addiu" << "\t" << "$" << mySystem.getRegName(scratchRegs[0]) << ", $" << mySystem.getRegName(scratchRegs[0]) << ", -1" << "\t\t #decrementing by 1 due to -- operator" << std::endl;
                 dst << "\t" << "sw" << "\t" << "$" << mySystem.getRegName(scratchRegs[0]) <<", "<< varAddress <<"($fp)"<<"\t\t #storing " << var << " after increment"<<std::endl;
             }
-            else if(mySystem.lookupParameter(var) > 1)
+            else if(mySystem.lookupParameter(var) > -1)
             {
                 dst << "\t" << "lw" << "\t" << "$" << mySystem.getRegName(scratchRegs[0]) << ", " << ((mySystem.lookupParameter(var))*4 + stackSize) << "($fp)" << "\t\t #loading function parameter " << var << std::endl;
                 dst << "\t" << "nop" << std::endl;

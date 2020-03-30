@@ -124,6 +124,7 @@ STATEMENT:
     | T_SWITCH T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES T_OPEN_BRACES SWITCH_CASES T_CLOSE_BRACES           {$$ = new Switch($3, $6);}
     | T_BREAK T_SEMICOLON                                                                                      {$$ = new Break();}
     | T_CONTINUE T_SEMICOLON                                                                                   {$$ = new Continue();}
+    |SCOPE {$$ = $1;}
     ;
 
 STATEMENT_SCOPE:
