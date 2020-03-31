@@ -425,7 +425,7 @@ public:
 
         Parameter->toMips(dst, mySystem, destReg);
 
-        dst<<"\t"<<"move"<<"\t"<<"$"<<mySystem.getRegName(freeParamReg[0]) <<", $"<<destReg<<"\t #move param to arg reg"<<std::endl;
+        dst<<"\t"<<"move"<<"\t"<<"$"<<mySystem.getRegName(freeParamReg[0]) <<", $"<<mySystem.getRegName(destReg)<<"\t #move param to arg reg"<<std::endl;
 
         if (RestOf != NULL) {
             RestOf->toMips(dst, mySystem, destReg);
@@ -446,8 +446,7 @@ class FunctionCall : public AST_Node
 
 
   public:
-    FunctionCall(std::string _name, NodePtr _arg) : name(_name), arg(_arg) {     
-    }
+    FunctionCall(std::string _name, NodePtr _arg) : name(_name), arg(_arg) {}
     ~FunctionCall() {}
 
     virtual void print(std::ostream &dst) const override {

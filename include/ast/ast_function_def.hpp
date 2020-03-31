@@ -192,10 +192,10 @@ public:
             functionImplementation->print(tmp);
            
         }
-        int stack_end = (stackVarCount*4) +78;
-        dst<<"\t"<<"addiu"<<"\t"<<"$sp, $sp,-"<<stack_end<<std::endl; //restoring sp
-        dst<<"\t"<<"sw"<<"\t"<<"$ra,"<<stack_end-4<<"($sp)"<<std::endl; //store return address at end of stack frame
-        dst<<"\t"<<"sw"<<"\t"<<"$fp,"<<stack_end-8<<"($sp)"<<std::endl; //old fp = top of stack address - 4
+        int stackBottom = (stackVarCount*4) +78;
+        dst<<"\t"<<"addiu"<<"\t"<<"$sp, $sp,-"<<stackBottom<<std::endl; 
+        dst<<"\t"<<"sw"<<"\t"<<"$ra,"<<stackBottom-4<<"($sp)"<<std::endl; 
+        dst<<"\t"<<"sw"<<"\t"<<"$fp,"<<stackBottom-8<<"($sp)"<<std::endl; 
         dst<<"\t"<<"move"<<"\t"<<"$fp, $sp"<<std::endl;
 
         
@@ -203,7 +203,7 @@ public:
             mySystem.resetArgRegs();
             
             for(int i =4; i<8; i++){
-                dst<<"\t"<<"sw"<<"\t"<<"$"<<mySystem.getRegName(i)<<", "<<stack_end+(4*(i-4))<<"($fp)"<<"\t"<<"#storing param argument register"<<std::endl;
+                dst<<"\t"<<"sw"<<"\t"<<"$"<<mySystem.getRegName(i)<<", "<<stackBottom+(4*(i-4))<<"($fp)"<<"\t"<<"#storing param argument register"<<std::endl;
             }
            
             parameters->toMips(dst, mySystem, destReg);
@@ -224,20 +224,20 @@ public:
         dst<<"#DEALLOCATING STACK"<<std::endl;
 
         if(parameters != NULL){
-            //int stack_end = (var_count*4) +parameter_count+12+50;
-            int argreg = 4;
+            
+            int argRegs = 4;
             for(int i =0; i<4; i++){
-                dst<<"\t"<<"lw"<<"\t"<<"$"<<argreg++<<", "<<stack_end+(4*i)<<"($fp)"<<"\t"<<"#loading param argument register"<<std::endl;
+                dst<<"\t"<<"lw"<<"\t"<<"$"<< mySystem.getRegName(argRegs++)<<", "<<stackBottom+(4*i)<<"($fp)"<<"\t"<<"#loading param argument register"<<std::endl;
                 dst<<"\t"<<"nop"<<std::endl;
             }
         }
 
-        dst<<"\t"<<"move"<<"\t"<<"$sp, $fp"<<std::endl; //deallocating stack
-        dst<<"\t"<<"lw"<<"\t"<<"$ra,"<<stack_end-4<<"($sp)"<<std::endl;
+        dst<<"\t"<<"move"<<"\t"<<"$sp, $fp"<<std::endl; 
+        dst<<"\t"<<"lw"<<"\t"<<"$ra,"<<stackBottom-4<<"($sp)"<<std::endl;
         dst<<"\t"<<"nop"<<std::endl;
-        dst<<"\t"<<"lw"<<"\t"<<"$fp,"<<stack_end-8<<"($sp)"<<std::endl; //old fp = top of stack address - 4
+        dst<<"\t"<<"lw"<<"\t"<<"$fp,"<<stackBottom-8<<"($sp)"<<std::endl; 
         dst<<"\t"<<"nop"<<std::endl;
-        dst<<"\t"<<"addiu"<<"\t"<<"$sp, $sp,"<<stack_end<<std::endl; //restoring sp
+        dst<<"\t"<<"addiu"<<"\t"<<"$sp, $sp,"<<stackBottom<<std::endl; 
         //returns 0 if no return defined for main
         if (functionIdentifier == "main" && main_returned == false) {
             dst<<"\t"<<"li"<<"\t"<<"$2"<<", 0"<<"\t#No return defined, return 0 by default"<<std::endl;
