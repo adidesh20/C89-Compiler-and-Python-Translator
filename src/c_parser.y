@@ -212,7 +212,7 @@ PARAMETERS_IN_LIST:
   ;
 
 EXPR:
-   LOGICAL_OR {$$ = $1;}
+   TERNARY {$$ = $1;}
   | ASSIGNMENT {$$ = $1;}
   ;
 ASSIGNMENT:
@@ -229,7 +229,10 @@ ASSIGNMENT:
   | T_VARIABLE T_DOT_OP T_VARIABLE T_DIVIDE_EQUALS EXPR                                        {$$ = new AssOpDiv(*$1 + *$3, $5);}
   ;
 
-
+TERNARY:
+    LOGICAL_OR T_TERNARY TERNARY T_COLON TERNARY {$$ = new TernaryOperator($1,$3,$5);}
+  | LOGICAL_OR                                    {$$ = $1;}
+  ;
 
 LOGICAL_OR:
     LOGICAL_AND T_LOGICAL_OR LOGICAL_OR           {$$ = new LogicalOrOperator($1, $3);}

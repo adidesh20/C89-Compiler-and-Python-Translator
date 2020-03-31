@@ -306,13 +306,11 @@ public:
 class AssArray : public AST_Node {
 private:
     std::string Identifier;
-    // int index_no;
     NodePtr Expression;
     NodePtr IndexExpr;
 public:
     ~AssArray() {}
-    // ArrayAssignment(std::string _Identifier, int _index_no, NodePtr _Expression)
-    //  : Identifier(_Identifier), index_no(_index_no), Expression(_Expression), IndexExpr(NULL) {}
+
     AssArray(std::string _Identifier, NodePtr _IndexExpr, NodePtr _Expression)
      : Identifier(_Identifier), Expression(_Expression), IndexExpr(_IndexExpr) {}
 
@@ -327,25 +325,24 @@ public:
 
     virtual void toMips (std::ostream &dst, System &mySystem, int destReg) const override {
 
-        std::vector<int> freeRegs = mySystem.temp_freeRegLookup();
-        mySystem.lockReg(freeRegs[0]);
+        std::vector<int> scratchRegs = mySystem.temp_freeRegLookup();
+        mySystem.lockReg(scratchRegs[0]);
         int index_no = IndexExpr->evaluate(mySystem);
-        Expression->toMips(dst, mySystem, freeRegs[0]);
+        Expression->toMips(dst, mySystem, scratchRegs[0]);
 
         int var_offset = mySystem.systemMemory.variableSearch(Identifier + std::to_string(index_no), currentIndent);
         if (var_offset !=0) {
-            dst<<"\t"<<"sw"<<"\t"<<"$"<<freeRegs[0]<<", "<<var_offset<<"($fp)"<<"\t\t #Assign element "<<index_no<<" of array "<<Identifier<<std::endl;
+            dst<<"\t"<<"sw"<<"\t"<<"$"<<scratchRegs[0]<<", "<<var_offset<<"($fp)"<<"\t\t #Assign element "<<index_no<<" of array "<<Identifier<<std::endl;
         }
         else {
-            //global array
-            dst<<"\t"<<"lui"<<"\t"<<"$"<<destReg<<", "<<"%hi("<<Identifier<<")"<<"\t\t#Loading in array: "<<Identifier<<std::endl;
-            dst<<"\t"<<"addiu"<<"\t"<<"$"<<destReg<<", $"<<destReg<<", %lo("<<Identifier<<")"<<std::endl;
+            dst<<"\t"<<"lui"<<"\t"<<"$"<<mySystem.getRegName(destReg)<<", "<<"%hi("<<Identifier<<")"<<"\t\t#Loading in array: "<<Identifier<<std::endl;
+            dst<<"\t"<<"addiu"<<"\t"<<"$"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(destReg)<<", %lo("<<Identifier<<")"<<std::endl;
             dst<<"\t"<<"nop"<<std::endl;
-            dst<<"\t"<<"addiu"<<"\t"<<"$"<<destReg<<", $"<<destReg<<", "<<index_no*4<<"\t\t #Add offset for element "<<index_no<<std::endl;
-            dst<<"\t"<<"sw"<<"\t"<<"$"<<freeRegs[0]<<", ($"<<destReg<<")"<<"\t\t #Store into global array "<<Identifier<<std::endl;
+            dst<<"\t"<<"addiu"<<"\t"<<"$"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(destReg)<<", "<<index_no*4<<"\t\t #Add offset for element "<<index_no<<std::endl;
+            dst<<"\t"<<"sw"<<"\t"<<"$"<<scratchRegs[0]<<", ($"<<mySystem.getRegName(destReg)<<")"<<"\t\t #Store into global array "<<Identifier<<std::endl;
         }
         dst<<"\t"<<"nop"<<std::endl;
-        mySystem.unlockReg(freeRegs[0]);
+        mySystem.unlockReg(scratchRegs[0]);
     }
 };
 

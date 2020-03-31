@@ -361,32 +361,70 @@ public:
 };
 */
 
-/*
+
 class TernaryOperator : public AST_Node {
   private:
     NodePtr condition;
-    NodePtr con_true;
-    NodePtr con_false;
+    NodePtr if_true;
+    NodePtr if_false;
   public:
     
     ~TernaryOperator() {}
     
-    TernaryOperator(NodePtr _condition, NodePtr _con_true, NodePtr _con_false)
-     : condition(_condition), con_true(_con_true), con_false(_con_false) {}
+    TernaryOperator(NodePtr _condition, NodePtr _if_true, NodePtr _if_false)
+     : condition(_condition), if_true(_if_true), if_false(_if_false) {}
     
     virtual void print(std::ostream &dst) const override {
         condition->print(dst);
         dst<<" ? ";
-        if (con_true != NULL) 
-            con_true->print(dst);
+        if (if_true != NULL) {
+
+            if_true->print(dst);
+        }
         dst<<" : ";
-        con_false->print(dst);
+        if_false->print(dst);
+    }
+
+     virtual int evaluate(System &mySystem) const override
+    {
+        if (condition->evaluate(mySystem)==1){
+            return if_true->evaluate(mySystem);
+        }
+        else{
+            return if_false->evaluate(mySystem);
+        }
+        
+        
+    }
+
+     virtual void toMips (std::ostream &dst, System &mySystem, int destReg) const override {
+        int current_if_level = if_level++;
+        condition->toMips(dst, mySystem, destReg);
+        dst<<"\t"<<"#Ternary operator"<<std::endl;
+        dst << "\t"<<"beq"<<"\t" << "$zero, $" << mySystem.getRegName(destReg) << ", else_"<<current_if_level << std::endl;
+        
+		dst << "\t"<<"nop"<<"\t" << std::endl;
+
+        if (if_true != NULL) {
+            if_true->toMips(dst, mySystem, destReg);
+        }
+        else {
+           
+            dst<<"\t"<<"b"<<"\t"<<"else_"<<current_if_level;
+        }
+        dst<<"\t"<<"b"<<"\t"<<"ifelse_end_"<<current_if_level<<std::endl;
+        dst<<"\t"<<"nop"<<std::endl;
+
+        dst<<"else_"<<current_if_level<<":"<<std::endl;
+        if_false->toMips(dst, mySystem, destReg);
+    
+
+        dst<<"ifelse_end_"<<current_if_level<<":"<<std::endl;
     }
 
     
     
 };
-*/
     // COMPARISON OPERATORS //
 
 class EqualToOperator
@@ -697,7 +735,7 @@ class BitwiseComplement : public Operator {
     {}
 
     virtual int evaluate(System &mySystem) const override {
-        // double vl=left->evaluate(bindings);
+       
         int vr=getRight()->evaluate(mySystem);
         return (~vr);
     }
@@ -724,15 +762,14 @@ class BitwiseOrOperator : public Operator {
     }
 
     virtual void toMips (std::ostream &dst, System &mySystem, int destReg) const override {
-        std::vector<int> freeReg = mySystem.temp_freeRegLookup(); //finds available registers
-        mySystem.lockReg(freeReg[0]);                      //locks the registers for use of the function
+        std::vector<int> scratchRegs = mySystem.temp_freeRegLookup();
+        mySystem.lockReg(scratchRegs[0]);                      
         getLeft()->toMips(dst, mySystem, destReg);
-        getRight()->toMips(dst, mySystem, freeReg[0]);
+        getRight()->toMips(dst, mySystem, scratchRegs[0]);
      
-        //checks equivalence, if they are the same will result in zero
-        dst<<"\t"<<"or"<<"\t"<<"$"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(freeReg[0])<<"\t#| bitwise operator" << std::endl;
-        //or operation ensures that if the result is non zero it becomes 1
-        mySystem.unlockReg(freeReg[0]);
+        dst<<"\t"<<"or"<<"\t"<<"$"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(scratchRegs[0])<<"\t#| bitwise operator" << std::endl;
+      
+        mySystem.unlockReg(scratchRegs[0]);
     }   
 };
 
@@ -752,15 +789,14 @@ class BitwiseXorOperator : public Operator {
     }
 
     virtual void toMips (std::ostream &dst, System &mySystem, int destReg) const override {
-        std::vector<int> freeReg = mySystem.temp_freeRegLookup(); //finds available registers
-        mySystem.lockReg(freeReg[0]);                      //locks the registers for use of the function
+        std::vector<int> scratchRegs = mySystem.temp_freeRegLookup();
+        mySystem.lockReg(scratchRegs[0]);                    
         getLeft()->toMips(dst, mySystem, destReg);
-        getRight()->toMips(dst, mySystem, freeReg[0]);
-     
-        //checks equivalence, if they are the same will result in zero
-        dst<<"\t"<<"xor"<<"\t"<<"$"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(freeReg[0])<<"\t#^ bitwise operator" << std::endl;
-        //or operation ensures that if the result is non zero it becomes 1
-        mySystem.unlockReg(freeReg[0]);
+        getRight()->toMips(dst, mySystem, scratchRegs[0]);
+
+        dst<<"\t"<<"xor"<<"\t"<<"$"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(scratchRegs[0])<<"\t\t#^ bitwise operator" << std::endl;
+      
+        mySystem.unlockReg(scratchRegs[0]);
     }   
 };
 
@@ -780,15 +816,15 @@ class BitwiseAndOperator : public Operator {
     }
 
     virtual void toMips (std::ostream &dst, System &mySystem, int destReg) const override {
-        std::vector<int> freeReg = mySystem.temp_freeRegLookup(); //finds available registers
-        mySystem.lockReg(freeReg[0]);                      //locks the registers for use of the function
+        std::vector<int> scratchRegs = mySystem.temp_freeRegLookup(); 
+        mySystem.lockReg(scratchRegs[0]);                   
         getLeft()->toMips(dst, mySystem, destReg);
-        getRight()->toMips(dst, mySystem, freeReg[0]);
+        getRight()->toMips(dst, mySystem, scratchRegs[0]);
      
-        //checks equivalence, if they are the same will result in zero
-        dst<<"\t"<<"and"<<"\t"<<"$"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(freeReg[0])<<"\t#& bitwise operator" << std::endl;
-        //or operation ensures that if the result is non zero it becomes 1
-        mySystem.unlockReg(freeReg[0]);
+
+        dst<<"\t"<<"and"<<"\t"<<"$"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(scratchRegs[0])<<"\t#& bitwise operator" << std::endl;
+        
+        mySystem.unlockReg(scratchRegs[0]);
     }   
 };
 
@@ -808,15 +844,15 @@ class LeftShiftOperator : public Operator {
     }
 
     virtual void toMips (std::ostream &dst, System &mySystem, int destReg) const override {
-        std::vector<int> freeReg = mySystem.temp_freeRegLookup(); //finds available registers
-        mySystem.lockReg(freeReg[0]);                      //locks the registers for use of the function
+        std::vector<int> scratchRegs = mySystem.temp_freeRegLookup(); 
+        mySystem.lockReg(scratchRegs[0]);                     
         getLeft()->toMips(dst, mySystem, destReg);
-        getRight()->toMips(dst, mySystem, freeReg[0]);
+        getRight()->toMips(dst, mySystem, scratchRegs[0]);
      
-        //checks equivalence, if they are the same will result in zero
-        dst<<"\t"<<"sllv"<<"\t"<<"$"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(freeReg[0])<<"\t# << operator" << std::endl;
-        //or operation ensures that if the result is non zero it becomes 1
-        mySystem.unlockReg(freeReg[0]);
+       
+        dst<<"\t"<<"sllv"<<"\t"<<"$"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(scratchRegs[0])<<"\t\t# << operator" << std::endl;
+
+        mySystem.unlockReg(scratchRegs[0]);
     }   
 };
 
@@ -836,15 +872,14 @@ class RightShiftOperator : public Operator {
     }
 
     virtual void toMips (std::ostream &dst, System &mySystem, int destReg) const override {
-        std::vector<int> freeReg = mySystem.temp_freeRegLookup(); //finds available registers
-        mySystem.lockReg(freeReg[0]);                      //locks the registers for use of the function
+        std::vector<int> scratchRegs = mySystem.temp_freeRegLookup();
+        mySystem.lockReg(scratchRegs[0]);                     
         getLeft()->toMips(dst, mySystem, destReg);
-        getRight()->toMips(dst, mySystem, freeReg[0]);
-     
-        //checks equivalence, if they are the same will result in zero
-        dst<<"\t"<<"srlv"<<"\t"<<"$"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(freeReg[0])<<"\t# << operator" << std::endl;
-        //or operation ensures that if the result is non zero it becomes 1
-        mySystem.unlockReg(freeReg[0]);
+        getRight()->toMips(dst, mySystem, scratchRegs[0]);
+    
+        dst<<"\t"<<"srlv"<<"\t"<<"$"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(destReg)<<", $"<<mySystem.getRegName(scratchRegs[0])<<"\t\t# << operator" << std::endl;
+
+        mySystem.unlockReg(scratchRegs[0]);
     }   
 };
 

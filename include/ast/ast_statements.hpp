@@ -53,22 +53,22 @@ public:
 
 class ScopeStatements: public AST_Node {
 private:
-    NodePtr Singular_statement;
-    NodePtr Rest_of_statements;
+    NodePtr statement;
+    NodePtr RestOf;
 public:
     ~ScopeStatements () {}
 
-    ScopeStatements (NodePtr _Singular_statement, NodePtr _Rest_of_statements)
-     : Singular_statement(_Singular_statement), Rest_of_statements(_Rest_of_statements) {}
+    ScopeStatements (NodePtr _statement, NodePtr _RestOf)
+     : statement(_statement), RestOf(_RestOf) {}
 
     virtual void print(std::ostream &dst) const override {
         for (int i = 0; i < currentIndent; i++) {
             dst << "\t";
         }
-        Singular_statement->print(dst);
+        statement->print(dst);
         dst<<std::endl;
-        if (Rest_of_statements != NULL) {
-            Rest_of_statements->print(dst);
+        if (RestOf != NULL) {
+            RestOf->print(dst);
         }
     }
 
@@ -76,18 +76,18 @@ public:
         for (int i = 0; i < currentIndent; i++) {
             dst << "\t";
         }
-        Singular_statement->toPython(dst);
+        statement->toPython(dst);
         dst<<std::endl;
-        if (Rest_of_statements != NULL) {
-            Rest_of_statements->toPython(dst);
+        if (RestOf != NULL) {
+            RestOf->toPython(dst);
         }
     }
 
     virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override {
-        Singular_statement->toMips(dst, mySystem, destReg);
+        statement->toMips(dst, mySystem, destReg);
         dst<<std::endl;
-        if (Rest_of_statements != NULL) {
-            Rest_of_statements->toMips(dst, mySystem, destReg);
+        if (RestOf != NULL) {
+            RestOf->toMips(dst, mySystem, destReg);
         }
     }
 
@@ -126,7 +126,7 @@ public:
         {
             return_val->toMips(dst, mySystem, destReg);
         }
-        dst << "\t" << "b " << function_def_queue.back() << "_function_end_" << function_def_num << "\t #return" << std::endl;
+        dst << "\t" << "b " << function_def_queue.back() << "_function_end_" << function_def_num << "\t\t #return" << std::endl;
         if(function_def_queue.back() == "main")
         {
             main_returned = true;
@@ -162,34 +162,28 @@ public:
     virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override {
         loop_while = true;
 
-        if(loop_while == true){
-        
-        //use a free register for condition check
- 
+        //if(loop_while == true){
+    
         int current_loop = loop_count++;
 
         dst<<"while_loop_"<<current_loop<<"_begin:"<<"\t#Begin while loop"<<std::endl;
-        
-        //evalute the condition into the free register
+ 
         Condition->toMips(dst, mySystem, destReg);
-        //branch to end if condition evaluates false (0)
-        dst<<"\t"<<"beq"<<"\t"<<"$0, $"<<destReg<<", end_loop_"<<current_loop<<std::endl;
+    
+        dst<<"\t"<<"beq"<<"\t"<<"$0, $"<<mySystem.getRegName(destReg)<<", end_loop_"<<current_loop<<std::endl;
         dst<<"\t"<<"nop"<<std::endl;
 
         std::string current_loop_end = "end_loop_" + std::to_string(current_loop);
         loop_ends.push_back(current_loop_end);
 
         Body->toMips(dst, mySystem, destReg);
-        // loop_count--;
-
-
-        //branch back to top
+  
         dst<<"\t"<<"b"<<"\t"<<"while_loop_"<<current_loop<<"_begin"<<std::endl;
         dst<<"\t"<<"nop"<<std::endl;
-        //end of loop
+  
         dst<<current_loop_end<<":"<<"\t#End while loop"<<std::endl;
         loop_ends.pop_back();
-        }
+        //}
 
         loop_while = false;
     }
@@ -297,7 +291,7 @@ public:
         int current_if_level = if_level++;
         
         Condition->toMips(dst, mySystem, scratchRegs[0]);
-        dst << "\t"<<"beq"<<"\t" << "$zero, $" << mySystem.getRegName(scratchRegs[0]) << ", else_"<<current_if_level << std::endl; //$else condition yet to be filled
+        dst << "\t"<<"beq"<<"\t" << "$zero, $" << mySystem.getRegName(scratchRegs[0]) << ", else_"<<current_if_level << std::endl; 
 		dst << "\t"<<"nop"<<"\t" << std::endl;
 		mySystem.unlockReg(scratchRegs[0]);
 
@@ -347,39 +341,33 @@ public:
         loop_for = true;
 
         if(loop_for == true){
-            //use a free register for condition check
-            // std::vector<int> freeRegs = mySystem.FindFreeConstantRegs();
-            // mySystem.set_used(freeRegs[0]);
-
+         
             loop_for = true;
             if (Init != NULL)
                 Init->toMips(dst, mySystem, destReg);
             dst<<"for_loop_"<<loop_count<<"_begin:"<<"\t#Begin for loop"<<std::endl;
             
-            //evalute the condition into the free register
             if (Condition != NULL)
                 Condition->toMips(dst, mySystem, destReg);
-            //branch to end if condition evaluates false (0)
-            dst<<"\t"<<"beq"<<"\t"<<"$0, $"<<destReg<<", end_loop_"<<loop_count<<std::endl;
+       
+            dst<<"\t"<<"beq"<<"\t"<<"$0, $"<<mySystem.getRegName(destReg)<<", end_loop_"<<loop_count<<std::endl;
             dst<<"\t"<<"nop"<<std::endl;
 
             std::string current_loop_end = "end_loop_" + std::to_string(loop_count);
             loop_ends.push_back(current_loop_end);
             if (Body != NULL)
                 Body->toMips(dst, mySystem, destReg);
-            // loop_count--;
+      
 
             dst<<"for_increment_"<<loop_count<<":"<<"\t#Increment stage of for loop"<<std::endl;
             if (Increment != NULL)
                 Increment->toMips(dst, mySystem, destReg);
 
-            //branch back to top
             dst<<"\t"<<"b"<<"\t"<<"for_loop_"<<loop_count<<"_begin"<<std::endl;
-            dst<<"\t"<<"nop"<<std::endl;
-            //end of loop
+
             dst<<"end_loop_"<<loop_count<<":"<<"\t#End for loop"<<std::endl;
             loop_ends.pop_back();
-            // mySystem.set_unused(freeRegs[0]);
+
             loop_count++;
         }
 
@@ -425,7 +413,7 @@ public:
 
         Parameter->toMips(dst, mySystem, destReg);
 
-        dst<<"\t"<<"move"<<"\t"<<"$"<<mySystem.getRegName(freeParamReg[0]) <<", $"<<mySystem.getRegName(destReg)<<"\t #move param to arg reg"<<std::endl;
+        dst<<"\t"<<"move"<<"\t"<<"$"<<mySystem.getRegName(freeParamReg[0]) <<", $"<<mySystem.getRegName(destReg)<<"\t\t #move parameter to arg reg"<<std::endl;
 
         if (RestOf != NULL) {
             RestOf->toMips(dst, mySystem, destReg);
@@ -442,17 +430,17 @@ class FunctionCall : public AST_Node
 {
   private:
     std::string name;
-    NodePtr arg;
+    NodePtr parameters;
 
 
   public:
-    FunctionCall(std::string _name, NodePtr _arg) : name(_name), arg(_arg) {}
+    FunctionCall(std::string _name, NodePtr _parameters) : name(_name), parameters(_parameters) {}
     ~FunctionCall() {}
 
     virtual void print(std::ostream &dst) const override {
         dst << name << "(";
-        if (arg != NULL) {
-            arg->print(dst);
+        if (parameters != NULL) {
+            parameters->print(dst);
         }
         
         dst << ")";
@@ -460,38 +448,38 @@ class FunctionCall : public AST_Node
 
     virtual void toPython(std::ostream &dst) const {
         dst << name << "(";
-        if (arg != NULL) {
-            arg->toPython(dst);
+        if (parameters != NULL) {
+            parameters->toPython(dst);
         }
 
         dst << ")";
     }
 
       virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override {
-        functionCallNum++;
-        function_call_queue.push_back(name);
+       
         std::vector<int> lockedRegs = mySystem.temp_lockedRegLookup();
-        int stack_count = localVarCount;
+        int stack_bottom = localVarCount;
         
-        //store temp registers before function call in stack
+        function_call_queue.push_back(name);
+        functionCallNum++;
         for (unsigned int i = 0; i < lockedRegs.size();i++) {
-            stack_count++;
-            dst << "\t"<<"sw"<< "\t"<< "$"<<lockedRegs[i]<<", "<<(stack_count)*4+16<< "($fp)";
-            dst <<"\t#Storing temp register: "<<lockedRegs[i]<< std::endl;
+            stack_bottom++;
+            dst << "\t"<<"sw"<< "\t"<< "$"<<mySystem.getRegName(lockedRegs[i])<<", "<<(stack_bottom)*4+16<< "($fp)";
+            dst <<"\t\t#Storing used temporary register: "<<mySystem.getRegName(lockedRegs[i])<< std::endl;
         }
 
-        if (arg!=NULL)
-            arg->toMips(dst,mySystem,destReg);
+        if (parameters!=NULL)
+            parameters->toMips(dst,mySystem,destReg);
 
-        //function call
-        dst<<"\t"<<"jal"<<"\t"<<name<<"\t#Function called"<<std::endl;
+       
+        dst<<"\t"<<"jal"<<"\t"<<name<<"\t\t#Function call"<<std::endl;
 
-        //restore temp registers
+
         for ( int i = lockedRegs.size()-1; i >= 0;i--) {
-            dst << "\t"<<"lw"<< "\t"<< "$"<<lockedRegs[i]<<", "<<(stack_count)*4+16<< "($fp)";
-            dst <<"\t#Loading temp register: "<<lockedRegs[i]<< std::endl;
+            dst << "\t"<<"lw"<< "\t"<< "$"<<mySystem.getRegName(lockedRegs[i])<<", "<<(stack_bottom)*4+16<< "($fp)";
+            dst <<"\t\t#Loading used temporary register: "<<mySystem.getRegName(lockedRegs[i])<< std::endl;
             dst<<"\t"<<"nop"<<std::endl;
-            stack_count--;
+            stack_bottom--;
         }
 
         

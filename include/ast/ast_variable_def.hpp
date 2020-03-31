@@ -147,7 +147,7 @@ public:
             }
             else {
                 dst<<varIdentifier<<":"<<std::endl;
-                dst<<"\t"<<".word"<<"\t"<<"0" << "\t#New global variable"<< std::endl;
+                dst<<"\t"<<".word"<<"\t"<<"0" << "\t\t#New global variable"<< std::endl;
                 mySystem.store_var_val(varIdentifier, 0);
 
             }
@@ -340,7 +340,7 @@ public:
             mySystem.NewGlobalVar(arrayid + std::to_string(currentIndent));
         }
         dst<<"\t"<<".data"<<std::endl;
-        dst<<Identifier<<":\t"<<".space "<<arraysize*4<<"\t#Global array of size "<<arraysize<<std::endl;
+        dst<<Identifier<<":\t"<<".space "<<arraysize*4<<"\t\t#Global array of size "<<arraysize<<std::endl;
         dst<<std::endl;
 
   }
