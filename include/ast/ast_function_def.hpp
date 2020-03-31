@@ -174,19 +174,16 @@ public:
        
         dst<<"\t"<<".text"<<std::endl;
         dst<<std::endl;
-        dst<<"#----------FUNCTION "<<functionIdentifier<<"----------"<<std::endl;
-    
-    
+        dst<<"#FUNCTION "<<functionIdentifier<<std::endl;
         dst<<"\t"<<".globl"<<"\t"<<functionIdentifier<<std::endl;
-        
         dst<<"\t"<<".ent"<<"\t"<<functionIdentifier<<std::endl;
         dst<<"\t"<<".type"<<"\t"<<functionIdentifier<<", @function"<<std::endl;
 
         dst<<functionIdentifier<<":"<<std::endl;
-        //space allocated in stack
+       
         dst<<"#ALLOCATING STACK"<<std::endl;
         
-        if (functionImplementation != NULL)
+        if (functionImplementation != NULL)//finding stackVarCount
         {
             std::ostream tmp(0);
             functionImplementation->print(tmp);
@@ -203,7 +200,7 @@ public:
             mySystem.resetArgRegs();
             
             for(int i =4; i<8; i++){
-                dst<<"\t"<<"sw"<<"\t"<<"$"<<mySystem.getRegName(i)<<", "<<stackBottom+(4*(i-4))<<"($fp)"<<"\t"<<"#storing param argument register"<<std::endl;
+                dst<<"\t"<<"sw"<<"\t"<<"$"<<mySystem.getRegName(i)<<", "<<stackBottom+(4*(i-4))<<"($fp)"<<"\t\t"<<"#storing arguement registers in stack"<<std::endl;
             }
            
             parameters->toMips(dst, mySystem, destReg);
@@ -213,10 +210,10 @@ public:
             functionImplementation->toMips(dst, mySystem, destReg);
         }
         else if(functionIdentifier == "main" && functionImplementation == NULL){
-            dst<<"\t"<<"move"<<"\t"<<"$v0, $0"<<std::endl; //empty main should return zero in $2
+            dst<<"\t"<<"move"<<"\t"<<"$v0, $0"<<std::endl; 
         }
         else{
-            dst<<"\t"<<"nop"<<"\t"<<std::endl; //if a function is declared as empty
+            dst<<"\t"<<"nop"<<"\t"<<std::endl;
         }
 
         
@@ -225,9 +222,9 @@ public:
 
         if(parameters != NULL){
             
-            int argRegs = 4;
-            for(int i =0; i<4; i++){
-                dst<<"\t"<<"lw"<<"\t"<<"$"<< mySystem.getRegName(argRegs++)<<", "<<stackBottom+(4*i)<<"($fp)"<<"\t"<<"#loading param argument register"<<std::endl;
+            
+            for(int i =4; i<8; i++){
+                dst<<"\t"<<"lw"<<"\t"<<"$"<< mySystem.getRegName(i)<<", "<<stackBottom+(4*(i-4))<<"($fp)"<<"\t\t"<<"#restoring argument registers from stack"<<std::endl;
                 dst<<"\t"<<"nop"<<std::endl;
             }
         }
@@ -238,9 +235,8 @@ public:
         dst<<"\t"<<"lw"<<"\t"<<"$fp,"<<stackBottom-8<<"($sp)"<<std::endl; 
         dst<<"\t"<<"nop"<<std::endl;
         dst<<"\t"<<"addiu"<<"\t"<<"$sp, $sp,"<<stackBottom<<std::endl; 
-        //returns 0 if no return defined for main
         if (functionIdentifier == "main" && main_returned == false) {
-            dst<<"\t"<<"li"<<"\t"<<"$2"<<", 0"<<"\t#No return defined, return 0 by default"<<std::endl;
+            dst<<"\t"<<"li"<<"\t"<<"$v0"<<", 0"<<"\t#No return defined, return 0 by default"<<std::endl;
         }
         dst<<"\t"<<"j"<<"\t"<<"$ra"<<std::endl;
         dst<<"\t"<<"nop"<<std::endl;

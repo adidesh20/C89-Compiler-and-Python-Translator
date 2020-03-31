@@ -80,7 +80,7 @@
 "||"                    {return T_LOGICAL_OR;}
 "&&"                    {return T_LOGICAL_AND;}
 [!]                     {return T_LOGICAL_NOT;}
-[?]                     {return T_TERNARY;}
+["?"]                     {return T_TERNARY;}
  /* Brackets */
 [(]                     {return T_OPEN_PARENTHESES;}
 [)]                     {return T_CLOSE_PARENTHESES;}
