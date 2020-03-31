@@ -2,6 +2,7 @@
 #define ASS_OP_HPP
 
 #include "ast.hpp"
+#include "common.hpp"
 #include <string>
 #include <iostream>
 #include <cmath>

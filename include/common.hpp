@@ -3,10 +3,11 @@
 
 //variables available to all files:
 #include "ast.hpp"
-
+#include "ast/ast_node.hpp"
 
 #include <vector>
 #include <string>
+#include <map>
 
 static std::vector<std::string> global_variables_names;
 static int currentIndent = 0;
@@ -41,5 +42,7 @@ static bool switchFallthroughAllowed = true;
 static bool inSwitch = false;
 
 static int enumCounter = 0;
+
+
 
 #endif

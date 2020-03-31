@@ -14,6 +14,7 @@
 #include "ast/ast_memory.hpp"
 #include "ast/ast_switch.hpp"
 #include "ast/ast_enum.hpp"
+#include "ast/ast_struct.hpp"
 
 extern const AST_Node *parseAST();
 

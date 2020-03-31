@@ -1,5 +1,6 @@
 %code requires{
   #include "ast.hpp"
+  #include <iostream>
 
 
   #include <cassert>
@@ -21,7 +22,7 @@
   std::string *string;
 }
 
-%token T_INT T_VOID T_FLOAT T_DOUBLE T_RETURN T_ENUM
+%token T_INT T_VOID T_FLOAT T_DOUBLE T_RETURN T_ENUM T_STRUCT
 %token T_IF T_ELSE T_WHILE T_FOR T_SWITCH T_CASE T_DEFAULT T_BREAK T_CONTINUE
 %token T_TIMES T_PLUS T_MINUS T_DIVIDE T_MOD
 %token T_INCREMENT T_DECREMENT
@@ -43,7 +44,7 @@
 
 %type <expr> ROOT  PROGRAM EXTERNAL_DECLARATION GLOBAL_DECLARATION GLOBAL_VAR_DEF_LIST GLOBAL_VAR_DEF SCOPE SCOPE_BODY STATEMENT LOCAL_DECLARATION  EXPR TERM UNARY  FACTOR PARAMETERS_IN_LIST
 %type <expr> FUNCTION_DEC FUNCTION_DEF PARAMETER_LIST PARAMETER  LOCAL_VAR_DEF LOCAL_VAR_DEF_LIST ASSIGNMENT STATEMENT_SCOPE TERNARY LOGICAL_AND LOGICAL_OR COMPARE_EQUAL COMPARE_DIFFERENT ADD_SUBTRACT
-%type <expr> BIT_AND BIT_OR BIT_XOR SHIFT SWITCH_CASES SW_CASE DEFAULT_CASE  GLOBAL_ENUM_LIST ENUM_LIST
+%type <expr> BIT_AND BIT_OR BIT_XOR SHIFT SWITCH_CASES SW_CASE DEFAULT_CASE  GLOBAL_ENUM_LIST ENUM_LIST STRUCT_LIST 
 %type <number> T_NUMBER
 %type <string> T_VARIABLE  TYPE  T_VOID T_INT T_DOUBLE T_FLOAT T_RETURN T_IF T_ELSE T_WHILE T_FOR T_SWITCH 
 
@@ -68,10 +69,11 @@ EXTERNAL_DECLARATION:
 
 
 GLOBAL_DECLARATION:
-    TYPE GLOBAL_VAR_DEF_LIST T_SEMICOLON           {$$=new GloTypeset (*$1,$2);}     
-    | TYPE T_VARIABLE T_OPEN_BRACKETS T_NUMBER T_CLOSE_BRACKETS T_SEMICOLON           {$$ = new GlobalArrayDec (*$1,*$2,$4);}  
-    | T_ENUM T_VARIABLE T_OPEN_BRACES GLOBAL_ENUM_LIST T_CLOSE_BRACES T_SEMICOLON     {$$ = new EnumDefinition(*$2, $4);}                     
-
+  TYPE GLOBAL_VAR_DEF_LIST T_SEMICOLON                                                      {$$=new GloTypeset (*$1,$2);}     
+  | TYPE T_VARIABLE T_OPEN_BRACKETS T_NUMBER T_CLOSE_BRACKETS T_SEMICOLON                   {$$ = new GlobalArrayDec (*$1,*$2,$4);}  
+  | T_ENUM T_VARIABLE T_OPEN_BRACES GLOBAL_ENUM_LIST T_CLOSE_BRACES T_SEMICOLON             {$$ = new EnumDefinition(*$2, $4);}
+  | T_STRUCT T_VARIABLE T_OPEN_BRACES STRUCT_LIST T_CLOSE_BRACES T_SEMICOLON                {$$ = new StructDefinition(*$2, $4);}  
+  | T_STRUCT T_VARIABLE T_VARIABLE T_SEMICOLON                                              {$$ = new GlobalStructInstance(*$2, *$3);}
   ;
 
 GLOBAL_VAR_DEF_LIST:      
@@ -81,7 +83,8 @@ GLOBAL_VAR_DEF_LIST:
 
 GLOBAL_VAR_DEF:
   T_VARIABLE                    {$$ = new GlobalVariable_Definition(*$1,NULL);}
-  |T_VARIABLE T_EQUAL EXPR        {$$ = new GlobalVariable_Definition(*$1,$3);}
+  | T_VARIABLE T_EQUAL EXPR        {$$ = new GlobalVariable_Definition(*$1,$3);}
+  
   ;
 
 GLOBAL_ENUM_LIST:
@@ -89,6 +92,13 @@ GLOBAL_ENUM_LIST:
   | T_VARIABLE T_EQUAL EXPR                             {$$ = new GlobalEnumList(*$1, $3, NULL);}
   | T_VARIABLE T_COMMA GLOBAL_ENUM_LIST                 {$$ = new GlobalEnumList(*$1, NULL, $3);}
   | T_VARIABLE                                          {$$ = new GlobalEnumList(*$1, NULL, NULL);}
+  ;
+
+STRUCT_LIST:
+  TYPE T_VARIABLE T_EQUAL EXPR T_SEMICOLON STRUCT_LIST  {$$ = new StructList(*$2, $4, $6);}
+  | TYPE T_VARIABLE T_SEMICOLON STRUCT_LIST             {$$ = new StructList(*$2, NULL, $4);}
+  | TYPE T_VARIABLE T_EQUAL EXPR T_SEMICOLON            {$$ = new StructList(*$2, $4, NULL);}
+  | TYPE T_VARIABLE T_SEMICOLON                         {$$ = new StructList(*$2, NULL, NULL);}
   ;
 
 FUNCTION_DEF:
@@ -125,14 +135,16 @@ STATEMENT:
     | T_RETURN T_SEMICOLON                     {$$ = new ReturnStatement(NULL);}
     | EXPR T_SEMICOLON                         {$$ = $1;}
     | STATEMENT  T_SEMICOLON                   {$$ = $1;}
-    | T_WHILE T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE                                     {$$ = new WhileStatement($3,$5);}
+    | T_WHILE T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE                                      {$$ = new WhileStatement($3,$5);}
     | T_IF T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE                                         {$$ = new IfElseStatement($3,$5,NULL);}
     | T_IF T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE T_ELSE STATEMENT_SCOPE                  {$$ = new IfElseStatement($3, $5, $7);}
-    | T_FOR T_OPEN_PARENTHESES STATEMENT STATEMENT EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE                     {$$ = new ForStatement($3, $4, $5, $7);}
+    | T_FOR T_OPEN_PARENTHESES STATEMENT STATEMENT EXPR T_CLOSE_PARENTHESES STATEMENT_SCOPE                    {$$ = new ForStatement($3, $4, $5, $7);}
     | T_SWITCH T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES T_OPEN_BRACES SWITCH_CASES T_CLOSE_BRACES           {$$ = new Switch($3, $6);}
     | T_BREAK T_SEMICOLON                                                                                      {$$ = new Break();}
     | T_CONTINUE T_SEMICOLON                                                                                   {$$ = new Continue();}
-    | T_ENUM T_VARIABLE T_OPEN_BRACES ENUM_LIST T_CLOSE_BRACES T_SEMICOLON                                     {$$ = new EnumDefinition(*$2, $4);}                                 
+    | T_ENUM T_VARIABLE T_OPEN_BRACES ENUM_LIST T_CLOSE_BRACES T_SEMICOLON                                     {$$ = new EnumDefinition(*$2, $4);}            
+    | T_STRUCT T_VARIABLE T_OPEN_BRACES STRUCT_LIST T_CLOSE_BRACES T_SEMICOLON                                 {$$ = new StructDefinition(*$2, $4);}
+    | T_STRUCT T_VARIABLE T_VARIABLE T_SEMICOLON                                                               {$$ = new LocalStructInstance(*$2, *$3);}                        
     |SCOPE {$$ = $1;}
     ;
 

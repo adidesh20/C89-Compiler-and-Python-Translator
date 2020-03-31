@@ -15,6 +15,7 @@
 "void"          { yylval.string = new std::string(yytext); return T_VOID; }
 "return"        {yylval.string = new std::string(yytext); return T_RETURN;}
 "enum"          {yylval.string = new std::string(yytext); return T_ENUM;}
+"struct"        {yylval.string = new std::string(yytext); return T_STRUCT;}
  
  /* =====================================CONDITIONAL SHIZZLE====================================== */
 

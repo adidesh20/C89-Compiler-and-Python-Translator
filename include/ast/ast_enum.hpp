@@ -1,3 +1,7 @@
+#ifndef ENUM_HPP
+#define ENUM_HPP
+
+
 #include "ast.hpp"
 #include "common.hpp"
 #include <iostream>
@@ -144,4 +148,4 @@ public:
     }
 };
 
-
+#endif
