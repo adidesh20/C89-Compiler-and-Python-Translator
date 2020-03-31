@@ -22,7 +22,7 @@
   std::string *string;
 }
 
-%token T_INT T_VOID T_FLOAT T_DOUBLE T_RETURN T_ENUM T_STRUCT
+%token T_INT T_VOID T_FLOAT T_DOUBLE T_RETURN T_ENUM T_STRUCT T_TYPEDEF
 %token T_IF T_ELSE T_WHILE T_FOR T_SWITCH T_CASE T_DEFAULT T_BREAK T_CONTINUE
 %token T_TIMES T_PLUS T_MINUS T_DIVIDE T_MOD
 %token T_INCREMENT T_DECREMENT
@@ -74,6 +74,7 @@ GLOBAL_DECLARATION:
   | T_ENUM T_VARIABLE T_OPEN_BRACES GLOBAL_ENUM_LIST T_CLOSE_BRACES T_SEMICOLON             {$$ = new EnumDefinition(*$2, $4);}
   | T_STRUCT T_VARIABLE T_OPEN_BRACES STRUCT_LIST T_CLOSE_BRACES T_SEMICOLON                {$$ = new StructDefinition(*$2, $4);}  
   | T_STRUCT T_VARIABLE T_VARIABLE T_SEMICOLON                                              {$$ = new GlobalStructInstance(*$2, *$3);}
+  | T_TYPEDEF TYPE T_VARIABLE T_SEMICOLON                                                   {$$ = new Typedef(*$2, *$3);}
   ;
 
 GLOBAL_VAR_DEF_LIST:      
@@ -144,7 +145,8 @@ STATEMENT:
     | T_CONTINUE T_SEMICOLON                                                                                   {$$ = new Continue();}
     | T_ENUM T_VARIABLE T_OPEN_BRACES ENUM_LIST T_CLOSE_BRACES T_SEMICOLON                                     {$$ = new EnumDefinition(*$2, $4);}            
     | T_STRUCT T_VARIABLE T_OPEN_BRACES STRUCT_LIST T_CLOSE_BRACES T_SEMICOLON                                 {$$ = new StructDefinition(*$2, $4);}
-    | T_STRUCT T_VARIABLE T_VARIABLE T_SEMICOLON                                                               {$$ = new LocalStructInstance(*$2, *$3);}                        
+    | T_STRUCT T_VARIABLE T_VARIABLE T_SEMICOLON                                                               {$$ = new LocalStructInstance(*$2, *$3);}
+    | T_TYPEDEF TYPE T_VARIABLE T_SEMICOLON                                                                    {$$ = new Typedef(*$2, *$3);}                        
     |SCOPE {$$ = $1;}
     ;
 
@@ -201,6 +203,7 @@ TYPE:
   | T_DOUBLE  {$$ = $1;}
   | T_FLOAT   {$$ = $1;}
   | T_VOID     {$$ = $1;}
+  | T_VARIABLE {$$ = $1;}
   ;
 
 PARAMETERS_IN_LIST:

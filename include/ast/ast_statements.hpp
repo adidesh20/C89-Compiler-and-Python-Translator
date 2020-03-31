@@ -568,4 +568,26 @@ public:
     }
 };
 
+class Typedef: public AST_Node
+{
+public:
+    std::string type;
+    std::string newName;
+    
+    ~Typedef(){}
+    Typedef(std::string _type, std::string _newName): type(_type), newName(_newName){}
+
+    virtual void print (std::ostream &dst) const override
+    {
+        dst << "typedef " << type << " " << newName << ";" << std::endl;
+    }
+
+    virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override
+    {
+
+    }
+   
+
+};
+
 #endif
