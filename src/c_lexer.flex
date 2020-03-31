@@ -91,6 +91,7 @@
 [;]				      { return T_SEMICOLON; }
 [:]				      { return T_COLON; }
 [,]				      { return T_COMMA; }
+[.]                   { return T_DOT_OP;}
 "//".*                {} // Single Line Comments
 
 %%

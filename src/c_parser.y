@@ -34,7 +34,7 @@
 %token T_OPEN_PARENTHESES T_CLOSE_PARENTHESES
 %token T_OPEN_BRACKETS T_CLOSE_BRACKETS
 %token T_OPEN_BRACES T_CLOSE_BRACES
-%token T_SEMICOLON T_COLON T_COMMA
+%token T_SEMICOLON T_COLON T_COMMA T_DOT_OP
 %token T_VARNAME
 
 %token T_TIMES T_DIVIDE T_PLUS T_MINUS T_EXPONENT
@@ -289,23 +289,24 @@ TERM:
 UNARY: 
   T_MINUS UNARY  { $$ = new NegOperator($2); }
 	|FACTOR         {$$ = $1; }
-  |T_VARIABLE T_INCREMENT          {$$ = new IncrementOperator(*$1, "post");}
-  | T_INCREMENT T_VARIABLE        {$$ = new IncrementOperator(*$2, "pre");}
-  | T_VARIABLE T_DECREMENT         {$$ = new DecrementOperator(*$1,"post");}
-  | T_DECREMENT  T_VARIABLE      {$$ = new DecrementOperator(*$2, "pre");}
-  | T_LOGICAL_NOT FACTOR             {$$ = new NotOperator($2);}
-  | T_BITWISE_COMP FACTOR         {$$ = new BitwiseComplement(NULL,$2);}
+  |T_VARIABLE T_INCREMENT           {$$ = new IncrementOperator(*$1, "post");}
+  | T_INCREMENT T_VARIABLE          {$$ = new IncrementOperator(*$2, "pre");}
+  | T_VARIABLE T_DECREMENT          {$$ = new DecrementOperator(*$1,"post");}
+  | T_DECREMENT  T_VARIABLE         {$$ = new DecrementOperator(*$2, "pre");}
+  | T_LOGICAL_NOT FACTOR            {$$ = new NotOperator($2);}
+  | T_BITWISE_COMP FACTOR           {$$ = new BitwiseComplement(NULL,$2);}
   
   ;
 
 
 FACTOR: 
-  T_NUMBER     {  $$ = new Number( $1 ); }
-  | T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES { $$ = $2; }
-  | T_VARIABLE         {$$ = new Variable (*$1); }
-  | T_VARIABLE T_OPEN_PARENTHESES PARAMETERS_IN_LIST T_CLOSE_PARENTHESES  {$$ = new FunctionCall(*$1, $3);}
-  | T_VARIABLE T_OPEN_PARENTHESES T_CLOSE_PARENTHESES {$$ = new FunctionCall(*$1, NULL);}
-  | T_VARIABLE T_OPEN_BRACKETS EXPR T_CLOSE_BRACKETS {$$ = new ArrayElement(*$1,$3); }
+  T_NUMBER                                                                                  {  $$ = new Number( $1 ); }
+  | T_OPEN_PARENTHESES EXPR T_CLOSE_PARENTHESES                                             { $$ = $2; }
+  | T_VARIABLE                                                                              {$$ = new Variable (*$1); }
+  | T_VARIABLE T_OPEN_PARENTHESES PARAMETERS_IN_LIST T_CLOSE_PARENTHESES                    {$$ = new FunctionCall(*$1, $3);}
+  | T_VARIABLE T_OPEN_PARENTHESES T_CLOSE_PARENTHESES                                       {$$ = new FunctionCall(*$1, NULL);}
+  | T_VARIABLE T_OPEN_BRACKETS EXPR T_CLOSE_BRACKETS                                        {$$ = new ArrayElement(*$1,$3); }
+  | T_VARIABLE T_DOT_OP T_VARIABLE                                                          {$$ = new Variable(*$1 + *$3);}
   ;
 
 
