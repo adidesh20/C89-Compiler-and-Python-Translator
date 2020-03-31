@@ -294,7 +294,7 @@ public:
 
     virtual void toMips(std::ostream &dst, System &mySystem, int destReg) const override
     {
-        // dst << "#local variable" << std::endl;
+    
         localVarCount++;
         mySystem.NewLocalVar(varIdentifier+std::to_string(currentIndent));
         
