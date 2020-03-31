@@ -22,7 +22,7 @@
   std::string *string;
 }
 
-%token T_INT T_VOID T_FLOAT T_DOUBLE T_RETURN T_ENUM T_STRUCT T_TYPEDEF
+%token T_INT T_VOID T_FLOAT T_DOUBLE T_RETURN T_ENUM T_STRUCT T_TYPEDEF T_SIZEOF
 %token T_IF T_ELSE T_WHILE T_FOR T_SWITCH T_CASE T_DEFAULT T_BREAK T_CONTINUE
 %token T_TIMES T_PLUS T_MINUS T_DIVIDE T_MOD
 %token T_INCREMENT T_DECREMENT
@@ -220,8 +220,13 @@ ASSIGNMENT:
   | T_VARIABLE T_PLUS_EQUALS EXPR                                                   {$$ = new AssOpAdd(*$1, $3);}
   | T_VARIABLE T_MINUS_EQUALS EXPR                                                  {$$ = new AssOpSub(*$1, $3);}
   | T_VARIABLE T_TIMES_EQUALS EXPR                                                  {$$ = new AssOpMul(*$1, $3);}
-  | T_VARIABLE T_DIVIDE_EQUALS EXPR                                               {$$ = new AssOpDiv(*$1, $3);}
-  | T_VARIABLE T_OPEN_BRACKETS EXPR T_CLOSE_BRACKETS T_EQUAL EXPR        {$$ = new AssArray(*$1,$3,$6);}
+  | T_VARIABLE T_DIVIDE_EQUALS EXPR                                                 {$$ = new AssOpDiv(*$1, $3);}
+  | T_VARIABLE T_OPEN_BRACKETS EXPR T_CLOSE_BRACKETS T_EQUAL EXPR                   {$$ = new AssArray(*$1,$3,$6);}
+  | T_VARIABLE T_DOT_OP T_VARIABLE T_EQUAL EXPR                                                {$$ = new AssOpEqual(*$1 + *$3, $5);}
+  | T_VARIABLE T_DOT_OP T_VARIABLE T_PLUS_EQUALS EXPR                                          {$$ = new AssOpAdd(*$1 + *$3, $5);}
+  | T_VARIABLE T_DOT_OP T_VARIABLE T_MINUS_EQUALS EXPR                                         {$$ = new AssOpSub(*$1 + *$3, $5);}
+  | T_VARIABLE T_DOT_OP T_VARIABLE T_TIMES_EQUALS EXPR                                          {$$ = new AssOpMul(*$1 + *$3, $5);}
+  | T_VARIABLE T_DOT_OP T_VARIABLE T_DIVIDE_EQUALS EXPR                                        {$$ = new AssOpDiv(*$1 + *$3, $5);}
   ;
 
 
@@ -310,6 +315,7 @@ FACTOR:
   | T_VARIABLE T_OPEN_PARENTHESES T_CLOSE_PARENTHESES                                       {$$ = new FunctionCall(*$1, NULL);}
   | T_VARIABLE T_OPEN_BRACKETS EXPR T_CLOSE_BRACKETS                                        {$$ = new ArrayElement(*$1,$3); }
   | T_VARIABLE T_DOT_OP T_VARIABLE                                                          {$$ = new Variable(*$1 + *$3);}
+  | T_SIZEOF EXPR                                                                           {$$ = new Number(4); }
   ;
 
 

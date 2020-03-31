@@ -29,6 +29,7 @@
 "break"         {yylval.string = new std::string(yytext); return T_BREAK;}
 "continue"      {yylval.string = new std::string(yytext); return T_CONTINUE;}
 "default"       {yylval.string = new std::string(yytext); return T_DEFAULT;}
+"sizeof"        {yylval.string = new std::string(yytext); return T_SIZEOF;}
 
  /* ==========================================IDENTIFIER=========================================== */
 
